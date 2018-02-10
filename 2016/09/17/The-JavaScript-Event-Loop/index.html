@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>The JavaScript Event Loop | Tong&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Javascript Basic review Part 2   Basic understanding of Javascript&amp;#x2019;s event-driven interaction model">
+<meta name="keywords" content="Javascript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The JavaScript Event Loop">
+<meta property="og:url" content="http://tongzhang.me/2016/09/17/The-JavaScript-Event-Loop/index.html">
+<meta property="og:site_name" content="Tong&#39;s blog">
+<meta property="og:description" content="Javascript Basic review Part 2   Basic understanding of Javascript&amp;#x2019;s event-driven interaction model">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://tongzhang.me/2016/09/17/The-JavaScript-Event-Loop/eventLoop.png">
+<meta property="og:updated_time" content="2018-02-10T17:48:02.516Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The JavaScript Event Loop">
+<meta name="twitter:description" content="Javascript Basic review Part 2   Basic understanding of Javascript&amp;#x2019;s event-driven interaction model">
+<meta name="twitter:image" content="http://tongzhang.me/2016/09/17/The-JavaScript-Event-Loop/eventLoop.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Tong&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/images/favicon.gif">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Tong</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item" href="/tags">
+                Tags
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </nav>
+    <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="z-index: 2">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item flex-1" href="/tags">
+                Tags
+            </a>
+            
+    </div>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        width: 40px;
+        border-radius: 40px;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>The JavaScript Event Loop</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="/images/avatar.jpeg">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Tong</span>
+                <span class="post-date sub-title">at: 2016-09-17</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/Javascript/">Javascript</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p>Javascript Basic review Part 2 </p>
+<blockquote>
+<p>Basic understanding of Javascript&#x2019;s event-driven interaction model<br><a id="more"></a></p>
+</blockquote>
+<h1 id="Single-thread-Javascript"><a href="#Single-thread-Javascript" class="headerlink" title="Single-thread Javascript"></a>Single-thread Javascript</h1><p>A major feature of JavaScript language is single-threaded, that is, the same time can only do one thing. So, why JavaScript can not have multiple threads?</p>
+<p>As a browser scripting language, the main purpose of JavaScript is to interact with the user and manipulate the DOM. This determines that it can only be single-threaded, otherwise it will bring very complex synchronization issues. </p>
+<p>For example, suppose that JavaScript has two threads at the same time, one thread  add content to a DOM node, another thread delete the node, then the browser should obey which thread? Therefore, in order to avoid complexity, JavaScript is a single thread language from birth, which has become the core features of the language.</p>
+<hr>
+<h1 id="Task-Queue"><a href="#Task-Queue" class="headerlink" title="Task Queue"></a>Task Queue</h1><p>Single-threaded means that all tasks need to queue up, before the end of a task before the implementation of the latter task. If the previous task takes a long time, the latter task will have to wait.</p>
+<p>Queue up sometime cause time wasting, like Ajax operations to read data from the network takes a lot of time, but the next task have to wait for such long time. It&#x2019;s obviously unreasonable, so JavaScript language designers realize that when the main thread can completely ignore IO devices, hanging on the task, and execute the next task first. Wait until the IO device returns the results, javascript will continue executing the hanged task.</p>
+<p>Thus, all tasks can be divided into two kinds, one is synchronous task, the other is asynchronous task. Synchronous task refers to the task in the main thread on the queue, only the completion of the previous task means performing the latter task; asynchronous task does not enter the main thread, but enter the &#x201C;task queue&#x201D;. Only when the &#x201C;task queue&#x201D; informs the main thread that an asynchronous task can be executed, the task will enter the main thread execution.</p>
+<hr>
+<h1 id="Non-blocking-I-O"><a href="#Non-blocking-I-O" class="headerlink" title="Non-blocking I/O"></a>Non-blocking I/O</h1><p>In JavaScript, almost all I/O is non-blocking. This includes HTTP requests, database operations and disk reads and writes; the single thread of execution asks the runtime to perform an operation, providing a callback function and then moves on to do something else. When the operation has been completed, a message is enqueued along with the provided callback function. At some point in the future, the message is dequeued and the callback fired.</p>
+<hr>
+<h1 id="Event-loop"><a href="#Event-loop" class="headerlink" title="Event loop"></a>Event loop</h1><p>JavaScript runtimes contain a task queue which stores a list of messages to be processed and their associated callback functions. These messages are queued in response to external events (such as a mouse being clicked or receiving the response to an HTTP request) given a callback function has been provided. If, for example a user were to click a button and no callback function was provided &#x2013; no message would have been enqueued:<br><img src="/2016/09/17/The-JavaScript-Event-Loop/eventLoop.png" style="text-align: center;
+  margin: 0 auto;" title="Event Loop"></p>
+<p>The main thread take tasks from the &#x201C;task queue&#x201D;, this process is a cycle of continuous, so the whole of this operating mechanism is called Event Loop. As long as the execution stack is empty, the main thread will read from the &#x201C;task queue&#x201D;, implement the callback function of these messages one by one. </p>
+<blockquote>
+<p>The code in the execution stack (the synchronization task) is always executed before the &#x201C;task queue&#x201D; (asynchronous task) is read.</p>
+</blockquote>
+
+        </div>
+        <div class="post-reply">
+            
+            
+            <div id="disqus_thread" style="width: 80%; margin: 0 auto;"></div>
+                <script>
+
+                    /**
+                     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+                    /*
+                     var disqus_config = function () {
+                     this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                     this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                     };
+                     */
+                    (function() { // DON'T EDIT BELOW THIS LINE
+                        var d = document, s = d.createElement('script');
+                        s.src = 'https://disqus.com/by/jimmyzt/';
+                        s.setAttribute('data-timestamp', +new Date());
+                        (d.head || d.body).appendChild(s);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+    #footer {
+        min-height: 10vh;
+        background: black;
+        color: #fff;
+    }
+
+    #footer a {
+        color: #e1e1e1;
+    }
+
+    .footer-content {
+        padding: 1rem;
+        margin: 0 auto;
+    }
+</style>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+<footer id="footer"
+        class="has-text-centered is-flex center">
+    <div class="container has-padding">
+        <div>
+            <div class="footer-content">
+                <i class="fa fa-eye" style="position: relative; top: 3px;right: 5px"></i><span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Visits
+                <br> Copyright ©
+                Tong Zhang
+                    2018
+                        <br> Powered by
+                        <a href="http://hexo.io/"
+                           target="_blank">Hexo</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script async
+        src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+        </script>
+
+<script src="/js/search_core.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>

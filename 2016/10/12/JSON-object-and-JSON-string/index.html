@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>JSON, JavaScript Object literals and JSON string | Tong&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Talk about the difference between JSON, JavaScript Object literals and JSON string including their convertion methods">
+<meta name="keywords" content="JSON">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JSON, JavaScript Object literals and JSON string">
+<meta property="og:url" content="http://tongzhang.me/2016/10/12/JSON-object-and-JSON-string/index.html">
+<meta property="og:site_name" content="Tong&#39;s blog">
+<meta property="og:description" content="Talk about the difference between JSON, JavaScript Object literals and JSON string including their convertion methods">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-02-10T17:48:14.244Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JSON, JavaScript Object literals and JSON string">
+<meta name="twitter:description" content="Talk about the difference between JSON, JavaScript Object literals and JSON string including their convertion methods">
+  
+    <link rel="alternate" href="/atom.xml" title="Tong&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/images/favicon.gif">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Tong</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item" href="/tags">
+                Tags
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </nav>
+    <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="z-index: 2">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item flex-1" href="/tags">
+                Tags
+            </a>
+            
+    </div>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        width: 40px;
+        border-radius: 40px;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>JSON, JavaScript Object literals and JSON string</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="/images/avatar.jpeg">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Tong</span>
+                <span class="post-date sub-title">at: 2016-10-12</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/JSON/">JSON</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <blockquote>
+<p>Talk about the difference between JSON, JavaScript Object literals and JSON string including their convertion methods<br><a id="more"></a></p>
+</blockquote>
+<h1 id="JSON-in-Javascript"><a href="#JSON-in-Javascript" class="headerlink" title="JSON in Javascript"></a>JSON in Javascript</h1><p>Data can be stored in many ways, but if it should be stored in a text file and be readable by a computer, it needs to follow some structure. JSON is one of the many formats that define such a structure, as it can describe Objects, Arrays, Strings, Numbers, Booleans.</p>
+<p>Such formats like JSON, XML, CSV are typically language-independent, meaning they can be processed by Java, Python, JavaScript, PHP, you name it. </p>
+<h2 id="The-difference-between-JSON-and-Javascript-Object-Literals"><a href="#The-difference-between-JSON-and-Javascript-Object-Literals" class="headerlink" title="The difference between JSON and Javascript Object Literals"></a>The difference between JSON and Javascript Object Literals</h2><p>JavaScript also provides a way to define/describe data, but the syntax is very specific to JavaScript, the value defined by this syntax is called Javascript Object Literals. </p>
+<p>While JSON is kind of more strict Javascript Object Literals. Let&#x2019;s compare these two concepts:  </p>
+<ol>
+<li>JSON has the following syntactical constraints:  </li>
+</ol>
+<ul>
+<li>Object keys must be strings quoted in &#x201C;&#x201D;.</li>
+<li>The values can be either:string, number, (JSON) object, array ,null, boolean</li>
+<li>Strings must be quoted with &#x201C; and not &#x2018;  </li>
+</ul>
+<ol>
+<li>In JavaScript, object literals can have:</li>
+</ol>
+<ul>
+<li>String literals, number literals or identifier names as keys.</li>
+<li>The values can be any valid JavaScript expression, including function definitions and undefined.  </li>
+</ul>
+<p>Let&#x2019;s look at some examples:</p>
+<pre>// This is JSON string
+var foo = &apos;{ &quot;prop&quot;: &quot;val&quot; }&apos;;
+// This is object literal
+var bar = {prop: &quot;val&quot;, fun: function() {alert(&apos;hh&apos;);}};
+//This is JSON syntax object 
+var hew = {&quot;prop&quot;: foo};</pre>
+
+<h2 id="What-is-JSON-string-and-JSON-Object"><a href="#What-is-JSON-string-and-JSON-Object" class="headerlink" title="What is JSON string and JSON Object"></a>What is JSON string and JSON Object</h2><p>For example, <code>{ &quot;prop&quot;: &quot;val&quot; }</code> could be a JavaScript Object literal or a JSON string, depending in what context it&#x2019;s being used. </p>
+<p>If it&#x2019;s used in a string context (surrounded by single or double quotes, loaded from a text file, etc) it is a JSON string. If it&#x2019;s used in an Object literal context, it&#x2019;s an Object literal.</p>
+<p>For example:</p>
+<pre>// This is a JSON String.
+var foo = &apos;{ &quot;prop&quot;: &quot;val&quot; }&apos;;
+// This is an Object literal.
+var bar = { &quot;prop&quot;: &quot;val&quot; };</pre>
+
+<p>In modern browsers, the JSON object is a native object with the static methods <code>JSON.parse</code> (deserialize a JSON string into an object) and <code>JSON.stringify</code> (serialize an object into a JSON string). When you want to convert to and from JSON, you use these methods.</p>
+<p>For example:</p>
+<pre>// This is a JSON String, like what you&apos;d get back from an AJAX request.
+var my_json_string = &apos;{ &quot;prop&quot;: &quot;val&quot; }&apos;;
+
+// This is how you deserialize that JSON String into an Object.
+var my_obj = JSON.parse( my_json_string );
+
+alert( my_obj.prop == &apos;val&apos; ); // Alerts true, fancy that!
+
+// And this is how you serialize an Object into a JSON String.
+var my_other_json_string = JSON.stringify( my_obj );</pre>
+
+
+<hr>
+<h1 id="JSON-stringify-value-replacer-space"><a href="#JSON-stringify-value-replacer-space" class="headerlink" title="JSON.stringify(value[, replacer [, space]])"></a>JSON.stringify(value[, replacer [, space]])</h1><p>The JSON.stringify () method can serialize any JavaScript value into a JSON string.</p>
+<h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><ol>
+<li>&#x975E;&#x6570;&#x7EC4;&#x5BF9;&#x8C61;&#x7684;&#x5C5E;&#x6027;&#x4E0D;&#x80FD;&#x4FDD;&#x8BC1;&#x4EE5;&#x7279;&#x5B9A;&#x7684;&#x987A;&#x5E8F;&#x51FA;&#x73B0;&#x5728;&#x5E8F;&#x5217;&#x5316;&#x540E;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x4E2D;&#x3002;</li>
+<li>&#x5E03;&#x5C14;&#x503C;&#x3001;&#x6570;&#x5B57;&#x3001;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x5305;&#x88C5;&#x5BF9;&#x8C61;&#x5728;&#x5E8F;&#x5217;&#x5316;&#x8FC7;&#x7A0B;&#x4E2D;&#x4F1A;&#x81EA;&#x52A8;&#x8F6C;&#x6362;&#x6210;&#x5BF9;&#x5E94;&#x7684;&#x539F;&#x59CB;&#x503C;&#x3002;</li>
+<li>undefined&#x3001;&#x4EFB;&#x610F;&#x7684;&#x51FD;&#x6570;&#x4EE5;&#x53CA; symbol &#x503C;&#xFF0C;&#x5728;&#x5E8F;&#x5217;&#x5316;&#x8FC7;&#x7A0B;&#x4E2D;&#x4F1A;&#x88AB;&#x5FFD;&#x7565;&#x6216;&#x8005;&#x88AB;&#x8F6C;&#x6362;&#x6210; null</li>
+</ol>
+<h2 id="Parameter-replacer"><a href="#Parameter-replacer" class="headerlink" title="Parameter replacer"></a>Parameter replacer</h2><ol>
+<li>&#x5982;&#x679C;&#x8BE5;&#x53C2;&#x6570;&#x662F;&#x4E00;&#x4E2A;&#x51FD;&#x6570;&#xFF0C;&#x5219;&#x5728;&#x5E8F;&#x5217;&#x5316;&#x8FC7;&#x7A0B;&#x4E2D;&#xFF0C;&#x88AB;&#x5E8F;&#x5217;&#x5316;&#x7684;&#x503C;&#x7684;&#x6BCF;&#x4E2A;&#x5C5E;&#x6027;&#x90FD;&#x4F1A;&#x7ECF;&#x8FC7;&#x8BE5;&#x51FD;&#x6570;&#x7684;&#x8F6C;&#x6362;&#x548C;&#x5904;&#x7406;&#xFF1B;</li>
+<li>&#x5982;&#x679C;&#x8BE5;&#x53C2;&#x6570;&#x662F;&#x4E00;&#x4E2A;&#x6570;&#x7EC4;&#xFF0C;&#x5219;&#x53EA;&#x6709;&#x5305;&#x542B;&#x5728;&#x8FD9;&#x4E2A;&#x6570;&#x7EC4;&#x4E2D;&#x7684;&#x5C5E;&#x6027;&#x540D;&#x624D;&#x4F1A;&#x88AB;&#x5E8F;&#x5217;&#x5316;&#x5230;&#x6700;&#x7EC8;&#x7684; JSON &#x5B57;&#x7B26;&#x4E32;&#x4E2D;&#xFF1B;&#x5982;&#x679C;&#x8BE5;&#x53C2;&#x6570;&#x4E3A;null&#x6216;&#x8005;&#x672A;&#x63D0;&#x4F9B;&#xFF0C;&#x5219;&#x5BF9;&#x8C61;&#x6240;&#x6709;&#x7684;&#x5C5E;&#x6027;&#x90FD;&#x4F1A;&#x88AB;&#x5E8F;&#x5217;&#x5316;&#xFF1B;<br>Example:<pre>/*When replacer is function: how to show function in JSON string */
+var censor = function(key,value){
+ if(typeof(value) == &apos;function&apos;){
+     return Function.prototype.toString.call(value);
+ }
+ return value;
+}
+var foo = {bar:&quot;new property&quot;,baz:3,getName:function(){return &apos;foo&apos;}};
+console.log(JSON.stringify(foo,censor))
+//Result:&apos;{&quot;bar&quot;:&quot;new property&quot;,&quot;baz&quot;:3,&quot;getName&quot;:&quot;function (){return &apos;foo&apos;}&quot;}&apos;
+/* When replacer is function: how to show undefined in JSON string */
+var censor = function(key,value){
+ if(value === undefined){
+      return &apos;undefined&apos;
+ }
+ return value;
+}
+var foo = {bar:&quot;new property&quot;,baz:3,test:undefined};
+console.log(JSON.stringify(foo,censor))
+//Result: &apos;{&quot;bar&quot;:&quot;new property&quot;,&quot;baz&quot;:3,&quot;test&quot;:&quot;undefined&quot;}&apos;&apos;
+/* When replacer is array or string:  */
+var foo = {a:&quot;1&quot;,b:2,c:true};
+console.log(JSON.stringify(foo,[&apos;a&apos;,&apos;c&apos;]))
+//Result: {&quot;a&quot;:&quot;1&quot;,&quot;c&quot;:true}
+/* When replacer is null:  */
+console.log(JSON.stringify(foo,null))
+//Result: {&quot;a&quot;:&quot;1&quot;,&quot;b&quot;:2,&quot;c&quot;:true}
+/* When replacer is ignored:  */
+console.log(JSON.stringify(foo))
+//Result: {&quot;a&quot;:&quot;1&quot;,&quot;b&quot;:2,&quot;c&quot;:true}</pre>
+
+</li>
+</ol>
+<h2 id="Paremeter-space"><a href="#Paremeter-space" class="headerlink" title="Paremeter space"></a>Paremeter space</h2><ol>
+<li>&#x5982;&#x679C;space&#x53C2;&#x6570;&#x4E3A;String&#x7C7B;&#x578B;&#x7684;&#x60C5;&#x51B5;&#x4E0B;,&#x5219;&#x9ED8;&#x8BA4;&#x53D6;&#x524D;String&#x7684;&#x524D;10&#x4E2A;&#x5B57;&#x7B26;&#x4F5C;&#x4E3A;&#x5206;&#x5272;&#x7B26;</li>
+<li>&#x5982;&#x679C;space&#x53C2;&#x6570;&#x4E3A;Number&#x7C7B;&#x578B;&#x7684;&#x60C5;&#x51B5;&#x4E0B;,&#x5219;&#x8868;&#x793A;space&#x4E2A;&#x7A7A;&#x683C;(space&lt;=10,&#x5927;&#x4E8E;10&#x53D6;10)<br>Example:<pre>//When space is string:
+var foo = {a:&quot;1&quot;,b:2,c:true};
+console.log(JSON.stringify(foo,null,&apos;test&apos;))
+/*
+{
+test&quot;a&quot;: &quot;1&quot;,
+test&quot;b&quot;: 2,
+test&quot;c&quot;: true
+}
+*/
+//When space is number:
+var foo = {a:&quot;1&quot;,b:2,c:true};
+console.log(JSON.stringify(foo,null,4))
+/*
+{
+ &quot;a&quot;: &quot;1&quot;,
+ &quot;b&quot;: 2,
+ &quot;c&quot;: true
+}
+*/</pre>
+
+</li>
+</ol>
+<h2 id="Use-the-JSON-stringify-to-dump-the-object"><a href="#Use-the-JSON-stringify-to-dump-the-object" class="headerlink" title="Use the JSON.stringify to dump the object"></a>Use the JSON.stringify to dump the object</h2><p>In everyday use, we may dump some complex objects, these objects are often nested objects within the object. Directly looks not so intuitive, combined with the above parameters of the replacer and space, we can dump complex objects with JSON.stringify.Example:</p>
+<pre>var censor = function(key,value){
+    if(typeof(value) == &apos;function&apos;){
+         return Function.prototype.toString.call(value)
+    }
+    return value;
+}
+var foo = {bar:&quot;new property&quot;,baz:3,o:{name:&apos;warjiang&apos;,age:23,info:{sex:&apos;male&apos;,getSex:function(){return &apos;sex&apos;;}}}};
+console.log(JSON.stringify(foo,censor,4))</pre>
+
+<hr>
+<h1 id="JSON-parse-text-reviver"><a href="#JSON-parse-text-reviver" class="headerlink" title="JSON.parse(text[, reviver])"></a>JSON.parse(text[, reviver])</h1><p>Resolves a string into a JSON object. During parsing, you can also optionally modify the original parsed value of some properties.</p>
+<h2 id="text"><a href="#text" class="headerlink" title="text"></a>text</h2><p>To parse a JSON string into a JSON object, see the description of the JSON syntax for learning JSON objects.</p>
+<h2 id="reviver-Optional"><a href="#reviver-Optional" class="headerlink" title="reviver Optional"></a>reviver Optional</h2><p>If it is a function, it specifies how the original value will be parsed before returned. Example: </p>
+<pre>var jsonString = &apos;{&quot;bar&quot;:&quot;property&quot;,&quot;baz&quot;:3}&apos;;
+var jsObject = JSON.parse(jsonString);
+console.log(jsObject)   //Object {bar: &quot;property&quot;, baz: 3}</pre>
+
+<hr>
+<h1 id="Obj-toJSON"><a href="#Obj-toJSON" class="headerlink" title="Obj.toJSON()"></a>Obj.toJSON()</h1><ul>
+<li>&#x5982;&#x679C;&#x4E00;&#x4E2A;&#x88AB;&#x5E8F;&#x5217;&#x5316;&#x7684;&#x5BF9;&#x8C61;&#x62E5;&#x6709; toJSON &#x65B9;&#x6CD5;&#xFF0C;&#x90A3;&#x4E48;&#x8BE5; toJSON v&#x65B9;&#x6CD5;&#x5C31;&#x4F1A;&#x8986;&#x76D6;&#x8BE5;&#x5BF9;&#x8C61;&#x9ED8;&#x8BA4;&#x7684;&#x5E8F;&#x5217;&#x5316;&#x884C;&#x4E3A;&#xFF1A;&#x4E0D;&#x662F;&#x90A3;&#x4E2A;&#x5BF9;&#x8C61;&#x88AB;&#x5E8F;&#x5217;&#x5316;&#xFF0C;&#x800C;&#x662F;&#x8C03;&#x7528; toJSON &#x65B9;&#x6CD5;&#x540E;&#x7684;&#x8FD4;&#x56DE;&#x503C;&#x4F1A;&#x88AB;&#x5E8F;&#x5217;&#x5316;</li>
+</ul>
+<p>Example:</p>
+<pre>var obj = {
+    foo: &apos;foo&apos;,
+    toJSON:function(){
+        return &apos;bar&apos;;
+    }
+}
+JSON.stringify(obj);//&apos;&quot;bar&quot;&apos;
+JSON.stringify({x:obj});//&apos;{&quot;x&quot;:&quot;bar&quot;}&apos;</pre>
+
+        </div>
+        <div class="post-reply">
+            
+            
+            <div id="disqus_thread" style="width: 80%; margin: 0 auto;"></div>
+                <script>
+
+                    /**
+                     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+                    /*
+                     var disqus_config = function () {
+                     this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                     this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                     };
+                     */
+                    (function() { // DON'T EDIT BELOW THIS LINE
+                        var d = document, s = d.createElement('script');
+                        s.src = 'https://disqus.com/by/jimmyzt/';
+                        s.setAttribute('data-timestamp', +new Date());
+                        (d.head || d.body).appendChild(s);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+    #footer {
+        min-height: 10vh;
+        background: black;
+        color: #fff;
+    }
+
+    #footer a {
+        color: #e1e1e1;
+    }
+
+    .footer-content {
+        padding: 1rem;
+        margin: 0 auto;
+    }
+</style>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+<footer id="footer"
+        class="has-text-centered is-flex center">
+    <div class="container has-padding">
+        <div>
+            <div class="footer-content">
+                <i class="fa fa-eye" style="position: relative; top: 3px;right: 5px"></i><span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Visits
+                <br> Copyright ©
+                Tong Zhang
+                    2018
+                        <br> Powered by
+                        <a href="http://hexo.io/"
+                           target="_blank">Hexo</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script async
+        src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+        </script>
+
+<script src="/js/search_core.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>Study Flexbox Layout | Tong&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Flex Box module provides a more efficient way to lay out, align and distribute space among different size of containers">
+<meta name="keywords" content="CSS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Study Flexbox Layout">
+<meta property="og:url" content="http://tongzhang.me/2016/08/02/Flex Box Style/index.html">
+<meta property="og:site_name" content="Tong&#39;s blog">
+<meta property="og:description" content="Flex Box module provides a more efficient way to lay out, align and distribute space among different size of containers">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-02-10T17:50:27.381Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Study Flexbox Layout">
+<meta name="twitter:description" content="Flex Box module provides a more efficient way to lay out, align and distribute space among different size of containers">
+  
+    <link rel="alternate" href="/atom.xml" title="Tong&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/images/favicon.gif">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Tong</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item" href="/tags">
+                Tags
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </nav>
+    <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="z-index: 2">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item flex-1" href="/tags">
+                Tags
+            </a>
+            
+    </div>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        width: 40px;
+        border-radius: 40px;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>Study Flexbox Layout</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="/images/avatar.jpeg">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Tong</span>
+                <span class="post-date sub-title">at: 2016-08-02</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/CSS/">CSS</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p>  Flex Box module provides a more efficient way to lay out, align and distribute space among different size of containers<br><a id="more"></a></p>
+<h2 id="Basic-concepts"><a href="#Basic-concepts" class="headerlink" title="Basic concepts"></a>Basic concepts</h2><h3 id="Container"><a href="#Container" class="headerlink" title="Container"></a>Container</h3><p>The flex box, can be inline element or block element;</p>
+<h3 id="Items"><a href="#Items" class="headerlink" title="Items"></a>Items</h3><p>Inner elements in the flex box;</p>
+<h3 id="Main-axis"><a href="#Main-axis" class="headerlink" title="Main axis"></a>Main axis</h3><p>The main axis of a flex container is the primary axis along which flex items are laid out. Beware, it is not necessarily horizontal;</p>
+<h3 id="Main-start-main-end"><a href="#Main-start-main-end" class="headerlink" title="Main-start | main-end"></a>Main-start | main-end</h3><p>The flex items are placed within the container starting from main-start and going to main-end.</p>
+<h3 id="Cross-start-cross-end"><a href="#Cross-start-cross-end" class="headerlink" title="Cross-start | cross-end"></a>Cross-start | cross-end</h3><p>Flex lines are filled with items and placed into the container starting on the cross-start side of the flex container and going toward the cross-end side.</p>
+<h2 id="Six-main-attributes-of-flex-container"><a href="#Six-main-attributes-of-flex-container" class="headerlink" title="Six main attributes of flex container"></a>Six main attributes of flex container</h2><h3 id="Flex-direction"><a href="#Flex-direction" class="headerlink" title="Flex-direction"></a>Flex-direction</h3><p>   This establishes the main-axis, thus defining the direction flex items are placed in the flex container. Values:<br>   <pre><code>row (default): left to right in ltr; right to left in rtl<br>row-reverse: right to left in ltr; left to right in rtl<br>column: same as row but top to bottom<br>column-reverse: same as row-reverse but bottom to top</code></pre></p>
+<h3 id="Flex-wrap"><a href="#Flex-wrap" class="headerlink" title="Flex-wrap"></a>Flex-wrap</h3><p>   The items can be decided to wrap in one/several lines as needed with this property. Values:<br>   <pre><code>nowrap (default): single-line / left to right in ltr; right to left in rtl<br>wrap: multi-line / left to right in ltr; right to left in rtl<br>wrap-reverse: multi-line / right to left in ltr; left to right in rtl</code></pre></p>
+<h3 id="Flex-flow"><a href="#Flex-flow" class="headerlink" title="Flex-flow"></a>Flex-flow</h3><p>   This is a shorthand flex-direction and flex-wrap properties.</p>
+<h3 id="Justify-content"><a href="#Justify-content" class="headerlink" title="Justify-content"></a>Justify-content</h3><p>   This defines the alignment along the main axis to help distribute extra free space left over. Values:<br>   <pre><code>flex-start (default): items are packed toward the start line<br>flex-end: items are packed toward to end line<br>center: items are centered along the line<br>space-between: items are evenly distributed in the line; first item is on the start line, last item on the end line<br>space-around: items are evenly distributed in the line with equal space around them.</code></pre></p>
+<h3 id="Align-items"><a href="#Align-items" class="headerlink" title="Align-items"></a>Align-items</h3><p>   This defines the layout of items on the cross axis on the current line.<br>   <pre><code>flex-start: cross-start margin edge of the items is placed on the cross-start line<br>flex-end: cross-end margin edge of the items is placed on the cross-end line<br>center: items are centered in the cross-axis<br>baseline: items are aligned such as their baselines align<br>stretch (default): stretch to fill the container</code></pre></p>
+<h3 id="Align-content"><a href="#Align-content" class="headerlink" title="Align-content"></a>Align-content</h3><p>   This aligns a flex container&#x2019;s lines within when there is extra space in the cross-axis, similar to how justify-content aligns individual items within the main-axis.</p>
+<h2 id="Four-main-attributes-of-items"><a href="#Four-main-attributes-of-items" class="headerlink" title="Four main attributes of items"></a>Four main attributes of items</h2><h3 id="Order"><a href="#Order" class="headerlink" title="Order"></a>Order</h3><p>   The order property controls the order in which they appear in the flex container.</p>
+<h3 id="Flex-grow-Flex-shrink"><a href="#Flex-grow-Flex-shrink" class="headerlink" title="Flex-grow | Flex-shrink"></a>Flex-grow | Flex-shrink</h3><p>   This defines the ability for a flex item to grow/shrink if necessary. </p>
+<h3 id="Flex-basis"><a href="#Flex-basis" class="headerlink" title="Flex-basis"></a>Flex-basis</h3><p>   This defines the default size of an element before the remaining space is distributed.</p>
+<h3 id="Align-self"><a href="#Align-self" class="headerlink" title="Align-self"></a>Align-self</h3><p>   This allows the default alignment (or the one specified by align-items) to be overridden for individual flex items. For example:<br>   <pre><code>.item {<br>   align-self: auto | flex-start | flex-end | center | baseline | stretch;<br>   }</code></pre></p>
+
+        </div>
+        <div class="post-reply">
+            
+            
+            <div id="disqus_thread" style="width: 80%; margin: 0 auto;"></div>
+                <script>
+
+                    /**
+                     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+                    /*
+                     var disqus_config = function () {
+                     this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                     this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                     };
+                     */
+                    (function() { // DON'T EDIT BELOW THIS LINE
+                        var d = document, s = d.createElement('script');
+                        s.src = 'https://disqus.com/by/jimmyzt/';
+                        s.setAttribute('data-timestamp', +new Date());
+                        (d.head || d.body).appendChild(s);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+    #footer {
+        min-height: 10vh;
+        background: black;
+        color: #fff;
+    }
+
+    #footer a {
+        color: #e1e1e1;
+    }
+
+    .footer-content {
+        padding: 1rem;
+        margin: 0 auto;
+    }
+</style>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+<footer id="footer"
+        class="has-text-centered is-flex center">
+    <div class="container has-padding">
+        <div>
+            <div class="footer-content">
+                <i class="fa fa-eye" style="position: relative; top: 3px;right: 5px"></i><span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Visits
+                <br> Copyright ©
+                Tong Zhang
+                    2018
+                        <br> Powered by
+                        <a href="http://hexo.io/"
+                           target="_blank">Hexo</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script async
+        src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+        </script>
+
+<script src="/js/search_core.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>

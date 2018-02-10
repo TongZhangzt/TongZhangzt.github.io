@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>Testing Framework Mocha.js | Tong&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Test framework is a tool to run the script written for testing the source code  Use the assertion library Chai.js">
+<meta name="keywords" content="MochaJs">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Testing Framework Mocha.js">
+<meta property="og:url" content="http://tongzhang.me/2016/11/29/Testing-Framework-Mocha-js/index.html">
+<meta property="og:site_name" content="Tong&#39;s blog">
+<meta property="og:description" content="Test framework is a tool to run the script written for testing the source code  Use the assertion library Chai.js">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-02-10T17:49:25.310Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Testing Framework Mocha.js">
+<meta name="twitter:description" content="Test framework is a tool to run the script written for testing the source code  Use the assertion library Chai.js">
+  
+    <link rel="alternate" href="/atom.xml" title="Tong&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/images/favicon.gif">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Tong</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item" href="/tags">
+                Tags
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </nav>
+    <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="z-index: 2">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item flex-1" href="/tags">
+                Tags
+            </a>
+            
+    </div>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        width: 40px;
+        border-radius: 40px;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>Testing Framework Mocha.js</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="/images/avatar.jpeg">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Tong</span>
+                <span class="post-date sub-title">at: 2016-11-29</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/MochaJs/">MochaJs</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p>Test framework is a tool to run the script written for testing the source code</p>
+<blockquote>
+<p>Use the assertion library Chai.js<br><a id="more"></a></p>
+</blockquote>
+<p>Mocha.js was born in 2011 and is one of the most popular JavaScript testing frameworks available today. It can be run both in the browser and in the Node environment.</p>
+<h1 id="Test-script-syntax"><a href="#Test-script-syntax" class="headerlink" title="Test script syntax"></a>Test script syntax</h1><p>Mocha&#x2019;s role is to run the test script, we first need to learn how to write test scripts. The so-called &#x201C;test script&#x201D; is the script used to test the source code.  </p>
+<p>For example, there is source file: add.js</p>
+<pre>// add.js
+function add(x, y) {
+  return x + y;
+}
+module.exports = add;</pre>
+
+<p>To test whether the add.js module is correct, we need to write a test script:</p>
+<pre>// add.test.js
+var add = require(&apos;./add.js&apos;);
+var expect = require(&apos;chai&apos;).expect;
+
+describe(&apos;Test for add.js&apos;, function() {
+  it(&apos;1 + 1 should be equal to 2&apos;, function() {
+    expect(add(1, 1)).to.be.equal(2);
+  });
+});</pre>
+
+<p>Every test script should contain one or more <code>describe</code> blocks, and each <code>describe</code> block should contain one or more <code>it</code> blocks.</p>
+<ol>
+<li><p>The <code>describe</code> block is called the &#x201C;test suite&#x201D; and represents a set of related tests. It is a function, the first parameter is the name of the test suite (&#x201C;Test for add.js&#x201D;), and the second argument is a function that is actually executed.</p>
+</li>
+<li><p><code>it</code> block is called the &#x201C;test case&#x201D;, which represents a single test and is the smallest unit of the test script. It is also a function, the first parameter is the name of the test case ( &#x201C;1 + 1 should be equal to 2&#x201D;), the second parameter is a function that is actually executed.</p>
+</li>
+</ol>
+<h1 id="Assertion-library-Chai-js"><a href="#Assertion-library-Chai-js" class="headerlink" title="Assertion library-Chai.js"></a>Assertion library-Chai.js</h1><h2 id="What-is-assertion"><a href="#What-is-assertion" class="headerlink" title="What is assertion"></a>What is assertion</h2><p>The so-called &#x201C;assertion&#x201D; is to determine whether the actual implementation of the source code and the expected results are the same, if not, throw an error. </p>
+<h2 id="Why-we-need-assertions"><a href="#Why-we-need-assertions" class="headerlink" title="Why we need assertions"></a>Why we need assertions</h2><p>All test cases (it blocks) should contain one or more assertions. It is the key to write test cases. The assertion function is implemented by the assertion library, and Mocha itself does not carry the assertion library, so the assertion library must be introduced first. Like:<br><code>var expect = require(&#x2018;chai&#x2019;).expect;</code></p>
+<h2 id="Use-Chai-js"><a href="#Use-Chai-js" class="headerlink" title="Use Chai.js"></a>Use Chai.js</h2><p>The assertion library that I choose is chai.js, and we specify the <code>expect</code> assertion style.</p>
+<p>Basically, expect assertions are very similar. Head is the expect method, the end is assertion methods, such as equal, a / an, ok, match and so on. Use to or to.be to connect the head and the end.</p>
+<p>Examples:</p>
+<pre>// &#x76F8;&#x7B49;&#x6216;&#x4E0D;&#x76F8;&#x7B49;
+expect(4 + 5).to.be.equal(9);
+// &#x5E03;&#x5C14;&#x503C;&#x4E3A;true
+expect(&apos;everthing&apos;).to.be.ok;
+expect(false).to.not.be.ok;
+// typeof
+expect({ foo: &apos;bar&apos; }).to.be.an(&apos;object&apos;);
+// include
+expect([1,2,3]).to.include(2);
+// empty
+expect([]).to.be.empty;
+// match
+expect(&apos;foobar&apos;).to.match(/^foo/);</pre>
+
+<h1 id="Command-Lines-for-Mocha"><a href="#Command-Lines-for-Mocha" class="headerlink" title="Command Lines for Mocha"></a>Command Lines for Mocha</h1><ol>
+<li><p>Run the specified test script<br><code>$mocha add.test.js</code></p>
+</li>
+<li><p>Default test, run all the test files under the test folder<br><code>$mocha</code></p>
+</li>
+<li><p>Specifies the format of the test report (Default spec)<br><code>$ mocha &#x2013;reporter spec</code></p>
+</li>
+<li><p>Display test results on the desktop<br><code>$ mocha &#x2013;growl</code></p>
+</li>
+<li><p>As long as there is a test case does not pass, stop the following test cases<br><code>$ mocha &#x2013;bail</code></p>
+</li>
+</ol>
+<h1 id="Asynchronous-testing"><a href="#Asynchronous-testing" class="headerlink" title="Asynchronous testing"></a>Asynchronous testing</h1><p>The default test time that Mocha.js set for test case is 2000 milliseconds, if after this time hasn&#x2019;t got a result, will throw an error. But for asynchronous test, this time is not always sufficient, we can use -t or &#x2013;timeout parameter to set the timeout threshold.</p>
+<h2 id="Timeout-example"><a href="#Timeout-example" class="headerlink" title="Timeout example"></a>Timeout example</h2><p>An example of timeout test case:</p>
+<pre>it(&apos;The test should end 5000 ms later&apos;, function(done) {
+  var x = true;
+  var f = function() {
+    x = false;
+    expect(x).to.be.not.ok;
+    done(); // Notify Mocha.js test end
+  };
+  setTimeout(f, 4000);
+});</pre>
+
+<p>The above test cases take 4000 milliseconds to run. Therefore, the -t or &#x2013;timeout parameter needs to be used to change the default timeout setting:<br><code>$ mocha -t 5000 timeout.test.js</code></p>
+<p>In the above test cases, there is a <code>done</code> function. When the block is executed, a <code>done</code> argument is passed to Mocha, and when the test is finished, the function must be explicitly called to tell the Mocha that test is finished.</p>
+<h2 id="Asynchronous-testing-example"><a href="#Asynchronous-testing-example" class="headerlink" title="Asynchronous testing example"></a>Asynchronous testing example</h2><p>An example of asynchronous testing example:</p>
+<pre>it(&apos;asynchronous request return an object&apos;, function(done){
+  request
+    .get(&apos;https://api.github.com&apos;)
+    .end(function(err, res){
+      expect(res).to.be.an(&apos;object&apos;);
+      done();
+    });
+});</pre>
+
+<p>Then run the test case:<br><code>$ mocha -t 10000 async.test.js</code><br>The test case will pass because of the change of the timeout threshold.</p>
+<h2 id="Promise-testing-example"><a href="#Promise-testing-example" class="headerlink" title="Promise testing example"></a>Promise testing example</h2><p>Mocha has built-in support for <code>Promise</code>, allowing return <code>Promise</code> object, and wait after the change of the Promise to execute the assertion without explicitly calling the done method.</p>
+<pre>it(&apos;asynchronous request return an object&apos;, function() {
+  return fetch(&apos;https://api.github.com&apos;)
+    .then(function(res) {
+      return res.json();
+    }).then(function(json) {
+      expect(json).to.be.an(&apos;object&apos;);
+    });
+});</pre>
+
+<h1 id="Hooks-for-test-cases"><a href="#Hooks-for-test-cases" class="headerlink" title="Hooks for test cases"></a>Hooks for test cases</h1><p>Mocha provides four hooks for test cases in the describe block: before (), after (), beforeEach (), and afterEach (). They are executed at the specified time.</p>
+<pre>describe(&apos;hooks&apos;, function() {
+  before(function() {
+    // Execute before all the test cases in this block
+  });
+  after(function() {
+     // Execute after all test cases in this block
+  });
+  beforeEach(function() {
+    // Execute before each test case in this block
+  });
+  afterEach(function() {
+    // Execute after each test case in this block
+  });
+  // test cases
+});</pre>
+        </div>
+        <div class="post-reply">
+            
+            
+            <div id="disqus_thread" style="width: 80%; margin: 0 auto;"></div>
+                <script>
+
+                    /**
+                     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+                    /*
+                     var disqus_config = function () {
+                     this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                     this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                     };
+                     */
+                    (function() { // DON'T EDIT BELOW THIS LINE
+                        var d = document, s = d.createElement('script');
+                        s.src = 'https://disqus.com/by/jimmyzt/';
+                        s.setAttribute('data-timestamp', +new Date());
+                        (d.head || d.body).appendChild(s);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+    #footer {
+        min-height: 10vh;
+        background: black;
+        color: #fff;
+    }
+
+    #footer a {
+        color: #e1e1e1;
+    }
+
+    .footer-content {
+        padding: 1rem;
+        margin: 0 auto;
+    }
+</style>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+<footer id="footer"
+        class="has-text-centered is-flex center">
+    <div class="container has-padding">
+        <div>
+            <div class="footer-content">
+                <i class="fa fa-eye" style="position: relative; top: 3px;right: 5px"></i><span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Visits
+                <br> Copyright ©
+                Tong Zhang
+                    2018
+                        <br> Powered by
+                        <a href="http://hexo.io/"
+                           target="_blank">Hexo</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script async
+        src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+        </script>
+
+<script src="/js/search_core.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>

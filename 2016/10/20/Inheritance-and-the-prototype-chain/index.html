@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>Inheritance and the Prototype chain | Tong&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Javascript Basic review Part 4   What is Prototype chain and how to realize inheritance in Javascript">
+<meta name="keywords" content="Javascript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Inheritance and the Prototype chain">
+<meta property="og:url" content="http://tongzhang.me/2016/10/20/Inheritance-and-the-prototype-chain/index.html">
+<meta property="og:site_name" content="Tong&#39;s blog">
+<meta property="og:description" content="Javascript Basic review Part 4   What is Prototype chain and how to realize inheritance in Javascript">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-02-09T22:19:09.396Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Inheritance and the Prototype chain">
+<meta name="twitter:description" content="Javascript Basic review Part 4   What is Prototype chain and how to realize inheritance in Javascript">
+  
+    <link rel="alternate" href="/atom.xml" title="Tong&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/images/favicon.gif">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Tong</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item" href="/tags">
+                Tags
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </nav>
+    <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="z-index: 2">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item flex-1" href="/tags">
+                Tags
+            </a>
+            
+    </div>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        width: 40px;
+        border-radius: 40px;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>Inheritance and the Prototype chain</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="/images/avatar.jpeg">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Tong</span>
+                <span class="post-date sub-title">at: 2016-10-20</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/Javascript/">Javascript</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p>Javascript Basic review Part 4 </p>
+<blockquote>
+<p>What is Prototype chain and how to realize inheritance in Javascript<br><a id="more"></a></p>
+</blockquote>
+<h1 id="What-is-Prototype-Chain"><a href="#What-is-Prototype-Chain" class="headerlink" title="What is Prototype Chain"></a>What is Prototype Chain</h1><h2 id="Why-we-need-a-prototype-is-Javascript"><a href="#Why-we-need-a-prototype-is-Javascript" class="headerlink" title="Why we need a prototype is Javascript"></a>Why we need a prototype is Javascript</h2><h3 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h3><p>One of the disadvantages of using constructors to create instance objects is that they can not share properties and methods. For example, in the constructor of a DOG object, set the common attribute &#x201C;species&#x201D; of instance objects. Then, two instance objects are generated:</p>
+<pre>function DOG(name){
+&#x3000;&#x3000;&#x3000;&#x3000;this.name = name;
+&#x3000;&#x3000;&#x3000;&#x3000;this.species = &apos;Dog&apos;;
+&#x3000;&#x3000;}
+var dogA = new DOG(&apos;Dog1&apos;);
+var dogB = new DOG(&apos;Dog2&apos;);</pre>
+These two objects&apos; species attributes are independent, if you modify one, does not affect the other. Each instance object has its own copy of the properties and methods. This not only can not do data sharing, is also a great waste of resources.
+<pre>dogA.species = &apos;Cat&apos;;
+alert(dogB.species); // show &apos;Dog&apos;, not influneced by dogA</pre>
+
+<h3 id="Generate"><a href="#Generate" class="headerlink" title="Generate"></a>Generate</h3><p>Therefore, we need a property, which contains an object (referred to as &#x201C;prototype object&#x201D;), all properties and methods needed to be shared are placed inside the object; those properties and methods which do not need to be shared are put inside the structure Function.<br>Put the DOG constructor as an example, now use the prototype property to rewrite:</p>
+<pre>function DOG(name){
+&#x3000;&#x3000;&#x3000;&#x3000;this.name = name;
+&#x3000;&#x3000;}
+DOG.prototype = { species : &apos;Dog&apos; };
+var dogA = new DOG(&apos;Dog1&apos;);
+var dogB = new DOG(&apos;Dog2&apos;);
+alert(dogA.species); // Dog
+alert(dogB.species); // Dog
+//Then we change the prototype attribute
+DOG.prototype.species = &apos;Cat&apos;;
+alert(dogA.species); // Cat
+alert(dogB.species); // Cat</pre>
+
+<blockquote>
+<p>&#x7531;&#x4E8E;&#x6240;&#x6709;&#x7684;&#x5B9E;&#x4F8B;&#x5BF9;&#x8C61;&#x5171;&#x4EAB;&#x540C;&#x4E00;&#x4E2A;prototype&#x5BF9;&#x8C61;&#xFF0C;&#x90A3;&#x4E48;&#x4ECE;&#x5916;&#x754C;&#x770B;&#x8D77;&#x6765;&#xFF0C;prototype&#x5BF9;&#x8C61;&#x5C31;&#x597D;&#x50CF;&#x662F;&#x5B9E;&#x4F8B;&#x5BF9;&#x8C61;&#x7684;&#x539F;&#x578B;&#xFF0C;&#x800C;&#x5B9E;&#x4F8B;&#x5BF9;&#x8C61;&#x5219;&#x597D;&#x50CF;&#x201D;&#x7EE7;&#x627F;&#x201D;&#x4E86;prototype&#x5BF9;&#x8C61;&#x4E00;&#x6837;&#x3002;</p>
+</blockquote>
+<h2 id="The-definition-of-Prototype-Chain"><a href="#The-definition-of-Prototype-Chain" class="headerlink" title="The definition of Prototype Chain"></a>The definition of Prototype Chain</h2><p>When it comes to inheritance, JavaScript only has one construct: objects. Each object has an internal link to another object called its prototype. That prototype object has a prototype of its own, and so on <b>until an object is reached with null</b> as its prototype. Null, by definition, has no prototype, and acts as the final link in this prototype chain.  </p>
+<p>JavaScript objects are dynamic &#x201C;bags&#x201D; of properties (referred to as own properties). JavaScript objects have a link to a prototype object. When trying to access a property of an object, the property will not only be sought on the object but on the prototype of the object, the prototype of the prototype, and so on until either a property with a matching name is found or the end of the prototype chain is reached.</p>
+<pre>// Let&apos;s assume we have object o, with its own properties a and b:
+{a: 1, b: 2}
+// o.[[Prototype]] has properties b and c:
+{b: 3, c: 4}
+// Finally, o.[[Prototype]].[[Prototype]] is null.
+// This is the end of the prototype chain as null
+// Thus, the full prototype chain looks like:
+// {a:1, b:2} ---&gt; {b:3, c:4} ---&gt; null
+console.log(o.a); // 1
+// Is there an &apos;a&apos; own property on o? Yes, and its value is 1.
+console.log(o.b); // 2
+// Is there a &apos;b&apos; own property on o? Yes, and its value is 2.
+// The prototype also has a &apos;b&apos; property, but it&apos;s not visited. 
+console.log(o.c); // 4
+// Is there a &apos;c&apos; own property on o? No, check its prototype.
+// Is there a &apos;c&apos; own property on o.[[Prototype]]? Yes, its value is 4.
+console.log(o.d); // undefined
+// Is there a &apos;d&apos; own property on o? No, check its prototype.
+// Is there a &apos;d&apos; own property on o.[[Prototype]]? No, check its prototype.
+// o.[[Prototype]].[[Prototype]] is null, stop searching</pre>
+
+<h2 id="Prototype-pattern-validation-method"><a href="#Prototype-pattern-validation-method" class="headerlink" title="Prototype pattern validation method"></a>Prototype pattern validation method</h2><h3 id="isPrototypeOf-NaN"><a href="#isPrototypeOf-NaN" class="headerlink" title="isPrototypeOf()"></a>isPrototypeOf()</h3><p>This method is used to determine the relationship between a prototype object and an instance.</p>
+<pre>alert(Dog.prototype.isPrototypeOf(dogA)); //true
+alert(Dog.prototype.isPrototypeOf(dogB)); //true</pre>
+
+<h3 id="hasOwnProperty-or-in-operand"><a href="#hasOwnProperty-or-in-operand" class="headerlink" title="hasOwnProperty() or in operand"></a>hasOwnProperty() or in operand</h3><p>Each instance object has a hasOwnProperty () method, used to determine whether a property is a local property, or inherited from the prototype object properties. Or we can use in operand.</p>
+<pre>alert(dogA.hasOwnProperty(&quot;name&quot;)); // true
+alert(dogA.hasOwnProperty(&quot;species&quot;)); // false
+alert(&quot;name&quot; in dogA); // true
+alert(&quot;species&quot; in dogA); // true</pre>
+
+<hr>
+<h1 id="Implement-inheritance"><a href="#Implement-inheritance" class="headerlink" title="Implement inheritance"></a>Implement inheritance</h1><h2 id="Constructor-inheritance"><a href="#Constructor-inheritance" class="headerlink" title="Constructor inheritance"></a>Constructor inheritance</h2><p>The question is that if there is a Animal object&#x2019;s constructor and a Cat object&#x2019;s constructor:</p>
+<pre>function Animal(){
+&#x3000;&#x3000;&#x3000;&#x3000;this.species = &quot;Animal&quot;;
+&#x3000;&#x3000;}
+function Cat(name,color){
+&#x3000;&#x3000;&#x3000;&#x3000;this.name = name;
+&#x3000;&#x3000;&#x3000;&#x3000;this.color = color;
+&#x3000;&#x3000;}</pre>
+How can &quot;Cat&quot; inherit &quot;Animal&quot; function?
+
+### Constructor binding
+Use the call or apply method to bind the constructor of the parent object to the child object by adding a line to the child object constructor:
+<pre>function Cat(name,color){
+&#x3000;&#x3000;&#x3000;&#x3000;Animal.apply(this, arguments);
+&#x3000;&#x3000;&#x3000;&#x3000;this.name = name;
+&#x3000;&#x3000;&#x3000;&#x3000;this.color = color;
+&#x3000;&#x3000;}
+&#x3000;&#x3000;var cat1 = new Cat(&quot;Cat1&quot;,&quot;yellow&quot;);
+&#x3000;&#x3000;alert(cat1.species); // Animal</pre>
+
+<h3 id="Inheritance-with-the-Prototype"><a href="#Inheritance-with-the-Prototype" class="headerlink" title="Inheritance with the Prototype"></a>Inheritance with the Prototype</h3><h4 id="Assign-Constructor-to-Propotype"><a href="#Assign-Constructor-to-Propotype" class="headerlink" title="Assign Constructor to Propotype"></a>Assign Constructor to Propotype</h4><p>If the Cat object&#x2019;s prototype object points to an Animal object&#x2019;s instance, then all the Cat object&#x2019;s instance can inherit the Animal object.</p>
+<pre>Cat.prototype = new Animal();
+Cat.prototype.constructor = Cat;
+var cat1 = new Cat(&quot;Cat1&quot;,&quot;yellow&quot;);
+alert(cat1.species); // Animal</pre>
+So Why we need the code after the first assignment:<br>
+<code>Cat.prototype.constructor = Cat;</code><br>
+
+It turns out that any prototype object has a constructor property that points to the constructor of the origin object. If there is no &quot;Cat.prototype = new Animal ();&quot;, Cat.prototype.constructor points to Cat; after this codes, Cat.prototype.constructor points to Animal. More importantly, each instance of this object also has a constructor property, which defaults to the constructor property of the prototype object. 
+
+<pre>Cat.prototype = new Animal();
+alert(Cat.prototype.constructor == Animal); //true
+alert(Cat1.constructor == Cat.prototype.constructor); // true
+alert(Cat1.constructor == Animal); // true</pre>
+
+<p>Therefore, after running the &#x201C;Cat.prototype = new Animal ();&#x201D;, Cat1.constructor also points to Animal! This obviously causes the chain of inheritance to become disorganized (Cat1 is explicitly generated with the constructor Cat), so we must manually correct the Cat.prototype object&#x2019;s constructor to Cat. This is the meaning of the second line.</p>
+<h4 id="Use-an-empty-object-as-an-intermediary"><a href="#Use-an-empty-object-as-an-intermediary" class="headerlink" title="Use an empty object as an intermediary"></a>Use an empty object as an intermediary</h4><p>If we directly assign the prototype of Animal to the prototype of Cat:</p>
+<pre>function Animal(){ }
+Animal.prototype.species = &quot;Animal&quot;;
+Cat.prototype = Animal.prototype;
+Cat.prototype.constructor = Cat;
+var cat1 = new Cat(&quot;Cat1&quot;,&quot;yellow&quot;);
+alert(cat1.species); // Animal</pre>
+The drawback is that Cat.prototype and Animal.prototype now point to the same object, so any changes to Cat.prototype will be reflected in Animal.prototype.Like: 
+<pre>Cat.prototype.constructor = Cat;
+alert(Animal.prototype.constructor); // Cat</pre>
+
+<p>So we use an empty object as an intermediary.</p>
+<pre>var F = function(){};
+F.prototype = Animal.prototype;
+Cat.prototype = new F();
+Cat.prototype.constructor = Cat;</pre>
+Packaged as a function extend, YUI library is achieving inheritance with this method:
+<pre>function extend(Child, Parent) {
+var F = function(){};
+F.prototype = Parent.prototype;
+Child.prototype = new F();
+Child.prototype.constructor = Child;
+Child.uber = Parent.prototype;
+}</pre>
+
+<h3 id="Copy-inheritance"><a href="#Copy-inheritance" class="headerlink" title="Copy inheritance"></a>Copy inheritance</h3><p>We can copy all the attributes and methods of father object into the sub-object, we can achieve inheritance.</p>
+<pre>function Animal(){};
+Animal.prototype.species = &quot;Animal&quot;;
+function extend2(Child, Parent) {
+var p = Parent.prototype;
+var c = Child.prototype;
+for (var i in p) {
+&#x3000;&#x3000;c[i] = p[i];
+}
+c.uber = p;
+}</pre>
+
+<h2 id="Object-inheritance"><a href="#Object-inheritance" class="headerlink" title="Object inheritance"></a>Object inheritance</h2><p>Now there is an object, called &#x201C;Chinese.&#x201D; There is also an object called &#x201C;Doctor&#x201D;. How can I get the &#x201C;doctor&#x201D; to inherit &#x201C;Chinese&#x201D;, that is, how can I create a &#x201C;Chinese doctor&#x201D; object?</p>
+<pre>var Chinese = {
+    nation:&apos;China&apos;
+};
+var Doctor ={
+    career:&apos;Doctor&apos;
+}</pre>
+
+<h3 id="object-Function"><a href="#object-Function" class="headerlink" title="object() Function"></a>object() Function</h3><p>The object() function is:</p>
+<pre>function object(o) {
+&#x3000;&#x3000;&#x3000;function F() {}
+&#x3000;&#x3000;&#x3000;F.prototype = o;
+&#x3000;&#x3000;&#x3000;return new F();
+&#x3000;&#x3000;}</pre>
+The object () function, in fact, only do one thing, point sub-object prototype to the parent object, so that the child object and the parent object are connected together in the Prototype chain.
+<pre>var Doctor = object(Chinese);
+alert(Doctor.nation); //China</pre>
+
+<h3 id="Shallow-copy"><a href="#Shallow-copy" class="headerlink" title="Shallow copy"></a>Shallow copy</h3><p>Another idea: copied all of the parent object&#x2019;s attributes to the child object.</p>
+<pre>function extendCopy(p) {
+&#x3000;&#x3000;&#x3000;var c = {};
+&#x3000;&#x3000;&#x3000;for (var i in p) { 
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;c[i] = p[i];
+&#x3000;&#x3000;&#x3000;}
+&#x3000;&#x3000;&#x3000;c.uber = p;
+&#x3000;&#x3000;&#x3000;return c;
+&#x3000;&#x3000;}
+//In this example
+var Doctor = extendCopy(Chinese);
+Doctor.career = &apos;Doctor&apos;;
+alert(Doctor.nation); // China</pre>
+However, such a copy has a problem. That is, if the property of the parent object is equal to an array or another object, then the child object actually gets only a memory address, not a true copy, so there is a possibility that the parent object will be tampered with.Like:  
+<pre>Chinese.birthPlaces = [&apos;A&apos;,&apos;B&apos;,&apos;C&apos;];
+var Doctor = extendCopy(Chinese);
+Doctor.birthPlaces.push(&apos;D&apos;);
+alert(Doctor.birthPlaces); //A, B, C, D
+alert(Chinese.birthPlaces); //A, B, C, D</pre>
+
+<p>See, now to the Chinese to add a &#x201C;place of birth&#x201D; attribute, its value is an array. Through extendCopy () function, Doctor inherited the Chinese. Then we add a city to the Doctor&#x2019;s Birthplace.Chinese&#x2019;s &#x201C;place of birth&#x201D; has been changed!</p>
+<h3 id="Deep-copy"><a href="#Deep-copy" class="headerlink" title="Deep copy"></a>Deep copy</h3><p>The so-called &#x201C;deep copy&#x201D;, is able to achieve the true sense of the array and object copy. It is not difficult to achieve, as long as the recursive call &#x201C;shallow copy&#x201D; on the list.</p>
+<pre>function deepCopy(p, c) {
+&#x3000;&#x3000;&#x3000;var c = c || {};
+&#x3000;&#x3000;&#x3000;for (var i in p) {
+&#x3000;&#x3000;&#x3000;&#x3000; if (typeof p[i] === &apos;object&apos;) {
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;c[i] = (p[i].constructor === Array) ? [] : {};
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;deepCopy(p[i], c[i]);
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;} else {
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;c[i] = p[i];
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;}
+&#x3000;&#x3000;&#x3000;}
+&#x3000;&#x3000;&#x3000;return c;
+&#x3000;&#x3000;}</pre>
+
+<h2 id="instanceof-Operator"><a href="#instanceof-Operator" class="headerlink" title="instanceof Operator"></a>instanceof Operator</h2><p>The instanceof operator tests whether an object has in its prototype chain the prototype property of a constructor.</p>
+<pre>// defining constructors
+function C(){}
+function D(){}
+var o = new C();
+o instanceof C;// true, because: Object.getPrototypeOf(o) === C.prototype
+o instanceof D;// false, because D.prototype is nowhere in o&apos;s prototype chain
+o instanceof Object; // true, because:C.prototype is instanceof Object 
+C.prototype = {};
+var o2 = new C();
+o2 instanceof C; // true
+o instanceof C; // false, because C.prototype is nowhere in o&apos;s prototype chain anymore
+D.prototype = new C(); // use inheritance 
+var o3 = new D();// Prototype chain: o3-&gt;D-&gt;C-&gt;C.prototype-&gt;null
+o3 instanceof D; // true
+o3 instanceof C; // true</pre>
+        </div>
+        <div class="post-reply">
+            
+            
+            <div id="disqus_thread" style="width: 80%; margin: 0 auto;"></div>
+                <script>
+
+                    /**
+                     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+                    /*
+                     var disqus_config = function () {
+                     this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                     this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                     };
+                     */
+                    (function() { // DON'T EDIT BELOW THIS LINE
+                        var d = document, s = d.createElement('script');
+                        s.src = 'https://disqus.com/by/jimmyzt/';
+                        s.setAttribute('data-timestamp', +new Date());
+                        (d.head || d.body).appendChild(s);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+    #footer {
+        min-height: 10vh;
+        background: black;
+        color: #fff;
+    }
+
+    #footer a {
+        color: #e1e1e1;
+    }
+
+    .footer-content {
+        padding: 1rem;
+        margin: 0 auto;
+    }
+</style>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+<footer id="footer"
+        class="has-text-centered is-flex center">
+    <div class="container has-padding">
+        <div>
+            <div class="footer-content">
+                <i class="fa fa-eye" style="position: relative; top: 3px;right: 5px"></i><span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Visits
+                <br> Copyright ©
+                Tong Zhang
+                    2018
+                        <br> Powered by
+                        <a href="http://hexo.io/"
+                           target="_blank">Hexo</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script async
+        src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+        </script>
+
+<script src="/js/search_core.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>

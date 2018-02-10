@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>DOM Events in Javascript | Tong&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Javascript Basic review Part 6   As developers, we should understand what is DOM event model, how DOM events work and event triggering process.">
+<meta name="keywords" content="Javascript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DOM Events in Javascript">
+<meta property="og:url" content="http://tongzhang.me/2016/11/20/DOM-Events-in-Javascript/index.html">
+<meta property="og:site_name" content="Tong&#39;s blog">
+<meta property="og:description" content="Javascript Basic review Part 6   As developers, we should understand what is DOM event model, how DOM events work and event triggering process.">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://tongzhang.me/2016/11/20/DOM-Events-in-Javascript/eventObject.jpg">
+<meta property="og:image" content="http://tongzhang.me/2016/11/20/DOM-Events-in-Javascript/eventPhases.svg">
+<meta property="og:updated_time" content="2018-02-10T17:48:42.378Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DOM Events in Javascript">
+<meta name="twitter:description" content="Javascript Basic review Part 6   As developers, we should understand what is DOM event model, how DOM events work and event triggering process.">
+<meta name="twitter:image" content="http://tongzhang.me/2016/11/20/DOM-Events-in-Javascript/eventObject.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Tong&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/images/favicon.gif">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Tong</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item" href="/tags">
+                Tags
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </nav>
+    <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="z-index: 2">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item flex-1" href="/tags">
+                Tags
+            </a>
+            
+    </div>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        width: 40px;
+        border-radius: 40px;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>DOM Events in Javascript</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="/images/avatar.jpeg">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Tong</span>
+                <span class="post-date sub-title">at: 2016-11-20</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/Javascript/">Javascript</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p>Javascript Basic review Part 6 </p>
+<blockquote>
+<p>As developers, we should understand what is DOM event model, how DOM events work and event triggering process.<br><a id="more"></a></p>
+</blockquote>
+<h1 id="What-is-Event"><a href="#What-is-Event" class="headerlink" title="What is Event?"></a>What is Event?</h1><ul>
+<li>Javascript dynamically create the webpage, and Events in Javascript are behaviours that can be detected by Javascript, like users&#x2019; bahaviors(click, mouseup, keydown), document behaviours(load, unloaded). Each element in the document is able to generate events that can trigger corresponding JavaScript function.</li>
+<li>Events are encapsulated into an <code>Event Object</code> that contains all the relevant information about the event (the properties of the event) and the actions that can be performed on the event (the method of the event) when fires. We can see an example Event Object:<br><img src="/2016/11/20/DOM-Events-in-Javascript/eventObject.jpg" style="text-align: center;
+margin: 0 auto;" title="Event Object"></li>
+</ul>
+<h2 id="Event-Object-properties"><a href="#Event-Object-properties" class="headerlink" title="Event Object properties"></a>Event Object properties</h2><ol>
+<li><b>target</b>: Identifies the element on which the event occurred.  </li>
+<li><b>currentTarget</b>: Identifies the current target for the event, as the event traverses the DOM. <b>currentTarget&#x53EA;&#x83B7;&#x53D6;&#x76D1;&#x542C;&#x5143;&#x7D20;&#xFF0C;target&#x83B7;&#x53D6;&#x7684;&#x662F;&#x89E6;&#x53D1;&#x5143;&#x7D20;</b></li>
+<li><b>type</b>: The Event.type read-only property returns a string containing the type of event.</li>
+<li><b>timeStamp</b>: Returns the time (in milliseconds) at which the event was created.</li>
+<li><b>bubbles</b>:(boolean)Indicates whether the given event bubbles up through the DOM or not.</li>
+<li><b>cancelable</b>:(boolean) This property indicates whether the event can disable the default behavior by calling the <code>event.preventDefault</code> method.</li>
+<li><b>EventPhase</b>:(number) Indicates which phase of the event flow is currently being evaluated. None: 0; capture: 1; target: 2; bubbling: 3.</li>
+<li><b>PageX and pageY</b>:(number) These two attributes indicates the coordinate position of the mouse on the webpage. </li>
+<li><b>isTrusted</b>:(boolean) The isTrusted read-only property of the Event is true when the event was generated by a user action.</li>
+</ol>
+<h2 id="Event-Object-methods"><a href="#Event-Object-methods" class="headerlink" title="Event Object methods"></a>Event Object methods</h2><ol>
+<li><b>PreventDefault</b><br>This method can prohibit all default behavior. For example, click on a label will open a new page, if the click event of a tag uses this function, it will not open a new page.  </li>
+<li><b>StopPropagation</b><br>Prevents further propagation of the current event in the capturing and bubbling phases.</li>
+<li><b>StopImmediatePropagation</b><br>Like stopPropagation, it prevents the firing of other listeners. Unlike stopPropagation, however, it is more &#x201C;powerful&#x201D; to prevent events except for the target, and even prevent the same event for the same target element.</li>
+</ol>
+<h2 id="&#x201C;this&#x201D;-in-callback-function"><a href="#&#x201C;this&#x201D;-in-callback-function" class="headerlink" title="&#x201C;this&#x201D; in callback function"></a>&#x201C;this&#x201D; in callback function</h2><p>The &#x201C;this&#x201D; pointer of call back function binded to an event is different from general:</p>
+<pre>
+var element = document.getElementById(&apos;element&apos;);
+var user = {
+ firstname: &apos;Bob&apos;,
+ greeting: function(){
+   alert(&apos;My name is &apos; + this.firstname);
+ }
+};
+// Attach user.greeting as a callback
+element.addEventListener(&apos;click&apos;, user.greeting);
+//Alert info: My name is undefined</pre>
+
+<p>In the binded function of DOM Element, &#x201C;this&#x201D; function refers to the DOM element rather than the caller of the function: user.</p>
+<h1 id="Event-Model"><a href="#Event-Model" class="headerlink" title="Event Model"></a>Event Model</h1><h2 id="Original-Event-Model"><a href="#Original-Event-Model" class="headerlink" title="Original Event Model"></a>Original Event Model</h2><p>In the original event model (also known as DOM0 model), the event does not propagate and there is no event flow. The event happened, handled and ended. The listener function is simply an attribute value of the element. There are two ways to bind the listener function in attribute value:</p>
+<ol>
+<li><p>HTML inline properties: <code>&lt;input type=&#x201D;button&#x201D; onclick=&#x201D;func1()&#x201D; /&gt;</code></p>
+</li>
+<li><p>DOM properties: <code>document.getElementsByTagName(&#x2018;input&#x2019;)[0].onclick = func1</code></p>
+</li>
+</ol>
+<h2 id="IE-Event-Model"><a href="#IE-Event-Model" class="headerlink" title="IE Event Model"></a>IE Event Model</h2><p>In IE, the event is an attribute of the <code>window</code> global object. You should use <code>window.element</code> to get the event object.<br>Add an eventListener:<br><code>element.attachEvent(&lt;event-name&gt;, &lt;callback&gt;);</code></p>
+<h2 id="DOM2-Event-Model"><a href="#DOM2-Event-Model" class="headerlink" title="DOM2 Event Model"></a>DOM2 Event Model</h2><p>This model is a standard model developed by the W3C, one event consists of three processes:</p>
+<ol>
+<li>Capture Phase</li>
+<li>Target Phase</li>
+<li>Bubbling Phase</li>
+</ol>
+<p>We can use EventListener function to bind a function:<br><b>AddEventListener</b>:<br><code>element.addEventListener(&lt;event-name&gt;, &lt;callback&gt;, &lt;use-capture&gt;)</code><br><b>RemoveEventListener</b>:<br><code>element.removeEventListener(&lt;event-name&gt;, &lt;callback&gt;, &lt;use-capture&gt;)</code></p>
+<p>The process is described in detail in the next chapter.</p>
+<h1 id="Event-Phases"><a href="#Event-Phases" class="headerlink" title="Event Phases"></a>Event Phases</h1><p>As we mentioned above, the event phases is consist of three phases:<br><img src="/2016/11/20/DOM-Events-in-Javascript/eventPhases.svg" style="text-align: center;
+  margin: 0 auto;" title="Event Phases"></p>
+<h2 id="Capture-Phase"><a href="#Capture-Phase" class="headerlink" title="Capture Phase"></a>Capture Phase</h2><p>The first phase is the capture phase. The event starts its journey at the root of the document, working its way down through each layer of the DOM, firing on each node until it reaches the event target. The job of the capture phase is to build the <code>propagation path</code>, which the event will travel back through in the bubbling phase.<br>You can listen to events in the capture phase by setting the third argument of addEventListener to true. But usually we don&#x2019;t do that.</p>
+<h2 id="Target-Phase"><a href="#Target-Phase" class="headerlink" title="Target Phase"></a>Target Phase</h2><p>When the event reached the target element, the event is fired. The <code>target</code> property of the event is always the most deeply nested element. Like if you have listened for a click event on a &lt;div&gt; element, and the user actually clicks on a &lt;p&gt; element in the div, then the &lt;p&gt; element will become the event target:</p>
+<pre>&lt;div&gt;
+    &lt;p&gt;&#x8FD9;&#x662F;&#x4E00;&#x6BB5;&#x8BDD;&#xFF0C;&#x8FD9;&#x91CC;&#x6709;&#x4E2A;&lt;strong&gt;&#x52A0;&#x7C97;&#x5B57;&#x4F53;&lt;/strong&gt;&#x3002;&lt;/p&gt;
+&lt;/div&gt;
+document.addEventListener(&apos;click&apos;, function(e){
+    alert(e.target.tagName);
+}, false);</pre>
+
+<blockquote>
+<p>The fact that events &#x201C;bubble&#x201D; means that you are able to listen for clicks on the &lt;div&gt; and still receive a callback once the event passes through.</p>
+</blockquote>
+<h2 id="Bubbling-Phase"><a href="#Bubbling-Phase" class="headerlink" title="Bubbling Phase"></a>Bubbling Phase</h2><p>After an event has fired on the target, it continues to bubble up through the DOM until it reaches the document&#x2019;s root. This means that the same event is fired on the target&#x2019;s parent node, followed by the parent&#x2019;s parent, continuing until there is no parent to pass the event onto.  </p>
+<p>For these three phrases, wilsonpage create a great Demo: <a href="http://jsbin.com/exezex/4/embed?css,js,output" target="_blank" rel="noopener">JS Bin</a></p>
+<h2 id="Delegate-Event-Listeners"><a href="#Delegate-Event-Listeners" class="headerlink" title="Delegate Event Listeners"></a>Delegate Event Listeners</h2><ul>
+<li>Because the event has bubbling phase, all the events of the child nodes will bubble up to the parent node. So we can set EventListener on the parent node to achieve monitoring all the child nodes, which is the Event Delegate.</li>
+<li>Instead of listening for the click event on each element, we listen for it on the parent &lt;ul&gt; element. When an &lt;li&gt; is clicked, then the event bubbles up to the &lt;ul&gt;, triggering the callback. We can identify which &lt;li&gt; element has been clicked by inspecting the event.target:<pre>// Not using event delegation
+$(&apos;li&apos;).on(&apos;click&apos;, function(){});
+// Using event delegation
+$(&apos;ul&apos;).on(&apos;click&apos;, &apos;li&apos;, function(){});</pre>
+
+</li>
+</ul>
+<p>If you use the original way to achieve the event delegate, you need to filter non-target nodes. For example:</p>
+<pre>element.addEventListener(&apos;click&apos;, function(event) {
+    // &#x5224;&#x65AD;&#x662F;&#x5426;&#x662F; a &#x8282;&#x70B9;
+    if ( event.target.tagName == &apos;A&apos; ) {
+        // a &#x7684;&#x4E00;&#x4E9B;&#x4EA4;&#x4E92;&#x64CD;&#x4F5C;
+    }
+}, false);</pre>
+
+<p><a href="http://jsfiddle.net/yujiangshui/ju2ujmzp/1/?utm_source=website&amp;utm_medium=embed&amp;utm_campaign=ju2ujmzp" target="_blank" rel="noopener">Delegate Event</a></p>
+<h2 id="stopPropagation"><a href="#stopPropagation" class="headerlink" title="stopPropagation"></a>stopPropagation</h2><p>Sometimes you only may want to listen to specific element then you need to use stopPropagation() function to stop bubbling up. Then, the event will no longer call any listeners on nodes that it travels through on its way to the target and back to the document.</p>
+<pre>child.addEventListener(&apos;click&apos;, function(event) {
+ event.stopPropagation();
+});
+parent.addEventListener(&apos;click&apos;, function(event) {
+ // If the child element is clicked
+ // this callback will not fire
+});</pre>
+
+<p><a href="http://jsbin.com/aparot/3/embed?html,js,output" target="_blank" rel="noopener">stopPropagation</a></p>
+<h1 id="Custom-Events"><a href="#Custom-Events" class="headerlink" title="Custom Events"></a>Custom Events</h1><p>Javascript let us create our own custom events and dispatch them on any element in the document. This type of event would behave just the same as a regular DOM event.</p>
+<pre>var myEvent = new CustomEvent(&quot;myevent&quot;, {
+  detail: {
+    name: &quot;Wilson&quot;
+  },
+  bubbles: true,
+  cancelable: false
+});
+// Listen for &apos;myevent&apos; on an element
+myElement.addEventListener(&apos;myevent&apos;, function(event) {
+  alert(&apos;Hello &apos; + event.detail.name);
+});
+// Trigger the &apos;myevent&apos;
+myElement.dispatchEvent(myEvent);</pre>
+
+<p><a href="http://jsbin.com/emuhef/1/edit?html,css,js,output" target="_blank" rel="noopener">Custom events</a></p>
+<h1 id="Useful-Events"><a href="#Useful-Events" class="headerlink" title="Useful Events"></a>Useful Events</h1><h2 id="Load"><a href="#Load" class="headerlink" title="Load"></a>Load</h2><p>The load event fires on any resource that has finished loading. This could be an image, style sheet, script, video, audio file, document or window.</p>
+<pre>image.addEventListener(&apos;load&apos;, function(event) {
+  image.classList.add(&apos;has-loaded&apos;);
+});</pre>
+
+<p><a href="http://jsbin.com/uhimir/1/edit?html,css,js,output" target="_blank" rel="noopener">Image Load</a></p>
+<h2 id="Resize"><a href="#Resize" class="headerlink" title="Resize"></a>Resize</h2><p>When the window is resized or the device&#x2019;s orientation changes, then we can use this function to readjust.</p>
+<pre>window.addEventListener(&apos;resize&apos;, function() {
+  // update the layout
+});</pre>
+
+<p><a href="http://jsbin.com/usevow/1/edit?html,js,output" target="_blank" rel="noopener">Window Resize</a></p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><a href="https://www.smashingmagazine.com/2013/11/an-introduction-to-dom-events/" target="_blank" rel="noopener">An Introduction To DOM Events</a></li>
+<li><a href="http://yujiangshui.com/javascript-event/#&#x4E8B;&#x4EF6;&#x89E6;&#x53D1;&#x8FC7;&#x7A0B;" target="_blank" rel="noopener">JavaScript &#x548C;&#x4E8B;&#x4EF6;</a></li>
+</ol>
+
+        </div>
+        <div class="post-reply">
+            
+            
+            <div id="disqus_thread" style="width: 80%; margin: 0 auto;"></div>
+                <script>
+
+                    /**
+                     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+                    /*
+                     var disqus_config = function () {
+                     this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                     this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                     };
+                     */
+                    (function() { // DON'T EDIT BELOW THIS LINE
+                        var d = document, s = d.createElement('script');
+                        s.src = 'https://disqus.com/by/jimmyzt/';
+                        s.setAttribute('data-timestamp', +new Date());
+                        (d.head || d.body).appendChild(s);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+    #footer {
+        min-height: 10vh;
+        background: black;
+        color: #fff;
+    }
+
+    #footer a {
+        color: #e1e1e1;
+    }
+
+    .footer-content {
+        padding: 1rem;
+        margin: 0 auto;
+    }
+</style>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+<footer id="footer"
+        class="has-text-centered is-flex center">
+    <div class="container has-padding">
+        <div>
+            <div class="footer-content">
+                <i class="fa fa-eye" style="position: relative; top: 3px;right: 5px"></i><span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Visits
+                <br> Copyright ©
+                Tong Zhang
+                    2018
+                        <br> Powered by
+                        <a href="http://hexo.io/"
+                           target="_blank">Hexo</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script async
+        src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+        </script>
+
+<script src="/js/search_core.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>

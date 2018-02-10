@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>Javascript type, value and variable | Tong&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Javascript Basic review Part 3   Basic knowledge of Javascript&amp;#x2019;s data type, value and variable">
+<meta name="keywords" content="Javascript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Javascript type, value and variable">
+<meta property="og:url" content="http://tongzhang.me/2016/09/30/Javascript-type-value-and-variable/index.html">
+<meta property="og:site_name" content="Tong&#39;s blog">
+<meta property="og:description" content="Javascript Basic review Part 3   Basic knowledge of Javascript&amp;#x2019;s data type, value and variable">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-02-09T22:17:11.651Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Javascript type, value and variable">
+<meta name="twitter:description" content="Javascript Basic review Part 3   Basic knowledge of Javascript&amp;#x2019;s data type, value and variable">
+  
+    <link rel="alternate" href="/atom.xml" title="Tong&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/images/favicon.gif">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Tong</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item" href="/tags">
+                Tags
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </nav>
+    <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="z-index: 2">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item flex-1" href="/tags">
+                Tags
+            </a>
+            
+    </div>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        width: 40px;
+        border-radius: 40px;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>Javascript type, value and variable</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="/images/avatar.jpeg">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Tong</span>
+                <span class="post-date sub-title">at: 2016-09-30</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/Javascript/">Javascript</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p>Javascript Basic review Part 3 </p>
+<blockquote>
+<p>Basic knowledge of Javascript&#x2019;s data type, value and variable<br><a id="more"></a></p>
+</blockquote>
+<h1 id="Dynamic-Typing"><a href="#Dynamic-Typing" class="headerlink" title="Dynamic Typing"></a>Dynamic Typing</h1><ul>
+<li>JavaScript is a loosely typed or a dynamic language. That means you don&#x2019;t have to declare the type of a variable ahead of time. The type will get determined automatically while the program is being processed. That also means that you can have the same variable as different types:<pre>var foo = 42;    // foo is now a Number
+var foo = &quot;bar&quot;; // foo is now a String
+var foo = true;  // foo is now a Boolean</pre>
+
+</li>
+</ul>
+<hr>
+<h1 id="Data-Type"><a href="#Data-Type" class="headerlink" title="Data Type"></a>Data Type</h1><h2 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h2><p>Javascript data type is divided into primitive type and reference type.<br>&#x539F;&#x59CB;&#x503C;: &#x5B58;&#x50A8;&#x5728;&#x6808;&#xFF08;stack&#xFF09;&#x4E2D;&#x7684;&#x7B80;&#x5355;&#x6570;&#x636E;&#x6BB5;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#xFF0C;&#x5B83;&#x4EEC;&#x7684;&#x503C;&#x76F4;&#x63A5;&#x5B58;&#x50A8;&#x5728;&#x53D8;&#x91CF;&#x8BBF;&#x95EE;&#x7684;&#x4F4D;&#x7F6E;&#x3002;<br>&#x5F15;&#x7528;&#x503C;: &#x5B58;&#x50A8;&#x5728;&#x5806;&#xFF08;heap&#xFF09;&#x4E2D;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#xFF0C;&#x5B58;&#x50A8;&#x5728;&#x53D8;&#x91CF;&#x5904;&#x7684;&#x503C;&#x662F;&#x4E00;&#x4E2A;&#x6307;&#x9488;&#xFF08;point&#xFF09;&#xFF0C;&#x6307;&#x5411;&#x5B58;&#x50A8;&#x5BF9;&#x8C61;&#x7684;&#x5185;&#x5B58;&#x5904;&#x3002;</p>
+<h2 id="Storage"><a href="#Storage" class="headerlink" title="Storage"></a>Storage</h2><p>&#x5177;&#x4F53;&#x6765;&#x8BF4;: &#x539F;&#x59CB;&#x7C7B;&#x578B;&#x5360;&#x636E;&#x7684;&#x7A7A;&#x95F4;&#x662F;&#x56FA;&#x5B9A;&#x7684;&#xFF0C;&#x6240;&#x4EE5;&#x53EF;&#x5C06;&#x4ED6;&#x4EEC;&#x5B58;&#x50A8;&#x5728;&#x8F83;&#x5C0F;&#x7684;&#x5185;&#x5B58;&#x533A;&#x57DF;&#x2014;&#x2014;&#x6808;&#x4E2D;&#x3002;&#x8FD9;&#x6837;&#x5B58;&#x50A8;&#x4FBF;&#x4E8E;&#x8FC5;&#x901F;&#x67E5;&#x5BFB;&#x53D8;&#x91CF;&#x7684;&#x503C;&#xFF1B;&#x800C;&#x5F15;&#x7528;&#x503C;&#x7684;&#x5B58;&#x50A8;&#x7A7A;&#x95F4;&#x5C06;&#x4ECE;&#x5806;&#x4E2D;&#x5206;&#x914D;&#x3002;&#x7531;&#x4E8E;&#x5F15;&#x7528;&#x503C;&#x7684;&#x5927;&#x5C0F;&#x4F1A;&#x6539;&#x53D8;&#xFF0C;&#x6240;&#x4EE5;&#x4E0D;&#x80FD;&#x628A;&#x5B83;&#x653E;&#x5728;&#x6808;&#x4E2D;&#xFF0C;&#x5426;&#x5219;&#x4F1A;&#x964D;&#x4F4E;&#x53D8;&#x91CF;&#x67E5;&#x5BFB;&#x7684;&#x901F;&#x5EA6;&#x3002;&#x76F8;&#x53CD;&#xFF0C;&#x653E;&#x5728;&#x53D8;&#x91CF;&#x7684;&#x6808;&#x7A7A;&#x95F4;&#x4E2D;&#x7684;&#x503C;&#x662F;&#x8BE5;&#x5BF9;&#x8C61;&#x5B58;&#x50A8;&#x5728;&#x5806;&#x4E2D;&#x7684;&#x5730;&#x5740;&#x3002;</p>
+<h2 id="Comparison-method"><a href="#Comparison-method" class="headerlink" title="Comparison method"></a>Comparison method</h2><ol>
+<li><p>&#x539F;&#x59CB;&#x503C;&#x662F;&#x4E0D;&#x53EF;&#x66F4;&#x6539;&#x7684;&#xFF1A;&#x4EFB;&#x4F55;&#x65B9;&#x6CD5;&#x90FD;&#x65E0;&#x6CD5;&#x66F4;&#x6539;&#xFF08;&#x6216;&#x201C;&#x7A81;&#x53D8;&#x201D;&#xFF09;&#x4E00;&#x4E2A;&#x539F;&#x59CB;&#x503C;&#xFF08;&#x4F60;&#x65E0;&#x6CD5;&#x4FEE;&#x6539;&#x503C;&#x672C;&#x8EAB;&#xFF0C;&#x4F60;&#x53EA;&#x80FD;&#x7ED9;&#x4EE3;&#x8868;&#x5B83;&#x7684;&#x53D8;&#x91CF;&#x91CD;&#x65B0;&#x8D4B;&#x503C;&#xFF0C;&#x5C06;&#x539F;&#x6765;&#x7684;&#x503C;&#x8986;&#x76D6;&#xFF09;&#x3002;&#x539F;&#x59CB;&#x503C;&#x7684;&#x6BD4;&#x8F83;&#x662F;&#x503C;&#x7684;&#x6BD4;&#x8F83;&#xFF1A;&#x53EA;&#x6709;&#x5728;&#x5B83;&#x4EEC;&#x7684;&#x503C;&#x76F8;&#x7B49;&#x65F6;&#x5B83;&#x4EEC;&#x624D;&#x76F8;&#x7B49;&#x3002;</p>
+</li>
+<li><p>&#x5F15;&#x7528;&#x503C;&#x548C;&#x539F;&#x59CB;&#x503C;&#x4E0D;&#x540C;&#xFF0C;&#x9996;&#x5148;&#xFF0C;&#x5B83;&#x4EEC;&#x662F;&#x53EF;&#x53D8;&#x7684;&#x2014;&#x2014;&#x5B83;&#x4EEC;&#x7684;&#x503C;&#x662F;&#x53EF;&#x4FEE;&#x6539;&#x7684;&#x3002;&#x5176;&#x6B21;&#xFF0C;&#x5F15;&#x7528;&#x503C;&#x7684;&#x6BD4;&#x8F83;&#x5E76;&#x975E;&#x503C;&#x7684;&#x6BD4;&#x8F83;&#xFF1A;&#x5373;&#x4F7F;&#x4E24;&#x4E2A;&#x5F15;&#x7528;&#x503C;&#x5305;&#x542B;&#x540C;&#x6837;&#x7684;&#x5C5E;&#x6027;&#x53CA;&#x76F8;&#x540C;&#x7684;&#x503C;&#xFF0C;&#x5B83;&#x4EEC;&#x4E5F;&#x662F;&#x4E0D;&#x76F8;&#x7B49;&#x7684;&#x3002;&#x5404;&#x4E2A;&#x7D22;&#x5F15;&#x5143;&#x7D20;&#x5B8C;&#x5168;&#x76F8;&#x7B49;&#x7684;&#x4E24;&#x4E2A;&#x6570;&#x7EC4;&#x4E5F;&#x4E0D;&#x76F8;&#x7B49;&#xFF1A;</p>
+<pre>var o = {x:1},p = {x:1};//&#x5177;&#x6709;&#x76F8;&#x540C;&#x5C5E;&#x6027;&#x7684;&#x4E24;&#x4E2A;&#x5BF9;&#x8C61;
+o === p;                //=&gt; false&#xFF1A;&#x4E24;&#x4E2A;&#x5355;&#x72EC;&#x7684;&#x5BF9;&#x8C61;&#x4E0D;&#x4E25;&#x683C;&#x76F8;&#x7B49;
+var a = [],b = [];      //&#x4E24;&#x4E2A;&#x5355;&#x72EC;&#x7684;&#x7A7A;&#x6570;&#x7EC4;
+a === b;                //=&gt; false&#xFF1A;&#x4E24;&#x4E2A;&#x5355;&#x72EC;&#x7684;&#x6570;&#x7EC4;&#x4E0D;&#x4E25;&#x683C;&#x76F8;&#x7B49;</pre>
+</li>
+<li><p>&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x503C;&#x90FD;&#x662F;&#x5F15;&#x7528;&#xFF0C;&#x5BF9;&#x8C61;&#x7684;&#x6BD4;&#x8F83;&#x5747;&#x662F;&#x5F15;&#x7528;&#x7684;&#x6BD4;&#x8F83;&#xFF1A;&#x5F53;&#x4E14;&#x4EC5;&#x5F53;&#x5B83;&#x4EEC;&#x5F15;&#x7528;&#x540C;&#x4E00;&#x4E2A;&#x57FA;&#x5BF9;&#x8C61;&#x65F6;&#xFF0C;&#x5B83;&#x4EEC;&#x624D;&#x76F8;&#x7B49;&#x3002;&#x5E76;&#x4E14;&#xFF0C;&#x4FEE;&#x6539;&#x5F15;&#x7528;&#x503C;&#x65F6;&#xFF0C;&#x57FA;&#x5BF9;&#x8C61;&#x4E5F;&#x4F1A;&#x88AB;&#x4FEE;&#x6539;&#xFF1A;<br><pre>var a = []; //&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;&#x5F15;&#x7528;&#x7A7A;&#x6570;&#x7EC4;&#x7684;&#x53D8;&#x91CF;a<br>var b = a;  //&#x53D8;&#x91CF;b&#x5F15;&#x7528;&#x540C;&#x4E00;&#x4E2A;&#x6570;&#x7EC4;<br>b[0] = 1;   //&#x901A;&#x8FC7;&#x53D8;&#x91CF;b&#x6765;&#x4FEE;&#x6539;&#x5F15;&#x7528;&#x7684;&#x6570;&#x7EC4;<br>a[0];       //=&gt; 1&#xFF1A;&#x53D8;&#x91CF;a&#x4E5F;&#x4F1A;&#x88AB;&#x4FEE;&#x6539;<br>a === b;    //=&gt; true&#xFF1A;a&#x548C;b&#x5F15;&#x7528;&#x540C;&#x4E00;&#x4E2A;&#x6570;&#x7EC4;&#xFF0C;&#x56E0;&#x6B64;&#x5B83;&#x4EEC;&#x76F8;&#x540C;</pre><br>a&#x548C;b&#x6307;&#x5411;&#x540C;&#x4E00;&#x4E2A;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#xFF0C;&#x5373;&#x6307;&#x5411;&#x5806;&#x4E2D;&#x540C;&#x4E00;&#x4E2A;&#x5185;&#x5B58;&#x5730;&#x5740;&#xFF0C;&#x6539;&#x53D8;&#x8FD9;&#x4E2A;&#x5730;&#x5740;&#x4E2D;&#x7684;&#x53D8;&#x91CF;&#x6570;&#x503C;&#xFF0C;a&#x548C;b&#x540C;&#x65F6;&#x6539;&#x53D8;&#x3002;&#x9664;&#x975E;&#x7ED9;a&#x6216;&#x8005;b&#x91CD;&#x65B0;&#x8D4B;&#x503C;&#x3002;</p>
+</li>
+</ol>
+<p>4.&#x4F20;&#x9012;&#x53C2;&#x6570;&#xFF1A;<br>&#x539F;&#x59CB;&#x503C;&#x505A;&#x53C2;&#x6570;&#xFF1A;&#x5F53;&#x4F20;&#x9012;&#x53C2;&#x6570;&#x7ED9;&#x51FD;&#x6570;&#x65F6;&#x53C2;&#x6570;&#x53EA;&#x662F;&#x5C06;&#x53C2;&#x6570;&#x590D;&#x5236;&#x4F20;&#x9012;&#x5230;&#x51FD;&#x6570;&#x4F53;&#x5185;&#x51FD;&#x6570;&#x4E2D;&#x4F7F;&#x7528;&#x7684;&#x53EA;&#x662F;&#x5916;&#x56F4;&#x4F5C;&#x7528;&#x57DF;&#x4E2D;num&#x7684;&#x526F;&#x672C;&#x3002;</p>
+<pre>var num = 100;
+function addTen(num){
+return num = num+100;//&#x51FD;&#x6570;&#x4E2D;&#x6539;&#x53D8;&#x4E86;num&#x53D8;&#x91CF;&#x3002;
+}
+alert(addTen(num));//200
+alert(num);//100</pre>
+&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x505A;&#x53C2;&#x6570;&#xFF1A;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x4F20;&#x9012;&#x7ED9;&#x51FD;&#x6570;&#x7684;&#x503C;&#x662F;&#x8FD9;&#x4E2A;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x6307;&#x9488;&#xFF0C;&#x51FD;&#x6570;&#x6839;&#x636E;&#x8FD9;&#x4E2A;&#x6307;&#x9488;&#x6539;&#x53D8;&#x4E86;&#x76F8;&#x5E94;&#x7684;&#x5C5E;&#x6027;&#x3002;
+<pre>var obj = {
+name:&apos;kin&apos;,
+age:&apos;20&apos;
+};
+function changeName(obj){
+return obj.name = &apos;chen&apos;;
+}
+var newName = changeName(obj);
+alert(newName);//chen
+alert(obj.name);//chen</pre>
+
+<hr>
+<h1 id="Primitive-Type"><a href="#Primitive-Type" class="headerlink" title="Primitive Type"></a>Primitive Type</h1><p>ECMAScript has five primitive type, they are Undefined&#x3001;Null&#x3001;Boolean&#x3001;Number and String&#x3002;</p>
+<h2 id="Null-VS-undefined"><a href="#Null-VS-undefined" class="headerlink" title="Null VS undefined"></a>Null VS undefined</h2><ol>
+<li><p>undefined<br>When you declare a variable with var but do not initialize it, the type of the variable is undefined, and its default initialization value is undefined. For variables that are not declared and initialized, they are used directly, so the type of the variable is undefined, but there is no default value for them.</p>
+</li>
+<li><p>Null<br>The default for the null type is null, which, logically, represents an empty object pointer. Undefined type is used to describe the uninitialized variables, while null Type is used to describe the empty object pointer. So, if the variable you&#x2019;re defining is ready to be used to hold the object in the future (that is, a complex data type object), you should initialize the variable to null.</p>
+</li>
+</ol>
+<p>Example of null and undefined: </p>
+<pre>//undefined
+var message;
+alert(&apos;Declared but not intialized&#xFF1A;&apos; +typeof message)//undefined
+alert(&apos;Not declared and intialized&#xFF1A;&apos;+ typeof age)//undefined
+//null
+var car=null;
+alert(&apos;car&apos;s type&#xFF1A;&apos;typeof car)//object</pre>
+
+<blockquote>
+<p>&#x533A;&#x5206;&#xFF0C;&#x5F53;&#x4E00;&#x4E2A;&#x53D8;&#x91CF;&#x58F0;&#x660E;&#x540E;&#xFF0C;&#x672A;&#x521D;&#x59CB;&#x5316;&#xFF0C;&#x5219;&#x8BE5;&#x503C;&#x4E3A;undefined&#xFF0C;&#x5982;&#x679C;&#x8FD9;&#x4E2A;&#x503C;&#x662F;&#x4E3A;&#x4E86;&#x4FDD;&#x5B58;&#x5BF9;&#x8C61;&#xFF0C;&#x5219;&#x4FEE;&#x6539;&#x5176;&#x9ED8;&#x8BA4;&#x521D;&#x59CB;&#x5316;&#x7684;&#x503C;&#xFF0C;&#x6539;&#x4E3A;null&#x3002; &#x6240;&#x4EE5;&#x5F53;&#x68C0;&#x6D4B;&#x5176;&#x7C7B;&#x578B;&#x65F6;&#xFF0C;&#x4F1A;&#x663E;&#x793A;&#x7C7B;&#x578B;&#x4E3A;object&#x3002;</p>
+</blockquote>
+<h2 id="Boolean-Conversion-rules"><a href="#Boolean-Conversion-rules" class="headerlink" title="Boolean Conversion rules"></a>Boolean Conversion rules</h2><p>Bloolean() function&#xFF0C;can transfer other types of value to boolean values&#x3002;</p>
+<table><thead><th align="right">Data Type</th><th align="center">Convert to true</th><th align="left">Convert to false</th></thead><tbody><tr><td align="right">String</td><td align="center">Non-empty string</td><td align="left">&#x201C;&#x201D;</td></tr><tr><td align="right">number</td><td align="center">Non-zero</td><td align="left">0</td>   </tr><tr><td align="right">object</td><td align="center">Any Object</td><td align="left">null</td></tr><tr><td align="right">undefined</td><td align="center">Not applicable</td><td align="left">undefined</td></tr></tbody></table>
+
+<h2 id="Number-Conversion-rules"><a href="#Number-Conversion-rules" class="headerlink" title="Number Conversion rules"></a>Number Conversion rules</h2><ol>
+<li><p>There are three functions that can convert non-numeric values to numeric: Number(), parseInt(), parseFloat(). The first can be used for any data type, the latter two, is dedicated to the string into a value.</p>
+</li>
+<li><p>NaN: that is, non-numeric, is a special value, this value is used to represent a return which should be a number but return a non-numeric value. NaN has two unusual characteristics: any operation involving NaN will return NaN, NaN value is not equal to any value,including itself.</p>
+</li>
+<li><p>isNaN(): this function can determine whether the parameters passed &#x201C;not numerical.&#x201D; Here is the issue of numerical conversion, such as &#x201C;10&#x201D; string can be converted to 10, but &#x201C;blue&#x201D; this string can not be converted to digital, so isNaN ( &#x201C;blue&#x201D;) == true</p>
+</li>
+</ol>
+<h2 id="String-Method"><a href="#String-Method" class="headerlink" title="String Method"></a>String Method</h2><p>Although String is a primitive type, it als has some methods(reason will be explained later). <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String</a>.</p>
+<p>1.Properties<br>String.prototype.constructor<br>  Specifies the function that creates an object&#x2019;s prototype.<br>String.prototype.length<br>  Reflects the length of the string.</p>
+<p>2.Methods </p>
+<h3 id="String-prototype-concat"><a href="#String-prototype-concat" class="headerlink" title="String.prototype.concat()"></a>String.prototype.concat()</h3><p>Combines the text of two strings and returns a new string.</p>
+<h3 id="String-prototype-indexOf"><a href="#String-prototype-indexOf" class="headerlink" title="String.prototype.indexOf()"></a>String.prototype.indexOf()</h3><p>Returns the index within the calling String object of the first occurrence of the specified value, or -1 if not found.</p>
+<h3 id="String-prototype-lastIndexOf"><a href="#String-prototype-lastIndexOf" class="headerlink" title="String.prototype.lastIndexOf()"></a>String.prototype.lastIndexOf()</h3><p>Returns the index within the calling String object of the last occurrence of the specified value, or -1 if not found.</p>
+<h3 id="String-prototype-includes"><a href="#String-prototype-includes" class="headerlink" title="String.prototype.includes()"></a>String.prototype.includes()</h3><p>Determines whether one string may be found within another string.</p>
+<h3 id="stringObject-split-separator-howmany"><a href="#stringObject-split-separator-howmany" class="headerlink" title="stringObject.split(separator,howmany)"></a>stringObject.split(separator,howmany)</h3><p><b>separator</b>  &#x5FC5;&#x9700;&#x3002;&#x5B57;&#x7B26;&#x4E32;&#x6216;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F;&#xFF0C;&#x4ECE;&#x8BE5;&#x53C2;&#x6570;&#x6307;&#x5B9A;&#x7684;&#x5730;&#x65B9;&#x5206;&#x5272; stringObject&#x3002;<br><b>howmany</b>    &#x53EF;&#x9009;&#x3002;&#x8BE5;&#x53C2;&#x6570;&#x53EF;&#x6307;&#x5B9A;&#x8FD4;&#x56DE;&#x7684;&#x6570;&#x7EC4;&#x7684;&#x6700;&#x5927;&#x957F;&#x5EA6;&#x3002;</p>
+<h3 id="StringObject-prototype-slice-start-end"><a href="#StringObject-prototype-slice-start-end" class="headerlink" title="StringObject.prototype.slice(start,end)"></a>StringObject.prototype.slice(start,end)</h3><p><b>start</b> &#x8981;&#x62BD;&#x53D6;&#x7684;&#x7247;&#x65AD;&#x7684;&#x8D77;&#x59CB;&#x4E0B;&#x6807;&#x3002;&#x5982;&#x679C;&#x662F;&#x8D1F;&#x6570;&#xFF0C;&#x5219;&#x8BE5;&#x53C2;&#x6570;&#x89C4;&#x5B9A;&#x7684;&#x662F;&#x4ECE;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x5C3E;&#x90E8;&#x5F00;&#x59CB;&#x7B97;&#x8D77;&#x7684;&#x4F4D;&#x7F6E;&#x3002;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#xFF0C;-1 &#x6307;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x6700;&#x540E;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#xFF0C;-2 &#x6307;&#x5012;&#x6570;&#x7B2C;&#x4E8C;&#x4E2A;&#x5B57;&#x7B26;&#xFF0C;&#x4EE5;&#x6B64;&#x7C7B;&#x63A8;&#x3002;<br><b>end</b> &#x7D27;&#x63A5;&#x7740;&#x8981;&#x62BD;&#x53D6;&#x7684;&#x7247;&#x6BB5;&#x7684;&#x7ED3;&#x5C3E;&#x7684;&#x4E0B;&#x6807;&#x3002;&#x82E5;&#x672A;&#x6307;&#x5B9A;&#x6B64;&#x53C2;&#x6570;&#xFF0C;&#x5219;&#x8981;&#x63D0;&#x53D6;&#x7684;&#x5B50;&#x4E32;&#x5305;&#x62EC; start &#x5230;&#x539F;&#x5B57;&#x7B26;&#x4E32;&#x7ED3;&#x5C3E;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x3002;&#x5982;&#x679C;&#x8BE5;&#x53C2;&#x6570;&#x662F;&#x8D1F;&#x6570;&#xFF0C;&#x90A3;&#x4E48;&#x5B83;&#x89C4;&#x5B9A;&#x7684;&#x662F;&#x4ECE;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x5C3E;&#x90E8;&#x5F00;&#x59CB;&#x7B97;&#x8D77;&#x7684;&#x4F4D;&#x7F6E;&#x3002;</p>
+<h3 id="String-prototype-substr-start-length"><a href="#String-prototype-substr-start-length" class="headerlink" title="String.prototype.substr(start, (length))"></a>String.prototype.substr(start, (length))</h3><p>Returns the characters in a string beginning at the specified location through the specified number of characters.</p>
+<h3 id="String-prototype-substring-start-end"><a href="#String-prototype-substring-start-end" class="headerlink" title="String.prototype.substring(start, end)"></a>String.prototype.substring(start, end)</h3><p>Returns the characters in a string between two indexes into the string.</p>
+<h1 id="Reference-Type"><a href="#Reference-Type" class="headerlink" title="Reference Type"></a>Reference Type</h1><p>Reference Type value refers to Object. In computer science, an object is a value in memory which is possibly referenced by an identifier.</p>
+<h2 id="Object"><a href="#Object" class="headerlink" title="Object"></a>Object</h2><ol>
+<li><p>The Object constructor creates an object wrapper.</p>
+<pre>//Object initialiser or literal
+{ [ nameValuePair1[, nameValuePair2[, ...nameValuePairN] ] ] }
+// Called as a constructor
+new Object([value])</pre>
+</li>
+<li><p>Properties of the Object constructor<br><b>Object.length</b>: Has a value of 1.<br><b>Object.prototype</b>: Allows the addition of properties to all objects of type Object.</p>
+</li>
+</ol>
+<h2 id="Primitive-values&#x2019;-corresponding-objects"><a href="#Primitive-values&#x2019;-corresponding-objects" class="headerlink" title="Primitive values&#x2019; corresponding objects"></a>Primitive values&#x2019; corresponding objects</h2><p>They are String, Number, Boolean. So as I methioned before, why we need String, Number, Boolean while we already have the primitive values of these?</p>
+<p>As we all know, objects can have there own propertities and methods while primitive type cannot. So what if we want to use methods to manipulate these three types of value? Javascript create three special reference types: String, Number, and Boolean allow us to manipulate the corresponding primitive types. Originally, primitive vvalue have no method, but you want to use methods, the system will transfer corresponding objects&#x2019;s methods.<br>For example:</p>
+<pre>var  realMessage=&quot;Said I love you but I lied&quot;; 
+var  myMessage=realMessage.substring(5,15); 
+console.log(myMessage); //&quot;I love you&quot;</pre> 
+In fact the process is:
+<pre>var _realMessage=new String(&quot;Said I love you but I lied&quot;); 
+var myMessage=_realMessage.substring(5,15);
+realMessgae=null; //Destroyed after used</pre>
+
+<h2 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h2><p>The JavaScript Array object is a global object that is used in the construction of arrays; which are high-level, list-like objects.</p>
+<p>Arrays are list-like objects whose prototype has methods to perform traversal and mutation operations. Neither the length of a JavaScript array nor the types of its elements are fixed. Since an array&#x2019;s length can change at any time, and data can be stored at non-contiguous locations in the array, JavaScript arrays are not guaranteed to be dense; this depends on how the programmer chooses to use them.</p>
+<ol>
+<li><p>Properties:<br>Array.length: The Array constructor&#x2019;s length property whose value is 1.<br>Array.prototype: Allows the addition of properties to all array objects.  </p>
+</li>
+<li><p>Methods: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array</a></p>
+</li>
+</ol>
+<h2 id="Math-Map-Date"><a href="#Math-Map-Date" class="headerlink" title="Math, Map, Date"></a>Math, Map, Date</h2><h3 id="Math"><a href="#Math" class="headerlink" title="Math"></a>Math</h3><p>Math is a built-in object that has properties and methods for mathematical constants and functions rather than a function object. All properties and methods of Math are static. Example:<br>You refer to the constant pi as Math.PI and you call the sine function as Math.sin(x), where x is the method&#x2019;s argument. </p>
+<h3 id="Date"><a href="#Date" class="headerlink" title="Date"></a>Date</h3><p>Creates a JavaScript Date instance that represents a single moment in time. Date objects are based on a time value that is the number of milliseconds since 1 January, 1970 UTC.</p>
+<ol>
+<li>Syntax<br>new Date();<br>new Date(value);<br>new Date(dateString);<br>new Date(year, month[, day[, hour[, minutes[, seconds[, milliseconds]]]]]);</li>
+<li>Usage<br>JavaScript Date objects can only be instantiated by calling JavaScript Date as a constructor: calling it as a regular function (i.e. without the new operator) will return <b>a string rather than a Date object</b></li>
+<li>Date.prototype Methods<br>Document: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date</a></li>
+</ol>
+<h3 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h3><ol>
+<li>The Map object is a simple key/value map. Any value (both objects and primitive values) may be used as either a key or a value.</li>
+<li>Exapmle:<pre>var myMap = new Map();
+var keyString = &quot;a string&quot;,
+ keyObj = {},
+ keyFunc = function () {};
+// setting the values
+myMap.set(keyString, &quot;value associated with &apos;a string&apos;&quot;);
+myMap.set(keyObj, &quot;value associated with keyObj&quot;);
+myMap.set(keyFunc, &quot;value associated with keyFunc&quot;);
+myMap.size; // 3</pre>
+
+</li>
+</ol>
+<h2 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h2><p>JSON is a syntax for serializing objects, arrays, values, strings, booleans, and nulls. It is based on JavaScript syntax, but there are differences: some JavaScript values are not JSON, and some JSON is not a JavaScript value.</p>
+<blockquote>
+<p><b>Details see the next blog.</b></p>
+</blockquote>
+<hr>
+<h1 id="Type-of-Operator"><a href="#Type-of-Operator" class="headerlink" title="Type of Operator"></a>Type of Operator</h1><p>The typeof operator returns a string indicating the type of the unevaluated operand.</p>
+<table><thead><th align="right">Type</th><th align="left">Result</th></thead><tbody><tr><td align="right">Undefined</td><td align="left">&#x201C;undefined&#x201D;</td></tr><tr><td align="right">Null</td><td align="left">&#x201C;object&#x201D;</td></tr><tr><td align="right">Boolean</td><td align="left">&#x201C;boolean&#x201D;</td></tr><tr><td align="right">String</td><td align="left">&#x201C;string&#x201D;</td></tr><tr><td align="right">Number</td><td align="left">&#x201C;number&#x201D;</td></tr><tr><td align="right">Symbol</td><td align="left">&#x201C;symbol&#x201D;</td>   </tr><tr><td align="right">Host object</td><td align="left">Implementation-dependent</td></tr><tr><td align="right">Function object</td><td align="left">&#x201C;function&#x201D;</td></tr><tr><td align="right">Any other object</td><td align="left">&#x201C;object&#x201D;</td></tr></tbody></table>
+
+
+        </div>
+        <div class="post-reply">
+            
+            
+            <div id="disqus_thread" style="width: 80%; margin: 0 auto;"></div>
+                <script>
+
+                    /**
+                     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+                    /*
+                     var disqus_config = function () {
+                     this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                     this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                     };
+                     */
+                    (function() { // DON'T EDIT BELOW THIS LINE
+                        var d = document, s = d.createElement('script');
+                        s.src = 'https://disqus.com/by/jimmyzt/';
+                        s.setAttribute('data-timestamp', +new Date());
+                        (d.head || d.body).appendChild(s);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+    #footer {
+        min-height: 10vh;
+        background: black;
+        color: #fff;
+    }
+
+    #footer a {
+        color: #e1e1e1;
+    }
+
+    .footer-content {
+        padding: 1rem;
+        margin: 0 auto;
+    }
+</style>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+<footer id="footer"
+        class="has-text-centered is-flex center">
+    <div class="container has-padding">
+        <div>
+            <div class="footer-content">
+                <i class="fa fa-eye" style="position: relative; top: 3px;right: 5px"></i><span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Visits
+                <br> Copyright ©
+                Tong Zhang
+                    2018
+                        <br> Powered by
+                        <a href="http://hexo.io/"
+                           target="_blank">Hexo</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script async
+        src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+        </script>
+
+<script src="/js/search_core.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>

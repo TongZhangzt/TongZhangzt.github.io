@@ -1,0 +1,2046 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+    
+    <entry>
+      <title><![CDATA[UI-Router in AngularJS]]></title>
+      <url>http://tongzhang.me/2017/01/28/UI-Router-in-AngularJS/</url>
+      <content type="html"><![CDATA[<p>UI-Router is a client-side router for single page web applications</p>
+<blockquote>
+<p>A client-side router updates the browser URL as the user nagivates through the single page app.<br><a id="more"></a></p>
+</blockquote>
+<p>Happy Chinese New Year!</p>
+<hr>
+<p>The aim of UI-Router is to change the browser&#x2019;s URL to drive navigation of the app, and enable a user to create deep-links (i.e., bookmarks) to areas deep within the application.</p>
+<h1 id="States-Manager"><a href="#States-Manager" class="headerlink" title="States Manager"></a>States Manager</h1><p>Think about each feature of an application as a set of states. Only one state can be active at one time. The user can transition from one state to another, to activate a different feature of the application.</p>
+<p>A state is a javascript object which has specific properties. Those properties define the functionality of the application when that state is active:</p>
+<h2 id="Name"><a href="#Name" class="headerlink" title="Name"></a>Name</h2><p>A name for this state, providing a way to refer to the state in many places.</p>
+<h2 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h2><p>A state can define a URL, but it isn&#x2019;t required. If a state has defined a URL, the browser&#x2019;s location is updated to that URL when the state is active.</p>
+<p>A state&#x2019;s URL is actually a URL fragment. Each state defines only the frament (portion) of the URL that it &#x201C;owns&#x201D;. That fragment is appended to the parent state&#x2019;s url in the browser URL when the nested state is active.</p>
+<h2 id="Views"><a href="#Views" class="headerlink" title="Views"></a>Views</h2><p>How this state will look and behave, which includes: Template, Controller, Resolve and Custom Data. </p>
+<h2 id="Template"><a href="#Template" class="headerlink" title="Template"></a>Template</h2><h3 id="Simple-template-or-templateUrl"><a href="#Simple-template-or-templateUrl" class="headerlink" title="Simple template or templateUrl:"></a>Simple template or templateUrl:</h3><p><b>Simple template:</b></p>
+<pre>$stateProvider.state(&apos;contacts&apos;, {
+  template: &apos;&lt;h1&gt;My Contacts&lt;/h1&gt;&apos;
+})</pre>
+
+<p><b>Dynamic creating templateUrl:</b></p>
+<pre>$stateProvider.state(&apos;contacts&apos;, {
+  templateUrl: function ($stateParams){
+    return &apos;/partials/contacts.&apos; + $stateParams.filterBy + &apos;.html&apos;;
+  }
+})</pre>
+
+<h3 id="Template-provider-function"><a href="#Template-provider-function" class="headerlink" title="Template provider function:"></a>Template provider function:</h3><p>We can use a template provider function which can be injected, has access to locals, and must return template HTML.</p>
+<pre><code>$stateProvider.state(&apos;contacts&apos;, {
+  templateProvider: function ($timeout, $stateParams) {
+    return $timeout(function () {
+      return &apos;/partials/contacts.&apos; + $stateParams.contactId + &apos;.html&apos;;
+    }, 100);
+  }
+})</code></pre>
+
+<h3 id="Default-template-Content"><a href="#Default-template-Content" class="headerlink" title="Default template Content"></a>Default template Content</h3><p>We can use ui-view to have some default content before it&#x2019;s populated by a state activation.</p>
+<pre><code>&lt;ui-view&gt;
+        &lt;i&gt;Some content will load here!&lt;/i&gt;
+    &lt;/ui-view&gt;</code></pre>
+
+<h2 id="Controllers"><a href="#Controllers" class="headerlink" title="Controllers"></a>Controllers</h2><p>We can assign a controller to the template, which will not be instantiated if template is not defined.</p>
+<h3 id="Simple-Controller"><a href="#Simple-Controller" class="headerlink" title="Simple Controller"></a>Simple Controller</h3><p>We can use the <code>controller</code> or <code>controllerAs</code> property to give the view a controller:   </p>
+<pre>$stateProvider.state(&apos;contacts&apos;, {
+  template: &apos;&lt;h1&gt;UI-Router in AngularJS&lt;/h1&gt;&apos;,
+  controller: function($scope){
+    $scope.title = &apos;My Contacts&apos;;
+  },
+  controllerAs: &apos;contact&apos;
+})</pre>
+
+<h3 id="Controller-Provider"><a href="#Controller-Provider" class="headerlink" title="Controller Provider"></a>Controller Provider</h3><p>We can use the controllerProvider to dynamically return a controller function or string for the template.</p>
+<pre>$stateProvider.state(&apos;contacts&apos;, {
+  template: ...,
+  controllerProvider: function($stateParams) {
+      var ctrlName = $stateParams.type + &quot;Controller&quot;;
+      return ctrlName;
+  }
+})</pre>
+
+<h2 id="Resolve"><a href="#Resolve" class="headerlink" title="Resolve"></a>Resolve</h2><p>If any of these dependencies are promises, they will be resolved and converted to a value before the <code>controller</code> is instantiated and the $stateChangeSuccess event is fired. We can use <code>resolve</code> to provide controller with content or data that is custom to the state.  </p>
+<p><b>Resolve</b> property is a map object:<br>key &#x2013; {string}: a name of a dependency to be injected into the controller.<br>factory - {string|function}</p>
+<pre>$stateProvider.state(&apos;myState&apos;, {
+      resolve:{
+         // Example using function with simple return value.
+         // Since it&apos;s not a promise, it resolves immediately.
+         simpleObj:  function(){
+            return {value: &apos;simple!&apos;};
+         },
+
+         // Example using function with returned promise.
+         promiseObj:  function($http){
+            // $http returns a promise for the url data
+            return $http({method: &apos;GET&apos;, url: &apos;/someUrl&apos;});
+         },
+
+         // Another promise example. If you need to do some 
+         // processing of the result, use .then, and your 
+         // promise is chained in for free.
+         promiseObj2:  function($http){
+            return $http({method: &apos;GET&apos;, url: &apos;/someUrl&apos;})
+               .then (function (data) {
+                   return doSomeStuffFirst(data);
+               });
+         }, 
+
+         // Example using a service by name as string.
+         // Note: The service could return a promise and
+         // it would work just like the example above
+         translations: &quot;translations&quot;,
+
+         // Example showing injection of service into
+         // resolve function. Service then returns a
+         // promise. 
+         translations2: function(translations, $stateParams){
+             // Assume that getLang is a service method
+             // that uses $http to fetch some translations.
+             // Also assume our url was &quot;/:lang/home&quot;.
+             return translations.getLang($stateParams.lang);
+         },
+
+      // The controller waits for every one of the above items to be
+      // completely resolved before instantiation. 
+      controller: function($scope, simpleObj, promiseObj, promiseObj2, translations, translations2, greeting){
+          $scope.simple = simpleObj.value;
+
+          // You can be sure that promiseObj is ready to use!
+          $scope.items = promiseObj.data.items;
+          $scope.items = promiseObj2.items;
+
+          $scope.title = translations.getLang(&quot;english&quot;).title;
+          $scope.title = translations2.title;
+      }
+   })</pre>
+
+<h2 id="Custom-Data"><a href="#Custom-Data" class="headerlink" title="Custom Data"></a>Custom Data</h2><p>We can attach custom data to the state object using a data property.</p>
+<pre>$stateProvider
+  .state(&apos;contacts.list&apos;, {
+    templateUrl: &apos;contacts.list.html&apos;,
+    data: {
+        customData1: 44,
+        customData2: &quot;red&quot;
+    } 
+  });
+  function Ctrl($state){
+    console.log($state.current.data.customData1) // outputs 44;
+    console.log($state.current.data.customData2) // outputs &quot;red&quot;;
+}</pre>
+
+<hr>
+<h1 id="Multiple-Named-Views"><a href="#Multiple-Named-Views" class="headerlink" title="Multiple Named Views"></a>Multiple Named Views</h1><p>One state can have a single view, in which we just need to define the name, url, template, controller, resolve and custom data. We can also have more than one views in the same template. That means we can add different views in the same template and then each view in views can set up its own templates, controllers. We put all of the views in the template in the <code>views</code> property.</p>
+<p>Every view gets assigned an absolute name that follows a scheme of <code>viewname@statename</code>, where viewname is the name used in the <code>&lt;div ui-view=&#x201D;viewname&#x201D;&gt;&lt;/div&gt;</code> directive and state name is the state&#x2019;s absolute name.</p>
+<p>Let&#x2019;s see an example:</p>
+<pre>$stateProvider
+  .state(&apos;contacts&apos;, {
+    templateUrl: &apos;contacts.html&apos;   
+  })
+  .state(&apos;contacts.detail&apos;, {
+    views: {
+        // Relatively targets the &apos;detail&apos; view in this state&apos;s parent state, &apos;contacts&apos;.
+        // &lt;div ui-view=&apos;detail&apos;/&gt; within contacts.html
+        &quot;detail&quot; : { },            
+
+        // Relatively targets the unnamed view in this state&apos;s parent state, &apos;contacts&apos;.
+        // &lt;div ui-view/&gt; within contacts.html
+        &quot;&quot; : { }, 
+
+        // Absolutely targets the &apos;info&apos; view in this state, &apos;contacts.detail&apos;.
+        // &lt;div ui-view=&apos;info&apos;/&gt; within contacts.detail.html
+        &quot;info@contacts.detail&quot; : { }
+
+        // Absolutely targets the &apos;detail&apos; view in the &apos;contacts&apos; state.
+        // &lt;div ui-view=&apos;detail&apos;/&gt; within contacts.html
+        &quot;detail@contacts&quot; : { }
+
+        // Absolutely targets the unnamed view in parent &apos;contacts&apos; state.
+        // &lt;div ui-view/&gt; within contacts.html
+        &quot;@contacts&quot; : { }
+
+        // absolutely targets the &apos;status&apos; view in root unnamed state.
+        // &lt;div ui-view=&apos;status&apos;/&gt; within index.html
+        &quot;status@&quot; : { }
+
+        // absolutely targets the unnamed view in root unnamed state.
+        // &lt;div ui-view/&gt; within index.html
+        &quot;@&quot; : { } 
+  });</pre>
+
+<hr>
+<h1 id="Nested-States-and-Nested-Views"><a href="#Nested-States-and-Nested-Views" class="headerlink" title="Nested States and Nested Views"></a>Nested States and Nested Views</h1><p>Both views and states can be nested with each other. That means each view can have child view and parent view and each state can have sub state and parent state.</p>
+<p>Child states can be used to drill down from a more general feature to more specific one, or to implement a master/detail pattern. For instance, you might have a parent state called contacts which defines the contacts module, and renders a list of all the contacts.</p>
+<h2 id="Naming-Your-States"><a href="#Naming-Your-States" class="headerlink" title="Naming Your States"></a>Naming Your States</h2><p>We can register states in any order and across modules. We can register children before the parent state exists. It will queue them up and once the parent state is registered then the child will be registered.</p>
+<p>No two states can have the same name. The name of the child state will automatically <code>append to the</code> name of the parent&#x2019;s state name. For example, we can&#x2019;t have two different states named &#x201C;edit&#x201D; even if they have different parents.</p>
+<h2 id="Nested-States-amp-Views"><a href="#Nested-States-amp-Views" class="headerlink" title="Nested States &amp; Views"></a>Nested States &amp; Views</h2><p>The views of Child state will automatically insert in the &lt;div ui-view&gt;&lt;/div&gt; of the parent state&#x2019;s template. For example:</p>
+<pre>$stateProvider
+    .state(&apos;contacts&apos;, {
+        abstract: true,
+        templateUrl: &apos;contacts.html&apos;
+    })
+    .state(&apos;contacts.list&apos;, {
+        // loaded into ui-view of parent&apos;s template &quot;contacts.html&quot;
+        templateUrl: &apos;contacts.list.html&apos;
+    })
+    .state(&apos;contacts.detail&apos;, {
+        // loaded into ui-view of parent&apos;s template &quot;contacts.html&quot;
+        templateUrl: &apos;contacts.detail.html&apos;
+    });
+
+&lt;!-- contacts.html --&gt;
+&lt;h1&gt;Contacts Page&lt;/h1&gt;
+&lt;div ui-view&gt;&lt;/div&gt;</pre>
+
+<h2 id="Inherit-From-Parent-States"><a href="#Inherit-From-Parent-States" class="headerlink" title="Inherit From Parent States"></a>Inherit From Parent States</h2><p>Child states DO inherit the following from parent states:</p>
+<ul>
+<li>Resolved dependencies via resolve</li>
+<li>Custom data properties</li>
+</ul>
+<h3 id="Inherited-Resolved-Dependencies"><a href="#Inherited-Resolved-Dependencies" class="headerlink" title="Inherited Resolved Dependencies"></a>Inherited Resolved Dependencies</h3><p>Child states will inherit resolved dependencies from parent state(s), which they can overwrite. You can then inject resolved dependencies into the <code>controllers</code> and <code>resolve functions</code> of child states.</p>
+<pre>$stateProvider.state(&apos;parent&apos;, {
+      resolve:{
+         resA:  function(){
+            return {&apos;value&apos;: &apos;A&apos;};
+         }
+      },
+      controller: function($scope, resA){
+          $scope.resA = resA.value;
+      }
+   })
+   .state(&apos;parent.child&apos;, {
+      resolve:{
+         resB: function(resA){
+            return {&apos;value&apos;: resA.value + &apos;B&apos;};
+         }
+      },
+      controller: function($scope, resA, resB){
+          $scope.resA2 = resA.value;
+          $scope.resB = resB.value;
+      }
+    )}</pre>
+
+<h3 id="Inherited-Custom-Data"><a href="#Inherited-Custom-Data" class="headerlink" title="Inherited Custom Data"></a>Inherited Custom Data</h3><p>Child states will inherit data properties from parent state(s), which they can overwrite.</p>
+<pre>$stateProvider.state(&apos;parent&apos;, {
+      data:{
+         customData1:  &quot;Hello&quot;,
+         customData2:  &quot;World!&quot;
+      }
+   })
+   .state(&apos;parent.child&apos;, {
+      data:{
+         // customData1 inherited from &apos;parent&apos;
+         // but we&apos;ll overwrite customData2
+         customData2:  &quot;UI-Router!&quot;
+      }
+   });
+
+$rootScope.$on(&apos;$stateChangeStart&apos;, function(event, toState){ 
+    var greeting = toState.data.customData1 + &quot; &quot; + toState.data.customData2;
+    console.log(greeting);
+
+    // Would print &quot;Hello World!&quot; when &apos;parent&apos; is activated
+    // Would print &quot;Hello UI-Router!&quot; when &apos;parent.child&apos; is activated
+})</pre>
+
+<p>Child views DO inherit the following from parent views:</p>
+<ul>
+<li>Scope Inheritance</li>
+<li>Resolved Dependencies</li>
+</ul>
+<h3 id="View-Inherited-Scope"><a href="#View-Inherited-Scope" class="headerlink" title="View Inherited Scope"></a>View Inherited Scope</h3><p>Inheritance of scope properties has <code>nothing</code> to do with the nesting of your states and <code>everything</code> to do with the nesting of your views (templates).</p>
+<p>It is entirely possible that you have nested states whose templates populate ui-views at various non-nested locations within your site. In this scenario you cannot expect to access the scope variables of parent state views within the views of children states.</p>
+<blockquote>
+<p>However, normally nested states all have nested views, so these views can inherite scope.</p>
+</blockquote>
+<p>For example:</p>
+<pre>$stateProvider
+    .state(&apos;contacts&apos;, {
+        url: &apos;/contacts&apos;,
+        templateUrl: &apos;contacts.html&apos;,
+        controller: function($scope){
+            $scope.contacts = [{ id:0, name: &quot;Alice&quot; }, { id:1, name: &quot;Bob&quot; }];
+        }           
+    })
+    .state(&apos;contacts.detail&apos;, {
+        url: &apos;/:id&apos;,
+        templateUrl: &apos;contacts.detail.html&apos;,
+        controller: function($scope, $stateParams){
+          $scope.person = $scope.contacts[$stateParams.id];
+        }
+    })</pre>
+
+<h3 id="View-Inherited-Resolved-Dependencies"><a href="#View-Inherited-Resolved-Dependencies" class="headerlink" title="View Inherited Resolved Dependencies"></a>View Inherited Resolved Dependencies</h3><p>Views may inherit resolved dependencies from the <code>state</code> that they belong to, but may not inherit those of their <code>sibling</code> views.</p>
+<pre>$stateProvider.state(&apos;myState&apos;, {
+  resolve:{
+     resMyState:  function(){
+        return { value: &apos;mystate&apos; };
+     }
+  },
+  views: {
+    &apos;foo@myState&apos;: {
+      templateUrl: &apos;mystate-foo.html&apos;,
+      controller: function($scope, resMyState, resFoo){ 
+        // has access to resMyState and resFoo, but not resBar
+      },
+      resolve: {
+        resFoo: function() {
+          return { value: &apos;foo&apos; };
+        }
+      },
+    },
+    &apos;bar@myState&apos;: {
+      templateUrl: &apos;mystate-bar.html&apos;,
+      controller: function($scope, resMyState, resBar){ 
+        // has access to resMyState and resBar, but not resFoo 
+      },
+      resolve: {
+        resBar: function() {
+          return { value: &apos;bar&apos; };
+        },
+      },
+    },
+  },
+});</pre>
+
+<hr>
+<h1 id="URL-Routing"><a href="#URL-Routing" class="headerlink" title="URL Routing"></a>URL Routing</h1><p>Most states in our application will probably have a url associated with them. URL Routing was not an afterthought to the state mechanics, but was figured into the design from the beginning</p>
+<h2 id="URL-Parameters"><a href="#URL-Parameters" class="headerlink" title="URL Parameters"></a>URL Parameters</h2><p>Often, URLs have dynamic parts to them which are called parameters. There are several options for specifying parameters.</p>
+<h3 id="Basic-Parameters"><a href="#Basic-Parameters" class="headerlink" title="Basic Parameters"></a>Basic Parameters</h3><p>The basic parameters look like:</p>
+<h4 id="Parameters-in-the-URL"><a href="#Parameters-in-the-URL" class="headerlink" title="Parameters in the URL:"></a>Parameters in the URL:</h4><p>Examples:</p>
+<ul>
+<li>&#x2018;/user/:id&#x2019; - Matches &#x2018;/user/bob&#x2019; or &#x2018;/user/1234!!!&#x2019; or even &#x2018;/user/&#x2018; but not &#x2018;/user&#x2019; or &#x2018;/user/bob/details&#x2019;. The second path segment will be captured as the parameter &#x2018;id&#x2019;.</li>
+<li>&#x2018;/user/{id}&#x2019; - Same as the previous example, but using curly brace syntax.</li>
+<li>&#x2018;/user/{id:int}&#x2019; - The param is interpreted as Integer.</li>
+</ul>
+<h4 id="Parameters-in-Links"><a href="#Parameters-in-Links" class="headerlink" title="Parameters in Links:"></a>Parameters in Links:</h4><p>To create a link that passes parameters, use the state name like a <code>function</code> and pass it an <code>object</code> with parameter names as keys. The proper href will be generated.</p>
+<p><code>&lt;a ui-sref=&#x201D;contacts.detail({contactId: id})&#x201D;&gt;View Contact&lt;/a&gt;</code><br>The value for id can be anything in scope.</p>
+<h3 id="Query-Parameters"><a href="#Query-Parameters" class="headerlink" title="Query Parameters"></a>Query Parameters</h3><p>You can also specify parameters as query parameters, following a &#x2018;?&#x2019;:</p>
+<pre>url: &quot;/contacts?myParam&quot;
+// will match to url of &quot;/contacts?myParam=value&quot;</pre>
+
+<p>If you need to have more than one, separate them with an &#x2018;&amp;&#x2019;:</p>
+<pre>url: &quot;/contacts?myParam1&amp;myParam2&quot;
+// will match to url of &quot;/contacts?myParam1=value1&amp;myParam2=wowcool&quot;</pre>
+
+<h3 id="Property-Parameters"><a href="#Property-Parameters" class="headerlink" title="Property Parameters"></a>Property Parameters</h3><p>We still can specify what parameters to receive even though the parameters don&#x2019;t appear in the url. You need to add a new field <code>params</code> in the state and create links as specified in Using Parameters in Links:<br>In the state:</p>
+<pre>.state(&apos;contacts&apos;, {
+        url: &quot;/contacts&quot;,
+        params: {
+            param1: null
+        },
+        templateUrl: &apos;contacts.html&apos;
+    })</pre>
+
+<p>The link you create is:<br><code>&lt;a ui-sref=&#x201D;contacts({param1: value1})&#x201D;&gt;View Contacts&lt;/a&gt;</code><br>Or can you pass them to $state.go():<br><code>$state.go(&#x2018;contacts&#x2019;, {param1: value1})</code><br>So that state can transite to that state with parameters.</p>
+<h3 id="stateParams-Service"><a href="#stateParams-Service" class="headerlink" title="$stateParams Service"></a>$stateParams Service</h3><p>As you saw previously the <code>$stateParams</code> service is an object that will have one key per url parameter. The <code>$stateParams</code> is a perfect way to provide your controllers or other services with the individual parts of the navigated url.</p>
+<pre>// If you had a url on your state of:
+url: &apos;/users/:id/details/{type}/{repeat:[0-9]+}?from&amp;to&apos;
+
+// Then you navigated your browser to:
+&apos;/users/123/details//0&apos;
+
+// Your $stateParams object would be
+{ id:&apos;123&apos;, type:&apos;&apos;, repeat:&apos;0&apos; }
+
+// Then you navigated your browser to:
+&apos;/users/123/details/default/0?from=there&amp;to=here&apos;
+
+// Your $stateParams object would be
+{ id:&apos;123&apos;, type:&apos;default&apos;, repeat:&apos;0&apos;, from:&apos;there&apos;, to:&apos;here&apos; }</pre>
+
+<blockquote>
+<p>In state controllers, the $stateParams object will only contain the params that were registered with that state. So you will not see params registered on other states, including ancestors.</p>
+</blockquote>
+<p>For example:</p>
+<pre>$stateProvider.state(&apos;contacts.detail&apos;, {
+   url: &apos;/contacts/:contactId&apos;,   
+   controller: function($stateParams){
+      $stateParams.contactId  //*** Exists! ***//
+   }
+}).state(&apos;contacts.detail.subitem&apos;, {
+   url: &apos;/item/:itemId&apos;, 
+   controller: function($stateParams){
+      $stateParams.contactId //*** Watch Out! DOESN&apos;T EXIST!! ***//
+      $stateParams.itemId //*** Exists! ***//  
+   }
+})</pre>
+
+<p>If you want to use the parameters in the url of parent state, you can use the resolve data to pass:</p>
+<pre>$stateProvider.state(&apos;contacts.detail&apos;, {
+   url: &apos;/contacts/:contactId&apos;,   
+   controller: function($stateParams){
+      $stateParams.contactId  //*** Exists! ***//
+   },
+   resolve:{
+      contactId: [&apos;$stateParams&apos;, function($stateParams){
+          return $stateParams.contactId;
+      }]
+   }
+}).state(&apos;contacts.detail.subitem&apos;, {
+   url: &apos;/item/:itemId&apos;, 
+   controller: function($stateParams, contactId){
+      contactId //*** Exists! ***//
+      $stateParams.itemId //*** Exists! ***//  
+   }
+})</pre>
+
+<h2 id="URL-Routing-for-Nested-States"><a href="#URL-Routing-for-Nested-States" class="headerlink" title="URL Routing for Nested States"></a>URL Routing for Nested States</h2><p>When using url routing together with nested states the default behavior is for child states to append their url to the urls of each of its parent states.</p>
+<pre>$stateProvider
+  .state(&apos;contacts&apos;, {
+     url: &apos;/contacts&apos;,
+     ...
+  })
+  .state(&apos;contacts.list&apos;, {
+     url: &apos;/list&apos;,
+     ...
+  });</pre>
+
+<p>So the routes would become:</p>
+<ul>
+<li>&#x2018;contacts&#x2019; state matches &#x201C;/contacts&#x201D;</li>
+<li>&#x2018;contacts.list&#x2019; state matches &#x201C;/contacts/list&#x201D;. The urls were combined.</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><a href="https://ui-router.github.io/" target="_blank" rel="noopener">UI-Router Official Website</a></li>
+<li><a href="https://github.com/angular-ui/ui-router/wiki" target="_blank" rel="noopener">UI-Router Nested States and Nested Views</a></li>
+</ol>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript Framework </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> AngularJS </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Testing Framework Mocha.js]]></title>
+      <url>http://tongzhang.me/2016/11/29/Testing-Framework-Mocha-js/</url>
+      <content type="html"><![CDATA[<p>Test framework is a tool to run the script written for testing the source code</p>
+<blockquote>
+<p>Use the assertion library Chai.js<br><a id="more"></a></p>
+</blockquote>
+<p>Mocha.js was born in 2011 and is one of the most popular JavaScript testing frameworks available today. It can be run both in the browser and in the Node environment.</p>
+<h1 id="Test-script-syntax"><a href="#Test-script-syntax" class="headerlink" title="Test script syntax"></a>Test script syntax</h1><p>Mocha&#x2019;s role is to run the test script, we first need to learn how to write test scripts. The so-called &#x201C;test script&#x201D; is the script used to test the source code.  </p>
+<p>For example, there is source file: add.js</p>
+<pre>// add.js
+function add(x, y) {
+  return x + y;
+}
+module.exports = add;</pre>
+
+<p>To test whether the add.js module is correct, we need to write a test script:</p>
+<pre>// add.test.js
+var add = require(&apos;./add.js&apos;);
+var expect = require(&apos;chai&apos;).expect;
+
+describe(&apos;Test for add.js&apos;, function() {
+  it(&apos;1 + 1 should be equal to 2&apos;, function() {
+    expect(add(1, 1)).to.be.equal(2);
+  });
+});</pre>
+
+<p>Every test script should contain one or more <code>describe</code> blocks, and each <code>describe</code> block should contain one or more <code>it</code> blocks.</p>
+<ol>
+<li><p>The <code>describe</code> block is called the &#x201C;test suite&#x201D; and represents a set of related tests. It is a function, the first parameter is the name of the test suite (&#x201C;Test for add.js&#x201D;), and the second argument is a function that is actually executed.</p>
+</li>
+<li><p><code>it</code> block is called the &#x201C;test case&#x201D;, which represents a single test and is the smallest unit of the test script. It is also a function, the first parameter is the name of the test case ( &#x201C;1 + 1 should be equal to 2&#x201D;), the second parameter is a function that is actually executed.</p>
+</li>
+</ol>
+<h1 id="Assertion-library-Chai-js"><a href="#Assertion-library-Chai-js" class="headerlink" title="Assertion library-Chai.js"></a>Assertion library-Chai.js</h1><h2 id="What-is-assertion"><a href="#What-is-assertion" class="headerlink" title="What is assertion"></a>What is assertion</h2><p>The so-called &#x201C;assertion&#x201D; is to determine whether the actual implementation of the source code and the expected results are the same, if not, throw an error. </p>
+<h2 id="Why-we-need-assertions"><a href="#Why-we-need-assertions" class="headerlink" title="Why we need assertions"></a>Why we need assertions</h2><p>All test cases (it blocks) should contain one or more assertions. It is the key to write test cases. The assertion function is implemented by the assertion library, and Mocha itself does not carry the assertion library, so the assertion library must be introduced first. Like:<br><code>var expect = require(&#x2018;chai&#x2019;).expect;</code></p>
+<h2 id="Use-Chai-js"><a href="#Use-Chai-js" class="headerlink" title="Use Chai.js"></a>Use Chai.js</h2><p>The assertion library that I choose is chai.js, and we specify the <code>expect</code> assertion style.</p>
+<p>Basically, expect assertions are very similar. Head is the expect method, the end is assertion methods, such as equal, a / an, ok, match and so on. Use to or to.be to connect the head and the end.</p>
+<p>Examples:</p>
+<pre>// &#x76F8;&#x7B49;&#x6216;&#x4E0D;&#x76F8;&#x7B49;
+expect(4 + 5).to.be.equal(9);
+// &#x5E03;&#x5C14;&#x503C;&#x4E3A;true
+expect(&apos;everthing&apos;).to.be.ok;
+expect(false).to.not.be.ok;
+// typeof
+expect({ foo: &apos;bar&apos; }).to.be.an(&apos;object&apos;);
+// include
+expect([1,2,3]).to.include(2);
+// empty
+expect([]).to.be.empty;
+// match
+expect(&apos;foobar&apos;).to.match(/^foo/);</pre>
+
+<h1 id="Command-Lines-for-Mocha"><a href="#Command-Lines-for-Mocha" class="headerlink" title="Command Lines for Mocha"></a>Command Lines for Mocha</h1><ol>
+<li><p>Run the specified test script<br><code>$mocha add.test.js</code></p>
+</li>
+<li><p>Default test, run all the test files under the test folder<br><code>$mocha</code></p>
+</li>
+<li><p>Specifies the format of the test report (Default spec)<br><code>$ mocha &#x2013;reporter spec</code></p>
+</li>
+<li><p>Display test results on the desktop<br><code>$ mocha &#x2013;growl</code></p>
+</li>
+<li><p>As long as there is a test case does not pass, stop the following test cases<br><code>$ mocha &#x2013;bail</code></p>
+</li>
+</ol>
+<h1 id="Asynchronous-testing"><a href="#Asynchronous-testing" class="headerlink" title="Asynchronous testing"></a>Asynchronous testing</h1><p>The default test time that Mocha.js set for test case is 2000 milliseconds, if after this time hasn&#x2019;t got a result, will throw an error. But for asynchronous test, this time is not always sufficient, we can use -t or &#x2013;timeout parameter to set the timeout threshold.</p>
+<h2 id="Timeout-example"><a href="#Timeout-example" class="headerlink" title="Timeout example"></a>Timeout example</h2><p>An example of timeout test case:</p>
+<pre>it(&apos;The test should end 5000 ms later&apos;, function(done) {
+  var x = true;
+  var f = function() {
+    x = false;
+    expect(x).to.be.not.ok;
+    done(); // Notify Mocha.js test end
+  };
+  setTimeout(f, 4000);
+});</pre>
+
+<p>The above test cases take 4000 milliseconds to run. Therefore, the -t or &#x2013;timeout parameter needs to be used to change the default timeout setting:<br><code>$ mocha -t 5000 timeout.test.js</code></p>
+<p>In the above test cases, there is a <code>done</code> function. When the block is executed, a <code>done</code> argument is passed to Mocha, and when the test is finished, the function must be explicitly called to tell the Mocha that test is finished.</p>
+<h2 id="Asynchronous-testing-example"><a href="#Asynchronous-testing-example" class="headerlink" title="Asynchronous testing example"></a>Asynchronous testing example</h2><p>An example of asynchronous testing example:</p>
+<pre>it(&apos;asynchronous request return an object&apos;, function(done){
+  request
+    .get(&apos;https://api.github.com&apos;)
+    .end(function(err, res){
+      expect(res).to.be.an(&apos;object&apos;);
+      done();
+    });
+});</pre>
+
+<p>Then run the test case:<br><code>$ mocha -t 10000 async.test.js</code><br>The test case will pass because of the change of the timeout threshold.</p>
+<h2 id="Promise-testing-example"><a href="#Promise-testing-example" class="headerlink" title="Promise testing example"></a>Promise testing example</h2><p>Mocha has built-in support for <code>Promise</code>, allowing return <code>Promise</code> object, and wait after the change of the Promise to execute the assertion without explicitly calling the done method.</p>
+<pre>it(&apos;asynchronous request return an object&apos;, function() {
+  return fetch(&apos;https://api.github.com&apos;)
+    .then(function(res) {
+      return res.json();
+    }).then(function(json) {
+      expect(json).to.be.an(&apos;object&apos;);
+    });
+});</pre>
+
+<h1 id="Hooks-for-test-cases"><a href="#Hooks-for-test-cases" class="headerlink" title="Hooks for test cases"></a>Hooks for test cases</h1><p>Mocha provides four hooks for test cases in the describe block: before (), after (), beforeEach (), and afterEach (). They are executed at the specified time.</p>
+<pre>describe(&apos;hooks&apos;, function() {
+  before(function() {
+    // Execute before all the test cases in this block
+  });
+  after(function() {
+     // Execute after all test cases in this block
+  });
+  beforeEach(function() {
+    // Execute before each test case in this block
+  });
+  afterEach(function() {
+    // Execute after each test case in this block
+  });
+  // test cases
+});</pre>]]></content>
+      
+        <categories>
+            
+            <category> Javascript Framework </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> MochaJs </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[DOM Events in Javascript]]></title>
+      <url>http://tongzhang.me/2016/11/20/DOM-Events-in-Javascript/</url>
+      <content type="html"><![CDATA[<p>Javascript Basic review Part 6 </p>
+<blockquote>
+<p>As developers, we should understand what is DOM event model, how DOM events work and event triggering process.<br><a id="more"></a></p>
+</blockquote>
+<h1 id="What-is-Event"><a href="#What-is-Event" class="headerlink" title="What is Event?"></a>What is Event?</h1><ul>
+<li>Javascript dynamically create the webpage, and Events in Javascript are behaviours that can be detected by Javascript, like users&#x2019; bahaviors(click, mouseup, keydown), document behaviours(load, unloaded). Each element in the document is able to generate events that can trigger corresponding JavaScript function.</li>
+<li>Events are encapsulated into an <code>Event Object</code> that contains all the relevant information about the event (the properties of the event) and the actions that can be performed on the event (the method of the event) when fires. We can see an example Event Object:<br><img src="/2016/11/20/DOM-Events-in-Javascript/eventObject.jpg" style="text-align: center;
+margin: 0 auto;" title="Event Object"></li>
+</ul>
+<h2 id="Event-Object-properties"><a href="#Event-Object-properties" class="headerlink" title="Event Object properties"></a>Event Object properties</h2><ol>
+<li><b>target</b>: Identifies the element on which the event occurred.  </li>
+<li><b>currentTarget</b>: Identifies the current target for the event, as the event traverses the DOM. <b>currentTarget&#x53EA;&#x83B7;&#x53D6;&#x76D1;&#x542C;&#x5143;&#x7D20;&#xFF0C;target&#x83B7;&#x53D6;&#x7684;&#x662F;&#x89E6;&#x53D1;&#x5143;&#x7D20;</b></li>
+<li><b>type</b>: The Event.type read-only property returns a string containing the type of event.</li>
+<li><b>timeStamp</b>: Returns the time (in milliseconds) at which the event was created.</li>
+<li><b>bubbles</b>:(boolean)Indicates whether the given event bubbles up through the DOM or not.</li>
+<li><b>cancelable</b>:(boolean) This property indicates whether the event can disable the default behavior by calling the <code>event.preventDefault</code> method.</li>
+<li><b>EventPhase</b>:(number) Indicates which phase of the event flow is currently being evaluated. None: 0; capture: 1; target: 2; bubbling: 3.</li>
+<li><b>PageX and pageY</b>:(number) These two attributes indicates the coordinate position of the mouse on the webpage. </li>
+<li><b>isTrusted</b>:(boolean) The isTrusted read-only property of the Event is true when the event was generated by a user action.</li>
+</ol>
+<h2 id="Event-Object-methods"><a href="#Event-Object-methods" class="headerlink" title="Event Object methods"></a>Event Object methods</h2><ol>
+<li><b>PreventDefault</b><br>This method can prohibit all default behavior. For example, click on a label will open a new page, if the click event of a tag uses this function, it will not open a new page.  </li>
+<li><b>StopPropagation</b><br>Prevents further propagation of the current event in the capturing and bubbling phases.</li>
+<li><b>StopImmediatePropagation</b><br>Like stopPropagation, it prevents the firing of other listeners. Unlike stopPropagation, however, it is more &#x201C;powerful&#x201D; to prevent events except for the target, and even prevent the same event for the same target element.</li>
+</ol>
+<h2 id="&#x201C;this&#x201D;-in-callback-function"><a href="#&#x201C;this&#x201D;-in-callback-function" class="headerlink" title="&#x201C;this&#x201D; in callback function"></a>&#x201C;this&#x201D; in callback function</h2><p>The &#x201C;this&#x201D; pointer of call back function binded to an event is different from general:</p>
+<pre>
+var element = document.getElementById(&apos;element&apos;);
+var user = {
+ firstname: &apos;Bob&apos;,
+ greeting: function(){
+   alert(&apos;My name is &apos; + this.firstname);
+ }
+};
+// Attach user.greeting as a callback
+element.addEventListener(&apos;click&apos;, user.greeting);
+//Alert info: My name is undefined</pre>
+
+<p>In the binded function of DOM Element, &#x201C;this&#x201D; function refers to the DOM element rather than the caller of the function: user.</p>
+<h1 id="Event-Model"><a href="#Event-Model" class="headerlink" title="Event Model"></a>Event Model</h1><h2 id="Original-Event-Model"><a href="#Original-Event-Model" class="headerlink" title="Original Event Model"></a>Original Event Model</h2><p>In the original event model (also known as DOM0 model), the event does not propagate and there is no event flow. The event happened, handled and ended. The listener function is simply an attribute value of the element. There are two ways to bind the listener function in attribute value:</p>
+<ol>
+<li><p>HTML inline properties: <code>&lt;input type=&#x201D;button&#x201D; onclick=&#x201D;func1()&#x201D; /&gt;</code></p>
+</li>
+<li><p>DOM properties: <code>document.getElementsByTagName(&#x2018;input&#x2019;)[0].onclick = func1</code></p>
+</li>
+</ol>
+<h2 id="IE-Event-Model"><a href="#IE-Event-Model" class="headerlink" title="IE Event Model"></a>IE Event Model</h2><p>In IE, the event is an attribute of the <code>window</code> global object. You should use <code>window.element</code> to get the event object.<br>Add an eventListener:<br><code>element.attachEvent(&lt;event-name&gt;, &lt;callback&gt;);</code></p>
+<h2 id="DOM2-Event-Model"><a href="#DOM2-Event-Model" class="headerlink" title="DOM2 Event Model"></a>DOM2 Event Model</h2><p>This model is a standard model developed by the W3C, one event consists of three processes:</p>
+<ol>
+<li>Capture Phase</li>
+<li>Target Phase</li>
+<li>Bubbling Phase</li>
+</ol>
+<p>We can use EventListener function to bind a function:<br><b>AddEventListener</b>:<br><code>element.addEventListener(&lt;event-name&gt;, &lt;callback&gt;, &lt;use-capture&gt;)</code><br><b>RemoveEventListener</b>:<br><code>element.removeEventListener(&lt;event-name&gt;, &lt;callback&gt;, &lt;use-capture&gt;)</code></p>
+<p>The process is described in detail in the next chapter.</p>
+<h1 id="Event-Phases"><a href="#Event-Phases" class="headerlink" title="Event Phases"></a>Event Phases</h1><p>As we mentioned above, the event phases is consist of three phases:<br><img src="/2016/11/20/DOM-Events-in-Javascript/eventPhases.svg" style="text-align: center;
+  margin: 0 auto;" title="Event Phases"></p>
+<h2 id="Capture-Phase"><a href="#Capture-Phase" class="headerlink" title="Capture Phase"></a>Capture Phase</h2><p>The first phase is the capture phase. The event starts its journey at the root of the document, working its way down through each layer of the DOM, firing on each node until it reaches the event target. The job of the capture phase is to build the <code>propagation path</code>, which the event will travel back through in the bubbling phase.<br>You can listen to events in the capture phase by setting the third argument of addEventListener to true. But usually we don&#x2019;t do that.</p>
+<h2 id="Target-Phase"><a href="#Target-Phase" class="headerlink" title="Target Phase"></a>Target Phase</h2><p>When the event reached the target element, the event is fired. The <code>target</code> property of the event is always the most deeply nested element. Like if you have listened for a click event on a &lt;div&gt; element, and the user actually clicks on a &lt;p&gt; element in the div, then the &lt;p&gt; element will become the event target:</p>
+<pre>&lt;div&gt;
+    &lt;p&gt;&#x8FD9;&#x662F;&#x4E00;&#x6BB5;&#x8BDD;&#xFF0C;&#x8FD9;&#x91CC;&#x6709;&#x4E2A;&lt;strong&gt;&#x52A0;&#x7C97;&#x5B57;&#x4F53;&lt;/strong&gt;&#x3002;&lt;/p&gt;
+&lt;/div&gt;
+document.addEventListener(&apos;click&apos;, function(e){
+    alert(e.target.tagName);
+}, false);</pre>
+
+<blockquote>
+<p>The fact that events &#x201C;bubble&#x201D; means that you are able to listen for clicks on the &lt;div&gt; and still receive a callback once the event passes through.</p>
+</blockquote>
+<h2 id="Bubbling-Phase"><a href="#Bubbling-Phase" class="headerlink" title="Bubbling Phase"></a>Bubbling Phase</h2><p>After an event has fired on the target, it continues to bubble up through the DOM until it reaches the document&#x2019;s root. This means that the same event is fired on the target&#x2019;s parent node, followed by the parent&#x2019;s parent, continuing until there is no parent to pass the event onto.  </p>
+<p>For these three phrases, wilsonpage create a great Demo: <a href="http://jsbin.com/exezex/4/embed?css,js,output" target="_blank" rel="noopener">JS Bin</a></p>
+<h2 id="Delegate-Event-Listeners"><a href="#Delegate-Event-Listeners" class="headerlink" title="Delegate Event Listeners"></a>Delegate Event Listeners</h2><ul>
+<li>Because the event has bubbling phase, all the events of the child nodes will bubble up to the parent node. So we can set EventListener on the parent node to achieve monitoring all the child nodes, which is the Event Delegate.</li>
+<li>Instead of listening for the click event on each element, we listen for it on the parent &lt;ul&gt; element. When an &lt;li&gt; is clicked, then the event bubbles up to the &lt;ul&gt;, triggering the callback. We can identify which &lt;li&gt; element has been clicked by inspecting the event.target:<pre>// Not using event delegation
+$(&apos;li&apos;).on(&apos;click&apos;, function(){});
+// Using event delegation
+$(&apos;ul&apos;).on(&apos;click&apos;, &apos;li&apos;, function(){});</pre>
+
+</li>
+</ul>
+<p>If you use the original way to achieve the event delegate, you need to filter non-target nodes. For example:</p>
+<pre>element.addEventListener(&apos;click&apos;, function(event) {
+    // &#x5224;&#x65AD;&#x662F;&#x5426;&#x662F; a &#x8282;&#x70B9;
+    if ( event.target.tagName == &apos;A&apos; ) {
+        // a &#x7684;&#x4E00;&#x4E9B;&#x4EA4;&#x4E92;&#x64CD;&#x4F5C;
+    }
+}, false);</pre>
+
+<p><a href="http://jsfiddle.net/yujiangshui/ju2ujmzp/1/?utm_source=website&amp;utm_medium=embed&amp;utm_campaign=ju2ujmzp" target="_blank" rel="noopener">Delegate Event</a></p>
+<h2 id="stopPropagation"><a href="#stopPropagation" class="headerlink" title="stopPropagation"></a>stopPropagation</h2><p>Sometimes you only may want to listen to specific element then you need to use stopPropagation() function to stop bubbling up. Then, the event will no longer call any listeners on nodes that it travels through on its way to the target and back to the document.</p>
+<pre>child.addEventListener(&apos;click&apos;, function(event) {
+ event.stopPropagation();
+});
+parent.addEventListener(&apos;click&apos;, function(event) {
+ // If the child element is clicked
+ // this callback will not fire
+});</pre>
+
+<p><a href="http://jsbin.com/aparot/3/embed?html,js,output" target="_blank" rel="noopener">stopPropagation</a></p>
+<h1 id="Custom-Events"><a href="#Custom-Events" class="headerlink" title="Custom Events"></a>Custom Events</h1><p>Javascript let us create our own custom events and dispatch them on any element in the document. This type of event would behave just the same as a regular DOM event.</p>
+<pre>var myEvent = new CustomEvent(&quot;myevent&quot;, {
+  detail: {
+    name: &quot;Wilson&quot;
+  },
+  bubbles: true,
+  cancelable: false
+});
+// Listen for &apos;myevent&apos; on an element
+myElement.addEventListener(&apos;myevent&apos;, function(event) {
+  alert(&apos;Hello &apos; + event.detail.name);
+});
+// Trigger the &apos;myevent&apos;
+myElement.dispatchEvent(myEvent);</pre>
+
+<p><a href="http://jsbin.com/emuhef/1/edit?html,css,js,output" target="_blank" rel="noopener">Custom events</a></p>
+<h1 id="Useful-Events"><a href="#Useful-Events" class="headerlink" title="Useful Events"></a>Useful Events</h1><h2 id="Load"><a href="#Load" class="headerlink" title="Load"></a>Load</h2><p>The load event fires on any resource that has finished loading. This could be an image, style sheet, script, video, audio file, document or window.</p>
+<pre>image.addEventListener(&apos;load&apos;, function(event) {
+  image.classList.add(&apos;has-loaded&apos;);
+});</pre>
+
+<p><a href="http://jsbin.com/uhimir/1/edit?html,css,js,output" target="_blank" rel="noopener">Image Load</a></p>
+<h2 id="Resize"><a href="#Resize" class="headerlink" title="Resize"></a>Resize</h2><p>When the window is resized or the device&#x2019;s orientation changes, then we can use this function to readjust.</p>
+<pre>window.addEventListener(&apos;resize&apos;, function() {
+  // update the layout
+});</pre>
+
+<p><a href="http://jsbin.com/usevow/1/edit?html,js,output" target="_blank" rel="noopener">Window Resize</a></p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><a href="https://www.smashingmagazine.com/2013/11/an-introduction-to-dom-events/" target="_blank" rel="noopener">An Introduction To DOM Events</a></li>
+<li><a href="http://yujiangshui.com/javascript-event/#&#x4E8B;&#x4EF6;&#x89E6;&#x53D1;&#x8FC7;&#x7A0B;" target="_blank" rel="noopener">JavaScript &#x548C;&#x4E8B;&#x4EF6;</a></li>
+</ol>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript Basic </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Javascript </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Scope chain and execution context in Javascript]]></title>
+      <url>http://tongzhang.me/2016/11/10/Scope-chain-and-execution-context-in-Javascript/</url>
+      <content type="html"><![CDATA[<p>Javascript Basic review Part 5 </p>
+<blockquote>
+<p>Understanding the unique feature of Javascript: Scope chain and Execution context<br><a id="more"></a></p>
+</blockquote>
+<p>Javascript is a single-thread language, so whenever a function is executed, javascript will generate <code>a new execution context</code> for the function. This execution context will be pushed into the javascript context stack, and after the implementation of the function, the execution context will pop up. Js interpreter is always executing in the top of the <code>context stack</code>. So in the implementation of a function:</p>
+<ol>
+<li>Generate a new execution context, and bind the variable object of the context, which includes the arguments and the variables defined in the function; </li>
+<li>Then create a scope chain that belongs to the context</li>
+<li>Finally assign &#x201C;this&#x201D; to the Object who owns the function  </li>
+</ol>
+<p>The process can be represented by the following figure:(Reference)<br><img src="/2016/11/10/Scope-chain-and-execution-context-in-Javascript/function_implement.jpg" style="margin-left: 100px" title="Function Implementation"></p>
+<blockquote>
+<p>I will analyze these concepts and process one by one in the next content.</p>
+</blockquote>
+<h1 id="Execution-Context"><a href="#Execution-Context" class="headerlink" title="Execution Context"></a>Execution Context</h1><p>The execution context determines which variables, functions, and data can be fetched during Js execution.   </p>
+<p>A program can be split into many different contexts, each of which binds a <code>variable object</code>. Variable object is a container, used to store all the defined or available variables, functions and so on in the context. The context at the top or outermost level is called the <code>global context</code>, which depends on the execution environment, such as &#x201C;global&#x201D; in Node and &#x201C;window&#x201D; in Browser:<br><img src="/2016/11/10/Scope-chain-and-execution-context-in-Javascript/execution_context.jpg" style="margin-left: 100px" title="Execution Context"><br>Each time a new execution context is created it is appended to the top of the <code>execution stack</code>. The browser will always execute the current execution context that is at the top of the execution stack. Once completed, it will be removed from the top of the stack and control will return to the execution context below.</p>
+<h1 id="Scope-Chain"><a href="#Scope-Chain" class="headerlink" title="Scope Chain"></a>Scope Chain</h1><p>As mentioned above, when the function is executed, a new context is generated and will first bind the variable object of the current context, and then create the scope chain. </p>
+<p>As We all know, the definition of function can be <code>nested</code> in execution contexts created by other functions, and can also be defined in the same context(such as global) parallel with other functions. The scope chain actually <code>string</code> all the nestedly defined variable objects together from bottom to up, so that the nested function can &#x201C;inherit&#x201D; the variable objects in upper context , and the parallel functions don&#x2019;t interfere with each other.</p>
+<pre>var x = &apos;global&apos;;  
+function a(){  
+  var x = &quot;a&apos;s x&quot;;
+  function b(){
+    var y = &quot;b&apos;s y&quot;;
+    console.log(x);
+  };
+  b();
+}
+function c(){  
+  var x = &quot;c&apos;s x&quot;;
+  function d(){
+    console.log(y);
+  };
+  d();
+}
+a();  // -&gt; &quot;a&apos;s x&quot;  
+c();  // -&gt; ReferenceError: y is not defined  
+x     // -&gt; &quot;global&quot;  
+y     // -&gt; ReferenceError: y is not defined</pre>
+
+<p>The code includes a total of five execution context: the global context, a(), b(), c(), d() local context. And the scope chain is:<br><img src="/2016/11/10/Scope-chain-and-execution-context-in-Javascript/scope_chain.jpg" style="margin-left: 100px" title="Scope Chain"><br>We can see from the figure that the internal context can access all external contexts through the <code>scope chain</code>, but the external context can not access any variables and functions in the internal context. The scope chain between these contexta are <code>linear and orderly</code>.  </p>
+<p>Identifier resolution (variable name or function name search) is the process of searching for identifiers one level at a time <code>along the scope chain</code>. The search process always begins at the front of the scope chain, and then <code>backtracks</code> step by step (stop at global execution context) until an identifier is found.</p>
+<h1 id="&#x201C;this&#x201D;-pointer"><a href="#&#x201C;this&#x201D;-pointer" class="headerlink" title="&#x201C;this&#x201D; pointer"></a>&#x201C;this&#x201D; pointer</h1><p>As we mentioned above, at the last step of the function implementation, we will assign the &#x201C;this&#x201D; to the object who owns the function. In most cases, the value of &#x201C;this&#x201D; is determined by how a function is called. It can&#x2019;t be set by assignment during execution, and it may be different each time the function is called. </p>
+<h2 id="&#x201C;this&#x201D;-in-global-context"><a href="#&#x201C;this&#x201D;-in-global-context" class="headerlink" title="&#x201C;this&#x201D; in global context"></a>&#x201C;this&#x201D; in global context</h2><p>In the global execution context (outside of any function), &#x201C;this&#x201D; refers to the global object.</p>
+<pre>var x = 1;  
+var f = function(){  
+  console.log(this.x);
+}
+f();  // -&gt; 1
+var ff = function(){  
+  this.x = 2;       //Call in global context, x is modified in global context.
+  console.log(this.x);
+}
+ff(); // -&gt; 2  
+x     // -&gt; 2</pre>
+
+<h2 id="&#x201C;this&#x201D;-as-an-object-method"><a href="#&#x201C;this&#x201D;-as-an-object-method" class="headerlink" title="&#x201C;this&#x201D; as an object method"></a>&#x201C;this&#x201D; as an object method</h2><p>When a function is called as a method of an object, its &#x201C;this&#x201D; is set to the object the method is called on.</p>
+<pre>var o = {
+  prop: 37,
+  f: function() {
+    return this.prop;
+  }
+};
+console.log(o.f()); // logs 37</pre>
+
+<p>Note that &#x201C;this&#x201D; behavior is not at all affected by how or where the function was defined and this binding is only affected by the most immediate member reference.</p>
+<h2 id="&#x201C;this&#x201D;-on-the-object&#x2019;s-prototype-chain"><a href="#&#x201C;this&#x201D;-on-the-object&#x2019;s-prototype-chain" class="headerlink" title="&#x201C;this&#x201D; on the object&#x2019;s prototype chain"></a>&#x201C;this&#x201D; on the object&#x2019;s prototype chain</h2><p>If the method is on an object&#x2019;s prototype chain, &#x201C;this&#x201D; refers to the object on which the method was called, as if the method was on the object.</p>
+<pre>var o = {f: function(){ 
+return this.a + this.b; 
+}};
+var p = Object.create(o);
+p.a = 1;
+p.b = 4;
+console.log(p.f()); // 5</pre>
+
+<h2 id="&#x201C;this&#x201D;-as-a-constructor"><a href="#&#x201C;this&#x201D;-as-a-constructor" class="headerlink" title="&#x201C;this&#x201D; as a constructor"></a>&#x201C;this&#x201D; as a constructor</h2><p>When a function is used as a constructor (with the new keyword), its this is bound to the new object being constructed.</p>
+<pre>function C(){
+  this.a = 37;
+}
+var o = new C();
+console.log(o.a); // logs 37</pre>
+
+<h2 id="&#x201C;this&#x201D;-as-a-DOM-event-handler"><a href="#&#x201C;this&#x201D;-as-a-DOM-event-handler" class="headerlink" title="&#x201C;this&#x201D; as a DOM event handler"></a>&#x201C;this&#x201D; as a DOM event handler</h2><p>When a function is used as an event handler, its this is set to the element the event fired from.</p>
+<pre>function bluify(e){  
+  console.log(this === e.currentTarget); // Always true
+  console.log(this === e.target);// true when currentTarget and target are the same object
+  this.style.backgroundColor = &apos;#A5D9F3&apos;;
+}
+var element = document.getElementByTagName(&apos;*&apos;);
+element.addEventListener(&apos;click&apos;, bluify, false);</pre>
+
+<blockquote>
+<p>About the &#x201C;event&#x201D; model and how to add eventListener please look at the next blog</p>
+</blockquote>
+<h1 id="Closure"><a href="#Closure" class="headerlink" title="Closure"></a>Closure</h1><p>Closures are functions that refer to independent variables that are used locally, but defined in an enclosing scope. In other words, these functions &#x2018;remember&#x2019; the environment in which they were created.</p>
+<blockquote>
+<p>How is Closure created?</p>
+</blockquote>
+<p>If we define a new function in an outer function and return the inner function as a return value, then the scope chains contained in the inner function will be returned together. Even if the inner function executes in other execution  contexts, its <code>inner scope chain</code> still maintains the original data, making the scope chain within the function to be protected, thus forming a &#x201C;closure.&#x201D;</p>
+<pre>function makeFunc() {
+  var name = &quot;Mozilla&quot;;
+  function displayName() {
+    alert(name);
+  }
+  return displayName;
+}
+var myFunc = makeFunc();
+myFunc(); // &quot;Mozilla&quot;</pre>
+
+<p>The answer is because myFunc has become a closure. A closure is a special kind of object that combines <code>two things</code>: a function, and the environment in which that function was created. The environment consists of any local variables that were in-scope at the time that the closure was created.  </p>
+<p>In this case, myFunc is a closure that incorporates both the displayName function and the &#x201C;Mozilla&#x201D; string that existed when the closure was created.</p>
+<h2 id="Emulating-private-methods-with-closures"><a href="#Emulating-private-methods-with-closures" class="headerlink" title="Emulating private methods with closures"></a>Emulating private methods with closures</h2><p>Languages such as Java provide the ability to declare methods private, meaning that they can only be called by other methods in the same class.  </p>
+<p>JavaScript does not provide a native way of doing this, but it is possible to emulate private methods using closures. </p>
+<pre>var Counter = (function() {
+  var privateCounter = 0;
+  function changeBy(val) {
+    privateCounter += val;
+  }
+  return {
+    increment: function() {
+      changeBy(1);
+    },
+    decrement: function() {
+      changeBy(-1);
+    },
+    value: function() {
+      return privateCounter;
+    }
+  }   
+})();//return an object to Counter and this is an anonymous function 
+console.log(Counter.value()); /* logs 0 */
+Counter.increment();
+Counter.increment();
+console.log(Counter.value()); /* logs 2 */
+Counter.decrement();
+console.log(Counter.value()); /* logs 1 */</pre>
+
+<h2 id="&#x201C;this&#x201D;-in-closure"><a href="#&#x201C;this&#x201D;-in-closure" class="headerlink" title="&#x201C;this&#x201D; in closure"></a>&#x201C;this&#x201D; in closure</h2><h3 id="Why-Prone-to-error"><a href="#Why-Prone-to-error" class="headerlink" title="Why Prone to error"></a>Why Prone to error</h3><p>As we mentioned above, once the closure is built, the scope chain in the function will maintains the original data whenever it is called. But in a function, the assignment of &#x201C;this&#x201D; is different from the scope chain. &#x201C;this&#x201D; is still assigned to objects who call the function. We can look at the following two examples to compare:<br>The general use of &#x201C;this&#x201D; in scope chain:</p>
+<pre>var name = &quot;global&quot;;  
+var o = {  
+  name: &quot;o&quot;,
+  getName: function(){
+    return this.name
+  }
+};
+o.getName();  // -&gt; &quot;o&quot;</pre>
+
+<p>Use this in the closure:</p>
+<pre>var name = &quot;global&quot;;  
+var oo = {  
+  name: &quot;oo&quot;,
+  getNameFunc: function(){
+    return function(){
+      return this.name;
+    };
+  }
+}
+oo.getNameFunc()();  // -&gt; &quot;global&quot;  </pre>
+
+<p>The result is &#x201C;global&#x201D; rather than &#x201C;oo&#x201D;, why?<br>Because <code>oo.getNameFunc()()</code> equals to<br><code>getName = oo.getNameFunc();<br>getName();  // -&gt; &#x201C;global&#x201D;</code><br>After the closure function is returned, it is called by global, so &#x201C;this&#x201D; of the closure function is assigned to global. Look at another example:</p>
+<pre>var ooo = {  
+  name: &quot;ooo&quot;,
+  getName: oo.getNameFunc() // &quot;this&quot; of the closure function is binded to the new Object
+};
+ooo.getName();  // -&gt; &quot;ooo&quot;</pre>
+
+<h3 id="Bind-&#x201C;this&#x201D;-in-closure"><a href="#Bind-&#x201C;this&#x201D;-in-closure" class="headerlink" title="Bind &#x201C;this&#x201D; in closure"></a>Bind &#x201C;this&#x201D; in closure</h3><p>Sometimes in order to avoid &#x201C;this&#x201D; is changed in the implementation of closure function, we need to bind &#x201C;this&#x201D; to the original function.</p>
+<h4 id="Use-&#x201C;self-this&#x201D;"><a href="#Use-&#x201C;self-this&#x201D;" class="headerlink" title="Use &#x201C;self = this&#x201D;"></a>Use &#x201C;self = this&#x201D;</h4><p>Create a variable self to store &#x201C;this&#x201D; in scope chain so it will be maintained.</p>
+<pre>var name = &quot;global&quot;;  
+var ooo = {  
+  name: &quot;ox4&quot;,
+  getNameFunc: function(){
+    var self = this; 
+    return function(){
+       return self.name;
+    };
+  }
+};
+ooo.getNameFunc()(); // -&gt; &quot;ox4&quot;  </pre>
+
+<h4 id="Use-bind-function"><a href="#Use-bind-function" class="headerlink" title="Use bind function"></a>Use bind function</h4><p>We can also bind &#x201C;this&#x201D; to the original object when we call the closure function.</p>
+<pre>var name = &quot;global&quot;;  
+var oo = {  
+  name: &quot;oo&quot;,
+  getNameFunc: function(){
+    return function(){
+      return this.name;
+    };
+  }
+}
+oo.getNameFunc()();  // -&gt; &quot;global&quot;  
+oo.getNameFunc().bind(oo)(); // -&gt; &quot;oo&quot;</pre>
+
+<h2 id="Name-conflicts-in-Closure"><a href="#Name-conflicts-in-Closure" class="headerlink" title="Name conflicts in Closure"></a>Name conflicts in Closure</h2><p>When two arguments or variables in the scopes of a closure have the same name, there is a name conflict.<br>More inner scopes take precedence, so the inner-most scope takes the highest precedence, while the outer-most scope takes the lowest. This is the scope chain. The first on the chain is the inner-most scope, and the last is the outer-most scope. Example:</p>
+<pre>function outside() {
+  var x = 10;
+  function inside(x) {
+    return x;
+  }
+  return inside;
+}
+result = outside()(20); // returns 20 instead of 10</pre>
+
+<h1 id="call-apply-and-bind"><a href="#call-apply-and-bind" class="headerlink" title="call, apply and bind"></a>call, apply and bind</h1><h2 id="call-and-apply"><a href="#call-and-apply" class="headerlink" title="call() and apply()"></a>call() and apply()</h2><p>In javascript, call and apply are to change the execution context of a function when running, in other words, is to change &#x201C;this&#x201D; in the function. They have the same function but they have different ways to accept arguments: </p>
+<pre>function add(c, d){
+  return this.a + this.b + c + d;
+}
+var o = {a:1, b:3};
+add.call(o, 5, 7); // 1 + 3 + 5 + 7 = 16
+add.apply(o, [10, 20]); // 1 + 3 + 10 + 20 = 34</pre>
+
+<p>Call needs to pass parameters in order, while apply is to put the parameters in the array. So when you already know the number of arguments, you can use call, if don&#x2019;t, you can use apply and push arguments into the argument array. If you cannot decide the number of arguments, you can traverse arguments array to find all the arguments. Example:</p>
+<pre>var array1 = [12 , &quot;foo&quot; , {name &quot;Joe&quot;} , -2458]; 
+var array2 = [&quot;Doe&quot; , 555 , 100]; 
+Array.prototype.push.apply(array1, array2);</pre>
+
+<p>Note that with call and apply, if the value passed as this is not an object, an attempt will be made to convert it to an object using the internal ToObject operation. </p>
+<h2 id="bind"><a href="#bind" class="headerlink" title="bind()"></a>bind()</h2><p>The bind () method is very similar to apply and call, which also aims to change the &#x201C;this&#x201D; in the function.  </p>
+<p>Bind() creates a new function with the same body and scope as f, but in the new function &#x201C;this&#x201D; is permanently bound to the first argument of bind().</p>
+<pre>this.x = 9; 
+var module = {
+  x: 81,
+  getX: function() { return this.x; }
+};
+module.getX(); // 81
+var retrieveX = module.getX;
+retrieveX();  //9   
+var boundGetX = retrieveX.bind(module);
+boundGetX(); // 81</pre>
+
+<h2 id="apply&#x3001;call&#x3001;bind-comparison"><a href="#apply&#x3001;call&#x3001;bind-comparison" class="headerlink" title="apply&#x3001;call&#x3001;bind comparison"></a>apply&#x3001;call&#x3001;bind comparison</h2><p>These three methods will all change the &#x201C;this&#x201D; context of the called function. But the apply() and apply() method will execute the function directly while bind() will return a binding function and will not execute it.</p>
+<blockquote>
+<p>&#x5F53;&#x4F60;&#x5E0C;&#x671B;&#x6539;&#x53D8;&#x4E0A;&#x4E0B;&#x6587;&#x73AF;&#x5883;&#x4E4B;&#x540E;&#x5E76;&#x975E;&#x7ACB;&#x5373;&#x6267;&#x884C;&#xFF0C;&#x800C;&#x662F;&#x56DE;&#x8C03;&#x6267;&#x884C;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x4F7F;&#x7528; bind() &#x65B9;&#x6CD5;, &#x5982;&#x679C;&#x60F3;&#x6539;&#x53D8;&#x540E;&#x7ACB;&#x5373;&#x6267;&#x884C;&#xFF0C; &#x7528;apply/call&#x3002;</p>
+</blockquote>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><a href="http://blog.rainy.im/2015/07/04/scope-chain-and-prototype-chain-in-js/" target="_blank" rel="noopener">&#x56FE;&#x89E3;Javascript&#x4E0A;&#x4E0B;&#x6587;&#x4E0E;&#x4F5C;&#x7528;&#x57DF;</a></li>
+<li><a href="http://ryanmorr.com/understanding-scope-and-context-in-javascript/" target="_blank" rel="noopener">Understanding Scope and Context in JavaScript</a></li>
+</ol>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript Basic </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Javascript </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Angular 2.0 Module]]></title>
+      <url>http://tongzhang.me/2016/10/29/Angular2-Module/</url>
+      <content type="html"><![CDATA[<a id="more"></a>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript Framework </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> AngularJS </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Inheritance and the Prototype chain]]></title>
+      <url>http://tongzhang.me/2016/10/20/Inheritance-and-the-prototype-chain/</url>
+      <content type="html"><![CDATA[<p>Javascript Basic review Part 4 </p>
+<blockquote>
+<p>What is Prototype chain and how to realize inheritance in Javascript<br><a id="more"></a></p>
+</blockquote>
+<h1 id="What-is-Prototype-Chain"><a href="#What-is-Prototype-Chain" class="headerlink" title="What is Prototype Chain"></a>What is Prototype Chain</h1><h2 id="Why-we-need-a-prototype-is-Javascript"><a href="#Why-we-need-a-prototype-is-Javascript" class="headerlink" title="Why we need a prototype is Javascript"></a>Why we need a prototype is Javascript</h2><h3 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h3><p>One of the disadvantages of using constructors to create instance objects is that they can not share properties and methods. For example, in the constructor of a DOG object, set the common attribute &#x201C;species&#x201D; of instance objects. Then, two instance objects are generated:</p>
+<pre>function DOG(name){
+&#x3000;&#x3000;&#x3000;&#x3000;this.name = name;
+&#x3000;&#x3000;&#x3000;&#x3000;this.species = &apos;Dog&apos;;
+&#x3000;&#x3000;}
+var dogA = new DOG(&apos;Dog1&apos;);
+var dogB = new DOG(&apos;Dog2&apos;);</pre>
+These two objects&apos; species attributes are independent, if you modify one, does not affect the other. Each instance object has its own copy of the properties and methods. This not only can not do data sharing, is also a great waste of resources.
+<pre>dogA.species = &apos;Cat&apos;;
+alert(dogB.species); // show &apos;Dog&apos;, not influneced by dogA</pre>
+
+<h3 id="Generate"><a href="#Generate" class="headerlink" title="Generate"></a>Generate</h3><p>Therefore, we need a property, which contains an object (referred to as &#x201C;prototype object&#x201D;), all properties and methods needed to be shared are placed inside the object; those properties and methods which do not need to be shared are put inside the structure Function.<br>Put the DOG constructor as an example, now use the prototype property to rewrite:</p>
+<pre>function DOG(name){
+&#x3000;&#x3000;&#x3000;&#x3000;this.name = name;
+&#x3000;&#x3000;}
+DOG.prototype = { species : &apos;Dog&apos; };
+var dogA = new DOG(&apos;Dog1&apos;);
+var dogB = new DOG(&apos;Dog2&apos;);
+alert(dogA.species); // Dog
+alert(dogB.species); // Dog
+//Then we change the prototype attribute
+DOG.prototype.species = &apos;Cat&apos;;
+alert(dogA.species); // Cat
+alert(dogB.species); // Cat</pre>
+
+<blockquote>
+<p>&#x7531;&#x4E8E;&#x6240;&#x6709;&#x7684;&#x5B9E;&#x4F8B;&#x5BF9;&#x8C61;&#x5171;&#x4EAB;&#x540C;&#x4E00;&#x4E2A;prototype&#x5BF9;&#x8C61;&#xFF0C;&#x90A3;&#x4E48;&#x4ECE;&#x5916;&#x754C;&#x770B;&#x8D77;&#x6765;&#xFF0C;prototype&#x5BF9;&#x8C61;&#x5C31;&#x597D;&#x50CF;&#x662F;&#x5B9E;&#x4F8B;&#x5BF9;&#x8C61;&#x7684;&#x539F;&#x578B;&#xFF0C;&#x800C;&#x5B9E;&#x4F8B;&#x5BF9;&#x8C61;&#x5219;&#x597D;&#x50CF;&#x201D;&#x7EE7;&#x627F;&#x201D;&#x4E86;prototype&#x5BF9;&#x8C61;&#x4E00;&#x6837;&#x3002;</p>
+</blockquote>
+<h2 id="The-definition-of-Prototype-Chain"><a href="#The-definition-of-Prototype-Chain" class="headerlink" title="The definition of Prototype Chain"></a>The definition of Prototype Chain</h2><p>When it comes to inheritance, JavaScript only has one construct: objects. Each object has an internal link to another object called its prototype. That prototype object has a prototype of its own, and so on <b>until an object is reached with null</b> as its prototype. Null, by definition, has no prototype, and acts as the final link in this prototype chain.  </p>
+<p>JavaScript objects are dynamic &#x201C;bags&#x201D; of properties (referred to as own properties). JavaScript objects have a link to a prototype object. When trying to access a property of an object, the property will not only be sought on the object but on the prototype of the object, the prototype of the prototype, and so on until either a property with a matching name is found or the end of the prototype chain is reached.</p>
+<pre>// Let&apos;s assume we have object o, with its own properties a and b:
+{a: 1, b: 2}
+// o.[[Prototype]] has properties b and c:
+{b: 3, c: 4}
+// Finally, o.[[Prototype]].[[Prototype]] is null.
+// This is the end of the prototype chain as null
+// Thus, the full prototype chain looks like:
+// {a:1, b:2} ---&gt; {b:3, c:4} ---&gt; null
+console.log(o.a); // 1
+// Is there an &apos;a&apos; own property on o? Yes, and its value is 1.
+console.log(o.b); // 2
+// Is there a &apos;b&apos; own property on o? Yes, and its value is 2.
+// The prototype also has a &apos;b&apos; property, but it&apos;s not visited. 
+console.log(o.c); // 4
+// Is there a &apos;c&apos; own property on o? No, check its prototype.
+// Is there a &apos;c&apos; own property on o.[[Prototype]]? Yes, its value is 4.
+console.log(o.d); // undefined
+// Is there a &apos;d&apos; own property on o? No, check its prototype.
+// Is there a &apos;d&apos; own property on o.[[Prototype]]? No, check its prototype.
+// o.[[Prototype]].[[Prototype]] is null, stop searching</pre>
+
+<h2 id="Prototype-pattern-validation-method"><a href="#Prototype-pattern-validation-method" class="headerlink" title="Prototype pattern validation method"></a>Prototype pattern validation method</h2><h3 id="isPrototypeOf-NaN"><a href="#isPrototypeOf-NaN" class="headerlink" title="isPrototypeOf()"></a>isPrototypeOf()</h3><p>This method is used to determine the relationship between a prototype object and an instance.</p>
+<pre>alert(Dog.prototype.isPrototypeOf(dogA)); //true
+alert(Dog.prototype.isPrototypeOf(dogB)); //true</pre>
+
+<h3 id="hasOwnProperty-or-in-operand"><a href="#hasOwnProperty-or-in-operand" class="headerlink" title="hasOwnProperty() or in operand"></a>hasOwnProperty() or in operand</h3><p>Each instance object has a hasOwnProperty () method, used to determine whether a property is a local property, or inherited from the prototype object properties. Or we can use in operand.</p>
+<pre>alert(dogA.hasOwnProperty(&quot;name&quot;)); // true
+alert(dogA.hasOwnProperty(&quot;species&quot;)); // false
+alert(&quot;name&quot; in dogA); // true
+alert(&quot;species&quot; in dogA); // true</pre>
+
+<hr>
+<h1 id="Implement-inheritance"><a href="#Implement-inheritance" class="headerlink" title="Implement inheritance"></a>Implement inheritance</h1><h2 id="Constructor-inheritance"><a href="#Constructor-inheritance" class="headerlink" title="Constructor inheritance"></a>Constructor inheritance</h2><p>The question is that if there is a Animal object&#x2019;s constructor and a Cat object&#x2019;s constructor:</p>
+<pre>function Animal(){
+&#x3000;&#x3000;&#x3000;&#x3000;this.species = &quot;Animal&quot;;
+&#x3000;&#x3000;}
+function Cat(name,color){
+&#x3000;&#x3000;&#x3000;&#x3000;this.name = name;
+&#x3000;&#x3000;&#x3000;&#x3000;this.color = color;
+&#x3000;&#x3000;}</pre>
+How can &quot;Cat&quot; inherit &quot;Animal&quot; function?
+
+### Constructor binding
+Use the call or apply method to bind the constructor of the parent object to the child object by adding a line to the child object constructor:
+<pre>function Cat(name,color){
+&#x3000;&#x3000;&#x3000;&#x3000;Animal.apply(this, arguments);
+&#x3000;&#x3000;&#x3000;&#x3000;this.name = name;
+&#x3000;&#x3000;&#x3000;&#x3000;this.color = color;
+&#x3000;&#x3000;}
+&#x3000;&#x3000;var cat1 = new Cat(&quot;Cat1&quot;,&quot;yellow&quot;);
+&#x3000;&#x3000;alert(cat1.species); // Animal</pre>
+
+<h3 id="Inheritance-with-the-Prototype"><a href="#Inheritance-with-the-Prototype" class="headerlink" title="Inheritance with the Prototype"></a>Inheritance with the Prototype</h3><h4 id="Assign-Constructor-to-Propotype"><a href="#Assign-Constructor-to-Propotype" class="headerlink" title="Assign Constructor to Propotype"></a>Assign Constructor to Propotype</h4><p>If the Cat object&#x2019;s prototype object points to an Animal object&#x2019;s instance, then all the Cat object&#x2019;s instance can inherit the Animal object.</p>
+<pre>Cat.prototype = new Animal();
+Cat.prototype.constructor = Cat;
+var cat1 = new Cat(&quot;Cat1&quot;,&quot;yellow&quot;);
+alert(cat1.species); // Animal</pre>
+So Why we need the code after the first assignment:<br>
+<code>Cat.prototype.constructor = Cat;</code><br>
+
+It turns out that any prototype object has a constructor property that points to the constructor of the origin object. If there is no &quot;Cat.prototype = new Animal ();&quot;, Cat.prototype.constructor points to Cat; after this codes, Cat.prototype.constructor points to Animal. More importantly, each instance of this object also has a constructor property, which defaults to the constructor property of the prototype object. 
+
+<pre>Cat.prototype = new Animal();
+alert(Cat.prototype.constructor == Animal); //true
+alert(Cat1.constructor == Cat.prototype.constructor); // true
+alert(Cat1.constructor == Animal); // true</pre>
+
+<p>Therefore, after running the &#x201C;Cat.prototype = new Animal ();&#x201D;, Cat1.constructor also points to Animal! This obviously causes the chain of inheritance to become disorganized (Cat1 is explicitly generated with the constructor Cat), so we must manually correct the Cat.prototype object&#x2019;s constructor to Cat. This is the meaning of the second line.</p>
+<h4 id="Use-an-empty-object-as-an-intermediary"><a href="#Use-an-empty-object-as-an-intermediary" class="headerlink" title="Use an empty object as an intermediary"></a>Use an empty object as an intermediary</h4><p>If we directly assign the prototype of Animal to the prototype of Cat:</p>
+<pre>function Animal(){ }
+Animal.prototype.species = &quot;Animal&quot;;
+Cat.prototype = Animal.prototype;
+Cat.prototype.constructor = Cat;
+var cat1 = new Cat(&quot;Cat1&quot;,&quot;yellow&quot;);
+alert(cat1.species); // Animal</pre>
+The drawback is that Cat.prototype and Animal.prototype now point to the same object, so any changes to Cat.prototype will be reflected in Animal.prototype.Like: 
+<pre>Cat.prototype.constructor = Cat;
+alert(Animal.prototype.constructor); // Cat</pre>
+
+<p>So we use an empty object as an intermediary.</p>
+<pre>var F = function(){};
+F.prototype = Animal.prototype;
+Cat.prototype = new F();
+Cat.prototype.constructor = Cat;</pre>
+Packaged as a function extend, YUI library is achieving inheritance with this method:
+<pre>function extend(Child, Parent) {
+var F = function(){};
+F.prototype = Parent.prototype;
+Child.prototype = new F();
+Child.prototype.constructor = Child;
+Child.uber = Parent.prototype;
+}</pre>
+
+<h3 id="Copy-inheritance"><a href="#Copy-inheritance" class="headerlink" title="Copy inheritance"></a>Copy inheritance</h3><p>We can copy all the attributes and methods of father object into the sub-object, we can achieve inheritance.</p>
+<pre>function Animal(){};
+Animal.prototype.species = &quot;Animal&quot;;
+function extend2(Child, Parent) {
+var p = Parent.prototype;
+var c = Child.prototype;
+for (var i in p) {
+&#x3000;&#x3000;c[i] = p[i];
+}
+c.uber = p;
+}</pre>
+
+<h2 id="Object-inheritance"><a href="#Object-inheritance" class="headerlink" title="Object inheritance"></a>Object inheritance</h2><p>Now there is an object, called &#x201C;Chinese.&#x201D; There is also an object called &#x201C;Doctor&#x201D;. How can I get the &#x201C;doctor&#x201D; to inherit &#x201C;Chinese&#x201D;, that is, how can I create a &#x201C;Chinese doctor&#x201D; object?</p>
+<pre>var Chinese = {
+    nation:&apos;China&apos;
+};
+var Doctor ={
+    career:&apos;Doctor&apos;
+}</pre>
+
+<h3 id="object-Function"><a href="#object-Function" class="headerlink" title="object() Function"></a>object() Function</h3><p>The object() function is:</p>
+<pre>function object(o) {
+&#x3000;&#x3000;&#x3000;function F() {}
+&#x3000;&#x3000;&#x3000;F.prototype = o;
+&#x3000;&#x3000;&#x3000;return new F();
+&#x3000;&#x3000;}</pre>
+The object () function, in fact, only do one thing, point sub-object prototype to the parent object, so that the child object and the parent object are connected together in the Prototype chain.
+<pre>var Doctor = object(Chinese);
+alert(Doctor.nation); //China</pre>
+
+<h3 id="Shallow-copy"><a href="#Shallow-copy" class="headerlink" title="Shallow copy"></a>Shallow copy</h3><p>Another idea: copied all of the parent object&#x2019;s attributes to the child object.</p>
+<pre>function extendCopy(p) {
+&#x3000;&#x3000;&#x3000;var c = {};
+&#x3000;&#x3000;&#x3000;for (var i in p) { 
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;c[i] = p[i];
+&#x3000;&#x3000;&#x3000;}
+&#x3000;&#x3000;&#x3000;c.uber = p;
+&#x3000;&#x3000;&#x3000;return c;
+&#x3000;&#x3000;}
+//In this example
+var Doctor = extendCopy(Chinese);
+Doctor.career = &apos;Doctor&apos;;
+alert(Doctor.nation); // China</pre>
+However, such a copy has a problem. That is, if the property of the parent object is equal to an array or another object, then the child object actually gets only a memory address, not a true copy, so there is a possibility that the parent object will be tampered with.Like:  
+<pre>Chinese.birthPlaces = [&apos;A&apos;,&apos;B&apos;,&apos;C&apos;];
+var Doctor = extendCopy(Chinese);
+Doctor.birthPlaces.push(&apos;D&apos;);
+alert(Doctor.birthPlaces); //A, B, C, D
+alert(Chinese.birthPlaces); //A, B, C, D</pre>
+
+<p>See, now to the Chinese to add a &#x201C;place of birth&#x201D; attribute, its value is an array. Through extendCopy () function, Doctor inherited the Chinese. Then we add a city to the Doctor&#x2019;s Birthplace.Chinese&#x2019;s &#x201C;place of birth&#x201D; has been changed!</p>
+<h3 id="Deep-copy"><a href="#Deep-copy" class="headerlink" title="Deep copy"></a>Deep copy</h3><p>The so-called &#x201C;deep copy&#x201D;, is able to achieve the true sense of the array and object copy. It is not difficult to achieve, as long as the recursive call &#x201C;shallow copy&#x201D; on the list.</p>
+<pre>function deepCopy(p, c) {
+&#x3000;&#x3000;&#x3000;var c = c || {};
+&#x3000;&#x3000;&#x3000;for (var i in p) {
+&#x3000;&#x3000;&#x3000;&#x3000; if (typeof p[i] === &apos;object&apos;) {
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;c[i] = (p[i].constructor === Array) ? [] : {};
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;deepCopy(p[i], c[i]);
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;} else {
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;c[i] = p[i];
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;}
+&#x3000;&#x3000;&#x3000;}
+&#x3000;&#x3000;&#x3000;return c;
+&#x3000;&#x3000;}</pre>
+
+<h2 id="instanceof-Operator"><a href="#instanceof-Operator" class="headerlink" title="instanceof Operator"></a>instanceof Operator</h2><p>The instanceof operator tests whether an object has in its prototype chain the prototype property of a constructor.</p>
+<pre>// defining constructors
+function C(){}
+function D(){}
+var o = new C();
+o instanceof C;// true, because: Object.getPrototypeOf(o) === C.prototype
+o instanceof D;// false, because D.prototype is nowhere in o&apos;s prototype chain
+o instanceof Object; // true, because:C.prototype is instanceof Object 
+C.prototype = {};
+var o2 = new C();
+o2 instanceof C; // true
+o instanceof C; // false, because C.prototype is nowhere in o&apos;s prototype chain anymore
+D.prototype = new C(); // use inheritance 
+var o3 = new D();// Prototype chain: o3-&gt;D-&gt;C-&gt;C.prototype-&gt;null
+o3 instanceof D; // true
+o3 instanceof C; // true</pre>]]></content>
+      
+        <categories>
+            
+            <category> Javascript Basic </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Javascript </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[JSON, JavaScript Object literals and JSON string]]></title>
+      <url>http://tongzhang.me/2016/10/12/JSON-object-and-JSON-string/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>Talk about the difference between JSON, JavaScript Object literals and JSON string including their convertion methods<br><a id="more"></a></p>
+</blockquote>
+<h1 id="JSON-in-Javascript"><a href="#JSON-in-Javascript" class="headerlink" title="JSON in Javascript"></a>JSON in Javascript</h1><p>Data can be stored in many ways, but if it should be stored in a text file and be readable by a computer, it needs to follow some structure. JSON is one of the many formats that define such a structure, as it can describe Objects, Arrays, Strings, Numbers, Booleans.</p>
+<p>Such formats like JSON, XML, CSV are typically language-independent, meaning they can be processed by Java, Python, JavaScript, PHP, you name it. </p>
+<h2 id="The-difference-between-JSON-and-Javascript-Object-Literals"><a href="#The-difference-between-JSON-and-Javascript-Object-Literals" class="headerlink" title="The difference between JSON and Javascript Object Literals"></a>The difference between JSON and Javascript Object Literals</h2><p>JavaScript also provides a way to define/describe data, but the syntax is very specific to JavaScript, the value defined by this syntax is called Javascript Object Literals. </p>
+<p>While JSON is kind of more strict Javascript Object Literals. Let&#x2019;s compare these two concepts:  </p>
+<ol>
+<li>JSON has the following syntactical constraints:  </li>
+</ol>
+<ul>
+<li>Object keys must be strings quoted in &#x201C;&#x201D;.</li>
+<li>The values can be either:string, number, (JSON) object, array ,null, boolean</li>
+<li>Strings must be quoted with &#x201C; and not &#x2018;  </li>
+</ul>
+<ol>
+<li>In JavaScript, object literals can have:</li>
+</ol>
+<ul>
+<li>String literals, number literals or identifier names as keys.</li>
+<li>The values can be any valid JavaScript expression, including function definitions and undefined.  </li>
+</ul>
+<p>Let&#x2019;s look at some examples:</p>
+<pre>// This is JSON string
+var foo = &apos;{ &quot;prop&quot;: &quot;val&quot; }&apos;;
+// This is object literal
+var bar = {prop: &quot;val&quot;, fun: function() {alert(&apos;hh&apos;);}};
+//This is JSON syntax object 
+var hew = {&quot;prop&quot;: foo};</pre>
+
+<h2 id="What-is-JSON-string-and-JSON-Object"><a href="#What-is-JSON-string-and-JSON-Object" class="headerlink" title="What is JSON string and JSON Object"></a>What is JSON string and JSON Object</h2><p>For example, <code>{ &quot;prop&quot;: &quot;val&quot; }</code> could be a JavaScript Object literal or a JSON string, depending in what context it&#x2019;s being used. </p>
+<p>If it&#x2019;s used in a string context (surrounded by single or double quotes, loaded from a text file, etc) it is a JSON string. If it&#x2019;s used in an Object literal context, it&#x2019;s an Object literal.</p>
+<p>For example:</p>
+<pre>// This is a JSON String.
+var foo = &apos;{ &quot;prop&quot;: &quot;val&quot; }&apos;;
+// This is an Object literal.
+var bar = { &quot;prop&quot;: &quot;val&quot; };</pre>
+
+<p>In modern browsers, the JSON object is a native object with the static methods <code>JSON.parse</code> (deserialize a JSON string into an object) and <code>JSON.stringify</code> (serialize an object into a JSON string). When you want to convert to and from JSON, you use these methods.</p>
+<p>For example:</p>
+<pre>// This is a JSON String, like what you&apos;d get back from an AJAX request.
+var my_json_string = &apos;{ &quot;prop&quot;: &quot;val&quot; }&apos;;
+
+// This is how you deserialize that JSON String into an Object.
+var my_obj = JSON.parse( my_json_string );
+
+alert( my_obj.prop == &apos;val&apos; ); // Alerts true, fancy that!
+
+// And this is how you serialize an Object into a JSON String.
+var my_other_json_string = JSON.stringify( my_obj );</pre>
+
+
+<hr>
+<h1 id="JSON-stringify-value-replacer-space"><a href="#JSON-stringify-value-replacer-space" class="headerlink" title="JSON.stringify(value[, replacer [, space]])"></a>JSON.stringify(value[, replacer [, space]])</h1><p>The JSON.stringify () method can serialize any JavaScript value into a JSON string.</p>
+<h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><ol>
+<li>&#x975E;&#x6570;&#x7EC4;&#x5BF9;&#x8C61;&#x7684;&#x5C5E;&#x6027;&#x4E0D;&#x80FD;&#x4FDD;&#x8BC1;&#x4EE5;&#x7279;&#x5B9A;&#x7684;&#x987A;&#x5E8F;&#x51FA;&#x73B0;&#x5728;&#x5E8F;&#x5217;&#x5316;&#x540E;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x4E2D;&#x3002;</li>
+<li>&#x5E03;&#x5C14;&#x503C;&#x3001;&#x6570;&#x5B57;&#x3001;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x5305;&#x88C5;&#x5BF9;&#x8C61;&#x5728;&#x5E8F;&#x5217;&#x5316;&#x8FC7;&#x7A0B;&#x4E2D;&#x4F1A;&#x81EA;&#x52A8;&#x8F6C;&#x6362;&#x6210;&#x5BF9;&#x5E94;&#x7684;&#x539F;&#x59CB;&#x503C;&#x3002;</li>
+<li>undefined&#x3001;&#x4EFB;&#x610F;&#x7684;&#x51FD;&#x6570;&#x4EE5;&#x53CA; symbol &#x503C;&#xFF0C;&#x5728;&#x5E8F;&#x5217;&#x5316;&#x8FC7;&#x7A0B;&#x4E2D;&#x4F1A;&#x88AB;&#x5FFD;&#x7565;&#x6216;&#x8005;&#x88AB;&#x8F6C;&#x6362;&#x6210; null</li>
+</ol>
+<h2 id="Parameter-replacer"><a href="#Parameter-replacer" class="headerlink" title="Parameter replacer"></a>Parameter replacer</h2><ol>
+<li>&#x5982;&#x679C;&#x8BE5;&#x53C2;&#x6570;&#x662F;&#x4E00;&#x4E2A;&#x51FD;&#x6570;&#xFF0C;&#x5219;&#x5728;&#x5E8F;&#x5217;&#x5316;&#x8FC7;&#x7A0B;&#x4E2D;&#xFF0C;&#x88AB;&#x5E8F;&#x5217;&#x5316;&#x7684;&#x503C;&#x7684;&#x6BCF;&#x4E2A;&#x5C5E;&#x6027;&#x90FD;&#x4F1A;&#x7ECF;&#x8FC7;&#x8BE5;&#x51FD;&#x6570;&#x7684;&#x8F6C;&#x6362;&#x548C;&#x5904;&#x7406;&#xFF1B;</li>
+<li>&#x5982;&#x679C;&#x8BE5;&#x53C2;&#x6570;&#x662F;&#x4E00;&#x4E2A;&#x6570;&#x7EC4;&#xFF0C;&#x5219;&#x53EA;&#x6709;&#x5305;&#x542B;&#x5728;&#x8FD9;&#x4E2A;&#x6570;&#x7EC4;&#x4E2D;&#x7684;&#x5C5E;&#x6027;&#x540D;&#x624D;&#x4F1A;&#x88AB;&#x5E8F;&#x5217;&#x5316;&#x5230;&#x6700;&#x7EC8;&#x7684; JSON &#x5B57;&#x7B26;&#x4E32;&#x4E2D;&#xFF1B;&#x5982;&#x679C;&#x8BE5;&#x53C2;&#x6570;&#x4E3A;null&#x6216;&#x8005;&#x672A;&#x63D0;&#x4F9B;&#xFF0C;&#x5219;&#x5BF9;&#x8C61;&#x6240;&#x6709;&#x7684;&#x5C5E;&#x6027;&#x90FD;&#x4F1A;&#x88AB;&#x5E8F;&#x5217;&#x5316;&#xFF1B;<br>Example:<pre>/*When replacer is function: how to show function in JSON string */
+var censor = function(key,value){
+ if(typeof(value) == &apos;function&apos;){
+     return Function.prototype.toString.call(value);
+ }
+ return value;
+}
+var foo = {bar:&quot;new property&quot;,baz:3,getName:function(){return &apos;foo&apos;}};
+console.log(JSON.stringify(foo,censor))
+//Result:&apos;{&quot;bar&quot;:&quot;new property&quot;,&quot;baz&quot;:3,&quot;getName&quot;:&quot;function (){return &apos;foo&apos;}&quot;}&apos;
+/* When replacer is function: how to show undefined in JSON string */
+var censor = function(key,value){
+ if(value === undefined){
+      return &apos;undefined&apos;
+ }
+ return value;
+}
+var foo = {bar:&quot;new property&quot;,baz:3,test:undefined};
+console.log(JSON.stringify(foo,censor))
+//Result: &apos;{&quot;bar&quot;:&quot;new property&quot;,&quot;baz&quot;:3,&quot;test&quot;:&quot;undefined&quot;}&apos;&apos;
+/* When replacer is array or string:  */
+var foo = {a:&quot;1&quot;,b:2,c:true};
+console.log(JSON.stringify(foo,[&apos;a&apos;,&apos;c&apos;]))
+//Result: {&quot;a&quot;:&quot;1&quot;,&quot;c&quot;:true}
+/* When replacer is null:  */
+console.log(JSON.stringify(foo,null))
+//Result: {&quot;a&quot;:&quot;1&quot;,&quot;b&quot;:2,&quot;c&quot;:true}
+/* When replacer is ignored:  */
+console.log(JSON.stringify(foo))
+//Result: {&quot;a&quot;:&quot;1&quot;,&quot;b&quot;:2,&quot;c&quot;:true}</pre>
+
+</li>
+</ol>
+<h2 id="Paremeter-space"><a href="#Paremeter-space" class="headerlink" title="Paremeter space"></a>Paremeter space</h2><ol>
+<li>&#x5982;&#x679C;space&#x53C2;&#x6570;&#x4E3A;String&#x7C7B;&#x578B;&#x7684;&#x60C5;&#x51B5;&#x4E0B;,&#x5219;&#x9ED8;&#x8BA4;&#x53D6;&#x524D;String&#x7684;&#x524D;10&#x4E2A;&#x5B57;&#x7B26;&#x4F5C;&#x4E3A;&#x5206;&#x5272;&#x7B26;</li>
+<li>&#x5982;&#x679C;space&#x53C2;&#x6570;&#x4E3A;Number&#x7C7B;&#x578B;&#x7684;&#x60C5;&#x51B5;&#x4E0B;,&#x5219;&#x8868;&#x793A;space&#x4E2A;&#x7A7A;&#x683C;(space&lt;=10,&#x5927;&#x4E8E;10&#x53D6;10)<br>Example:<pre>//When space is string:
+var foo = {a:&quot;1&quot;,b:2,c:true};
+console.log(JSON.stringify(foo,null,&apos;test&apos;))
+/*
+{
+test&quot;a&quot;: &quot;1&quot;,
+test&quot;b&quot;: 2,
+test&quot;c&quot;: true
+}
+*/
+//When space is number:
+var foo = {a:&quot;1&quot;,b:2,c:true};
+console.log(JSON.stringify(foo,null,4))
+/*
+{
+ &quot;a&quot;: &quot;1&quot;,
+ &quot;b&quot;: 2,
+ &quot;c&quot;: true
+}
+*/</pre>
+
+</li>
+</ol>
+<h2 id="Use-the-JSON-stringify-to-dump-the-object"><a href="#Use-the-JSON-stringify-to-dump-the-object" class="headerlink" title="Use the JSON.stringify to dump the object"></a>Use the JSON.stringify to dump the object</h2><p>In everyday use, we may dump some complex objects, these objects are often nested objects within the object. Directly looks not so intuitive, combined with the above parameters of the replacer and space, we can dump complex objects with JSON.stringify.Example:</p>
+<pre>var censor = function(key,value){
+    if(typeof(value) == &apos;function&apos;){
+         return Function.prototype.toString.call(value)
+    }
+    return value;
+}
+var foo = {bar:&quot;new property&quot;,baz:3,o:{name:&apos;warjiang&apos;,age:23,info:{sex:&apos;male&apos;,getSex:function(){return &apos;sex&apos;;}}}};
+console.log(JSON.stringify(foo,censor,4))</pre>
+
+<hr>
+<h1 id="JSON-parse-text-reviver"><a href="#JSON-parse-text-reviver" class="headerlink" title="JSON.parse(text[, reviver])"></a>JSON.parse(text[, reviver])</h1><p>Resolves a string into a JSON object. During parsing, you can also optionally modify the original parsed value of some properties.</p>
+<h2 id="text"><a href="#text" class="headerlink" title="text"></a>text</h2><p>To parse a JSON string into a JSON object, see the description of the JSON syntax for learning JSON objects.</p>
+<h2 id="reviver-Optional"><a href="#reviver-Optional" class="headerlink" title="reviver Optional"></a>reviver Optional</h2><p>If it is a function, it specifies how the original value will be parsed before returned. Example: </p>
+<pre>var jsonString = &apos;{&quot;bar&quot;:&quot;property&quot;,&quot;baz&quot;:3}&apos;;
+var jsObject = JSON.parse(jsonString);
+console.log(jsObject)   //Object {bar: &quot;property&quot;, baz: 3}</pre>
+
+<hr>
+<h1 id="Obj-toJSON"><a href="#Obj-toJSON" class="headerlink" title="Obj.toJSON()"></a>Obj.toJSON()</h1><ul>
+<li>&#x5982;&#x679C;&#x4E00;&#x4E2A;&#x88AB;&#x5E8F;&#x5217;&#x5316;&#x7684;&#x5BF9;&#x8C61;&#x62E5;&#x6709; toJSON &#x65B9;&#x6CD5;&#xFF0C;&#x90A3;&#x4E48;&#x8BE5; toJSON v&#x65B9;&#x6CD5;&#x5C31;&#x4F1A;&#x8986;&#x76D6;&#x8BE5;&#x5BF9;&#x8C61;&#x9ED8;&#x8BA4;&#x7684;&#x5E8F;&#x5217;&#x5316;&#x884C;&#x4E3A;&#xFF1A;&#x4E0D;&#x662F;&#x90A3;&#x4E2A;&#x5BF9;&#x8C61;&#x88AB;&#x5E8F;&#x5217;&#x5316;&#xFF0C;&#x800C;&#x662F;&#x8C03;&#x7528; toJSON &#x65B9;&#x6CD5;&#x540E;&#x7684;&#x8FD4;&#x56DE;&#x503C;&#x4F1A;&#x88AB;&#x5E8F;&#x5217;&#x5316;</li>
+</ul>
+<p>Example:</p>
+<pre>var obj = {
+    foo: &apos;foo&apos;,
+    toJSON:function(){
+        return &apos;bar&apos;;
+    }
+}
+JSON.stringify(obj);//&apos;&quot;bar&quot;&apos;
+JSON.stringify({x:obj});//&apos;{&quot;x&quot;:&quot;bar&quot;}&apos;</pre>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript Basic </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> JSON </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Javascript type, value and variable]]></title>
+      <url>http://tongzhang.me/2016/09/30/Javascript-type-value-and-variable/</url>
+      <content type="html"><![CDATA[<p>Javascript Basic review Part 3 </p>
+<blockquote>
+<p>Basic knowledge of Javascript&#x2019;s data type, value and variable<br><a id="more"></a></p>
+</blockquote>
+<h1 id="Dynamic-Typing"><a href="#Dynamic-Typing" class="headerlink" title="Dynamic Typing"></a>Dynamic Typing</h1><ul>
+<li>JavaScript is a loosely typed or a dynamic language. That means you don&#x2019;t have to declare the type of a variable ahead of time. The type will get determined automatically while the program is being processed. That also means that you can have the same variable as different types:<pre>var foo = 42;    // foo is now a Number
+var foo = &quot;bar&quot;; // foo is now a String
+var foo = true;  // foo is now a Boolean</pre>
+
+</li>
+</ul>
+<hr>
+<h1 id="Data-Type"><a href="#Data-Type" class="headerlink" title="Data Type"></a>Data Type</h1><h2 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h2><p>Javascript data type is divided into primitive type and reference type.<br>&#x539F;&#x59CB;&#x503C;: &#x5B58;&#x50A8;&#x5728;&#x6808;&#xFF08;stack&#xFF09;&#x4E2D;&#x7684;&#x7B80;&#x5355;&#x6570;&#x636E;&#x6BB5;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#xFF0C;&#x5B83;&#x4EEC;&#x7684;&#x503C;&#x76F4;&#x63A5;&#x5B58;&#x50A8;&#x5728;&#x53D8;&#x91CF;&#x8BBF;&#x95EE;&#x7684;&#x4F4D;&#x7F6E;&#x3002;<br>&#x5F15;&#x7528;&#x503C;: &#x5B58;&#x50A8;&#x5728;&#x5806;&#xFF08;heap&#xFF09;&#x4E2D;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#xFF0C;&#x5B58;&#x50A8;&#x5728;&#x53D8;&#x91CF;&#x5904;&#x7684;&#x503C;&#x662F;&#x4E00;&#x4E2A;&#x6307;&#x9488;&#xFF08;point&#xFF09;&#xFF0C;&#x6307;&#x5411;&#x5B58;&#x50A8;&#x5BF9;&#x8C61;&#x7684;&#x5185;&#x5B58;&#x5904;&#x3002;</p>
+<h2 id="Storage"><a href="#Storage" class="headerlink" title="Storage"></a>Storage</h2><p>&#x5177;&#x4F53;&#x6765;&#x8BF4;: &#x539F;&#x59CB;&#x7C7B;&#x578B;&#x5360;&#x636E;&#x7684;&#x7A7A;&#x95F4;&#x662F;&#x56FA;&#x5B9A;&#x7684;&#xFF0C;&#x6240;&#x4EE5;&#x53EF;&#x5C06;&#x4ED6;&#x4EEC;&#x5B58;&#x50A8;&#x5728;&#x8F83;&#x5C0F;&#x7684;&#x5185;&#x5B58;&#x533A;&#x57DF;&#x2014;&#x2014;&#x6808;&#x4E2D;&#x3002;&#x8FD9;&#x6837;&#x5B58;&#x50A8;&#x4FBF;&#x4E8E;&#x8FC5;&#x901F;&#x67E5;&#x5BFB;&#x53D8;&#x91CF;&#x7684;&#x503C;&#xFF1B;&#x800C;&#x5F15;&#x7528;&#x503C;&#x7684;&#x5B58;&#x50A8;&#x7A7A;&#x95F4;&#x5C06;&#x4ECE;&#x5806;&#x4E2D;&#x5206;&#x914D;&#x3002;&#x7531;&#x4E8E;&#x5F15;&#x7528;&#x503C;&#x7684;&#x5927;&#x5C0F;&#x4F1A;&#x6539;&#x53D8;&#xFF0C;&#x6240;&#x4EE5;&#x4E0D;&#x80FD;&#x628A;&#x5B83;&#x653E;&#x5728;&#x6808;&#x4E2D;&#xFF0C;&#x5426;&#x5219;&#x4F1A;&#x964D;&#x4F4E;&#x53D8;&#x91CF;&#x67E5;&#x5BFB;&#x7684;&#x901F;&#x5EA6;&#x3002;&#x76F8;&#x53CD;&#xFF0C;&#x653E;&#x5728;&#x53D8;&#x91CF;&#x7684;&#x6808;&#x7A7A;&#x95F4;&#x4E2D;&#x7684;&#x503C;&#x662F;&#x8BE5;&#x5BF9;&#x8C61;&#x5B58;&#x50A8;&#x5728;&#x5806;&#x4E2D;&#x7684;&#x5730;&#x5740;&#x3002;</p>
+<h2 id="Comparison-method"><a href="#Comparison-method" class="headerlink" title="Comparison method"></a>Comparison method</h2><ol>
+<li><p>&#x539F;&#x59CB;&#x503C;&#x662F;&#x4E0D;&#x53EF;&#x66F4;&#x6539;&#x7684;&#xFF1A;&#x4EFB;&#x4F55;&#x65B9;&#x6CD5;&#x90FD;&#x65E0;&#x6CD5;&#x66F4;&#x6539;&#xFF08;&#x6216;&#x201C;&#x7A81;&#x53D8;&#x201D;&#xFF09;&#x4E00;&#x4E2A;&#x539F;&#x59CB;&#x503C;&#xFF08;&#x4F60;&#x65E0;&#x6CD5;&#x4FEE;&#x6539;&#x503C;&#x672C;&#x8EAB;&#xFF0C;&#x4F60;&#x53EA;&#x80FD;&#x7ED9;&#x4EE3;&#x8868;&#x5B83;&#x7684;&#x53D8;&#x91CF;&#x91CD;&#x65B0;&#x8D4B;&#x503C;&#xFF0C;&#x5C06;&#x539F;&#x6765;&#x7684;&#x503C;&#x8986;&#x76D6;&#xFF09;&#x3002;&#x539F;&#x59CB;&#x503C;&#x7684;&#x6BD4;&#x8F83;&#x662F;&#x503C;&#x7684;&#x6BD4;&#x8F83;&#xFF1A;&#x53EA;&#x6709;&#x5728;&#x5B83;&#x4EEC;&#x7684;&#x503C;&#x76F8;&#x7B49;&#x65F6;&#x5B83;&#x4EEC;&#x624D;&#x76F8;&#x7B49;&#x3002;</p>
+</li>
+<li><p>&#x5F15;&#x7528;&#x503C;&#x548C;&#x539F;&#x59CB;&#x503C;&#x4E0D;&#x540C;&#xFF0C;&#x9996;&#x5148;&#xFF0C;&#x5B83;&#x4EEC;&#x662F;&#x53EF;&#x53D8;&#x7684;&#x2014;&#x2014;&#x5B83;&#x4EEC;&#x7684;&#x503C;&#x662F;&#x53EF;&#x4FEE;&#x6539;&#x7684;&#x3002;&#x5176;&#x6B21;&#xFF0C;&#x5F15;&#x7528;&#x503C;&#x7684;&#x6BD4;&#x8F83;&#x5E76;&#x975E;&#x503C;&#x7684;&#x6BD4;&#x8F83;&#xFF1A;&#x5373;&#x4F7F;&#x4E24;&#x4E2A;&#x5F15;&#x7528;&#x503C;&#x5305;&#x542B;&#x540C;&#x6837;&#x7684;&#x5C5E;&#x6027;&#x53CA;&#x76F8;&#x540C;&#x7684;&#x503C;&#xFF0C;&#x5B83;&#x4EEC;&#x4E5F;&#x662F;&#x4E0D;&#x76F8;&#x7B49;&#x7684;&#x3002;&#x5404;&#x4E2A;&#x7D22;&#x5F15;&#x5143;&#x7D20;&#x5B8C;&#x5168;&#x76F8;&#x7B49;&#x7684;&#x4E24;&#x4E2A;&#x6570;&#x7EC4;&#x4E5F;&#x4E0D;&#x76F8;&#x7B49;&#xFF1A;</p>
+<pre>var o = {x:1},p = {x:1};//&#x5177;&#x6709;&#x76F8;&#x540C;&#x5C5E;&#x6027;&#x7684;&#x4E24;&#x4E2A;&#x5BF9;&#x8C61;
+o === p;                //=&gt; false&#xFF1A;&#x4E24;&#x4E2A;&#x5355;&#x72EC;&#x7684;&#x5BF9;&#x8C61;&#x4E0D;&#x4E25;&#x683C;&#x76F8;&#x7B49;
+var a = [],b = [];      //&#x4E24;&#x4E2A;&#x5355;&#x72EC;&#x7684;&#x7A7A;&#x6570;&#x7EC4;
+a === b;                //=&gt; false&#xFF1A;&#x4E24;&#x4E2A;&#x5355;&#x72EC;&#x7684;&#x6570;&#x7EC4;&#x4E0D;&#x4E25;&#x683C;&#x76F8;&#x7B49;</pre>
+</li>
+<li><p>&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x503C;&#x90FD;&#x662F;&#x5F15;&#x7528;&#xFF0C;&#x5BF9;&#x8C61;&#x7684;&#x6BD4;&#x8F83;&#x5747;&#x662F;&#x5F15;&#x7528;&#x7684;&#x6BD4;&#x8F83;&#xFF1A;&#x5F53;&#x4E14;&#x4EC5;&#x5F53;&#x5B83;&#x4EEC;&#x5F15;&#x7528;&#x540C;&#x4E00;&#x4E2A;&#x57FA;&#x5BF9;&#x8C61;&#x65F6;&#xFF0C;&#x5B83;&#x4EEC;&#x624D;&#x76F8;&#x7B49;&#x3002;&#x5E76;&#x4E14;&#xFF0C;&#x4FEE;&#x6539;&#x5F15;&#x7528;&#x503C;&#x65F6;&#xFF0C;&#x57FA;&#x5BF9;&#x8C61;&#x4E5F;&#x4F1A;&#x88AB;&#x4FEE;&#x6539;&#xFF1A;<br><pre>var a = []; //&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;&#x5F15;&#x7528;&#x7A7A;&#x6570;&#x7EC4;&#x7684;&#x53D8;&#x91CF;a<br>var b = a;  //&#x53D8;&#x91CF;b&#x5F15;&#x7528;&#x540C;&#x4E00;&#x4E2A;&#x6570;&#x7EC4;<br>b[0] = 1;   //&#x901A;&#x8FC7;&#x53D8;&#x91CF;b&#x6765;&#x4FEE;&#x6539;&#x5F15;&#x7528;&#x7684;&#x6570;&#x7EC4;<br>a[0];       //=&gt; 1&#xFF1A;&#x53D8;&#x91CF;a&#x4E5F;&#x4F1A;&#x88AB;&#x4FEE;&#x6539;<br>a === b;    //=&gt; true&#xFF1A;a&#x548C;b&#x5F15;&#x7528;&#x540C;&#x4E00;&#x4E2A;&#x6570;&#x7EC4;&#xFF0C;&#x56E0;&#x6B64;&#x5B83;&#x4EEC;&#x76F8;&#x540C;</pre><br>a&#x548C;b&#x6307;&#x5411;&#x540C;&#x4E00;&#x4E2A;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#xFF0C;&#x5373;&#x6307;&#x5411;&#x5806;&#x4E2D;&#x540C;&#x4E00;&#x4E2A;&#x5185;&#x5B58;&#x5730;&#x5740;&#xFF0C;&#x6539;&#x53D8;&#x8FD9;&#x4E2A;&#x5730;&#x5740;&#x4E2D;&#x7684;&#x53D8;&#x91CF;&#x6570;&#x503C;&#xFF0C;a&#x548C;b&#x540C;&#x65F6;&#x6539;&#x53D8;&#x3002;&#x9664;&#x975E;&#x7ED9;a&#x6216;&#x8005;b&#x91CD;&#x65B0;&#x8D4B;&#x503C;&#x3002;</p>
+</li>
+</ol>
+<p>4.&#x4F20;&#x9012;&#x53C2;&#x6570;&#xFF1A;<br>&#x539F;&#x59CB;&#x503C;&#x505A;&#x53C2;&#x6570;&#xFF1A;&#x5F53;&#x4F20;&#x9012;&#x53C2;&#x6570;&#x7ED9;&#x51FD;&#x6570;&#x65F6;&#x53C2;&#x6570;&#x53EA;&#x662F;&#x5C06;&#x53C2;&#x6570;&#x590D;&#x5236;&#x4F20;&#x9012;&#x5230;&#x51FD;&#x6570;&#x4F53;&#x5185;&#x51FD;&#x6570;&#x4E2D;&#x4F7F;&#x7528;&#x7684;&#x53EA;&#x662F;&#x5916;&#x56F4;&#x4F5C;&#x7528;&#x57DF;&#x4E2D;num&#x7684;&#x526F;&#x672C;&#x3002;</p>
+<pre>var num = 100;
+function addTen(num){
+return num = num+100;//&#x51FD;&#x6570;&#x4E2D;&#x6539;&#x53D8;&#x4E86;num&#x53D8;&#x91CF;&#x3002;
+}
+alert(addTen(num));//200
+alert(num);//100</pre>
+&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x505A;&#x53C2;&#x6570;&#xFF1A;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x4F20;&#x9012;&#x7ED9;&#x51FD;&#x6570;&#x7684;&#x503C;&#x662F;&#x8FD9;&#x4E2A;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x6307;&#x9488;&#xFF0C;&#x51FD;&#x6570;&#x6839;&#x636E;&#x8FD9;&#x4E2A;&#x6307;&#x9488;&#x6539;&#x53D8;&#x4E86;&#x76F8;&#x5E94;&#x7684;&#x5C5E;&#x6027;&#x3002;
+<pre>var obj = {
+name:&apos;kin&apos;,
+age:&apos;20&apos;
+};
+function changeName(obj){
+return obj.name = &apos;chen&apos;;
+}
+var newName = changeName(obj);
+alert(newName);//chen
+alert(obj.name);//chen</pre>
+
+<hr>
+<h1 id="Primitive-Type"><a href="#Primitive-Type" class="headerlink" title="Primitive Type"></a>Primitive Type</h1><p>ECMAScript has five primitive type, they are Undefined&#x3001;Null&#x3001;Boolean&#x3001;Number and String&#x3002;</p>
+<h2 id="Null-VS-undefined"><a href="#Null-VS-undefined" class="headerlink" title="Null VS undefined"></a>Null VS undefined</h2><ol>
+<li><p>undefined<br>When you declare a variable with var but do not initialize it, the type of the variable is undefined, and its default initialization value is undefined. For variables that are not declared and initialized, they are used directly, so the type of the variable is undefined, but there is no default value for them.</p>
+</li>
+<li><p>Null<br>The default for the null type is null, which, logically, represents an empty object pointer. Undefined type is used to describe the uninitialized variables, while null Type is used to describe the empty object pointer. So, if the variable you&#x2019;re defining is ready to be used to hold the object in the future (that is, a complex data type object), you should initialize the variable to null.</p>
+</li>
+</ol>
+<p>Example of null and undefined: </p>
+<pre>//undefined
+var message;
+alert(&apos;Declared but not intialized&#xFF1A;&apos; +typeof message)//undefined
+alert(&apos;Not declared and intialized&#xFF1A;&apos;+ typeof age)//undefined
+//null
+var car=null;
+alert(&apos;car&apos;s type&#xFF1A;&apos;typeof car)//object</pre>
+
+<blockquote>
+<p>&#x533A;&#x5206;&#xFF0C;&#x5F53;&#x4E00;&#x4E2A;&#x53D8;&#x91CF;&#x58F0;&#x660E;&#x540E;&#xFF0C;&#x672A;&#x521D;&#x59CB;&#x5316;&#xFF0C;&#x5219;&#x8BE5;&#x503C;&#x4E3A;undefined&#xFF0C;&#x5982;&#x679C;&#x8FD9;&#x4E2A;&#x503C;&#x662F;&#x4E3A;&#x4E86;&#x4FDD;&#x5B58;&#x5BF9;&#x8C61;&#xFF0C;&#x5219;&#x4FEE;&#x6539;&#x5176;&#x9ED8;&#x8BA4;&#x521D;&#x59CB;&#x5316;&#x7684;&#x503C;&#xFF0C;&#x6539;&#x4E3A;null&#x3002; &#x6240;&#x4EE5;&#x5F53;&#x68C0;&#x6D4B;&#x5176;&#x7C7B;&#x578B;&#x65F6;&#xFF0C;&#x4F1A;&#x663E;&#x793A;&#x7C7B;&#x578B;&#x4E3A;object&#x3002;</p>
+</blockquote>
+<h2 id="Boolean-Conversion-rules"><a href="#Boolean-Conversion-rules" class="headerlink" title="Boolean Conversion rules"></a>Boolean Conversion rules</h2><p>Bloolean() function&#xFF0C;can transfer other types of value to boolean values&#x3002;</p>
+<table><thead><th align="right">Data Type</th><th align="center">Convert to true</th><th align="left">Convert to false</th></thead><tbody><tr><td align="right">String</td><td align="center">Non-empty string</td><td align="left">&#x201C;&#x201D;</td></tr><tr><td align="right">number</td><td align="center">Non-zero</td><td align="left">0</td>   </tr><tr><td align="right">object</td><td align="center">Any Object</td><td align="left">null</td></tr><tr><td align="right">undefined</td><td align="center">Not applicable</td><td align="left">undefined</td></tr></tbody></table>
+
+<h2 id="Number-Conversion-rules"><a href="#Number-Conversion-rules" class="headerlink" title="Number Conversion rules"></a>Number Conversion rules</h2><ol>
+<li><p>There are three functions that can convert non-numeric values to numeric: Number(), parseInt(), parseFloat(). The first can be used for any data type, the latter two, is dedicated to the string into a value.</p>
+</li>
+<li><p>NaN: that is, non-numeric, is a special value, this value is used to represent a return which should be a number but return a non-numeric value. NaN has two unusual characteristics: any operation involving NaN will return NaN, NaN value is not equal to any value,including itself.</p>
+</li>
+<li><p>isNaN(): this function can determine whether the parameters passed &#x201C;not numerical.&#x201D; Here is the issue of numerical conversion, such as &#x201C;10&#x201D; string can be converted to 10, but &#x201C;blue&#x201D; this string can not be converted to digital, so isNaN ( &#x201C;blue&#x201D;) == true</p>
+</li>
+</ol>
+<h2 id="String-Method"><a href="#String-Method" class="headerlink" title="String Method"></a>String Method</h2><p>Although String is a primitive type, it als has some methods(reason will be explained later). <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String</a>.</p>
+<p>1.Properties<br>String.prototype.constructor<br>  Specifies the function that creates an object&#x2019;s prototype.<br>String.prototype.length<br>  Reflects the length of the string.</p>
+<p>2.Methods </p>
+<h3 id="String-prototype-concat"><a href="#String-prototype-concat" class="headerlink" title="String.prototype.concat()"></a>String.prototype.concat()</h3><p>Combines the text of two strings and returns a new string.</p>
+<h3 id="String-prototype-indexOf"><a href="#String-prototype-indexOf" class="headerlink" title="String.prototype.indexOf()"></a>String.prototype.indexOf()</h3><p>Returns the index within the calling String object of the first occurrence of the specified value, or -1 if not found.</p>
+<h3 id="String-prototype-lastIndexOf"><a href="#String-prototype-lastIndexOf" class="headerlink" title="String.prototype.lastIndexOf()"></a>String.prototype.lastIndexOf()</h3><p>Returns the index within the calling String object of the last occurrence of the specified value, or -1 if not found.</p>
+<h3 id="String-prototype-includes"><a href="#String-prototype-includes" class="headerlink" title="String.prototype.includes()"></a>String.prototype.includes()</h3><p>Determines whether one string may be found within another string.</p>
+<h3 id="stringObject-split-separator-howmany"><a href="#stringObject-split-separator-howmany" class="headerlink" title="stringObject.split(separator,howmany)"></a>stringObject.split(separator,howmany)</h3><p><b>separator</b>  &#x5FC5;&#x9700;&#x3002;&#x5B57;&#x7B26;&#x4E32;&#x6216;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F;&#xFF0C;&#x4ECE;&#x8BE5;&#x53C2;&#x6570;&#x6307;&#x5B9A;&#x7684;&#x5730;&#x65B9;&#x5206;&#x5272; stringObject&#x3002;<br><b>howmany</b>    &#x53EF;&#x9009;&#x3002;&#x8BE5;&#x53C2;&#x6570;&#x53EF;&#x6307;&#x5B9A;&#x8FD4;&#x56DE;&#x7684;&#x6570;&#x7EC4;&#x7684;&#x6700;&#x5927;&#x957F;&#x5EA6;&#x3002;</p>
+<h3 id="StringObject-prototype-slice-start-end"><a href="#StringObject-prototype-slice-start-end" class="headerlink" title="StringObject.prototype.slice(start,end)"></a>StringObject.prototype.slice(start,end)</h3><p><b>start</b> &#x8981;&#x62BD;&#x53D6;&#x7684;&#x7247;&#x65AD;&#x7684;&#x8D77;&#x59CB;&#x4E0B;&#x6807;&#x3002;&#x5982;&#x679C;&#x662F;&#x8D1F;&#x6570;&#xFF0C;&#x5219;&#x8BE5;&#x53C2;&#x6570;&#x89C4;&#x5B9A;&#x7684;&#x662F;&#x4ECE;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x5C3E;&#x90E8;&#x5F00;&#x59CB;&#x7B97;&#x8D77;&#x7684;&#x4F4D;&#x7F6E;&#x3002;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#xFF0C;-1 &#x6307;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x6700;&#x540E;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#xFF0C;-2 &#x6307;&#x5012;&#x6570;&#x7B2C;&#x4E8C;&#x4E2A;&#x5B57;&#x7B26;&#xFF0C;&#x4EE5;&#x6B64;&#x7C7B;&#x63A8;&#x3002;<br><b>end</b> &#x7D27;&#x63A5;&#x7740;&#x8981;&#x62BD;&#x53D6;&#x7684;&#x7247;&#x6BB5;&#x7684;&#x7ED3;&#x5C3E;&#x7684;&#x4E0B;&#x6807;&#x3002;&#x82E5;&#x672A;&#x6307;&#x5B9A;&#x6B64;&#x53C2;&#x6570;&#xFF0C;&#x5219;&#x8981;&#x63D0;&#x53D6;&#x7684;&#x5B50;&#x4E32;&#x5305;&#x62EC; start &#x5230;&#x539F;&#x5B57;&#x7B26;&#x4E32;&#x7ED3;&#x5C3E;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x3002;&#x5982;&#x679C;&#x8BE5;&#x53C2;&#x6570;&#x662F;&#x8D1F;&#x6570;&#xFF0C;&#x90A3;&#x4E48;&#x5B83;&#x89C4;&#x5B9A;&#x7684;&#x662F;&#x4ECE;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x5C3E;&#x90E8;&#x5F00;&#x59CB;&#x7B97;&#x8D77;&#x7684;&#x4F4D;&#x7F6E;&#x3002;</p>
+<h3 id="String-prototype-substr-start-length"><a href="#String-prototype-substr-start-length" class="headerlink" title="String.prototype.substr(start, (length))"></a>String.prototype.substr(start, (length))</h3><p>Returns the characters in a string beginning at the specified location through the specified number of characters.</p>
+<h3 id="String-prototype-substring-start-end"><a href="#String-prototype-substring-start-end" class="headerlink" title="String.prototype.substring(start, end)"></a>String.prototype.substring(start, end)</h3><p>Returns the characters in a string between two indexes into the string.</p>
+<h1 id="Reference-Type"><a href="#Reference-Type" class="headerlink" title="Reference Type"></a>Reference Type</h1><p>Reference Type value refers to Object. In computer science, an object is a value in memory which is possibly referenced by an identifier.</p>
+<h2 id="Object"><a href="#Object" class="headerlink" title="Object"></a>Object</h2><ol>
+<li><p>The Object constructor creates an object wrapper.</p>
+<pre>//Object initialiser or literal
+{ [ nameValuePair1[, nameValuePair2[, ...nameValuePairN] ] ] }
+// Called as a constructor
+new Object([value])</pre>
+</li>
+<li><p>Properties of the Object constructor<br><b>Object.length</b>: Has a value of 1.<br><b>Object.prototype</b>: Allows the addition of properties to all objects of type Object.</p>
+</li>
+</ol>
+<h2 id="Primitive-values&#x2019;-corresponding-objects"><a href="#Primitive-values&#x2019;-corresponding-objects" class="headerlink" title="Primitive values&#x2019; corresponding objects"></a>Primitive values&#x2019; corresponding objects</h2><p>They are String, Number, Boolean. So as I methioned before, why we need String, Number, Boolean while we already have the primitive values of these?</p>
+<p>As we all know, objects can have there own propertities and methods while primitive type cannot. So what if we want to use methods to manipulate these three types of value? Javascript create three special reference types: String, Number, and Boolean allow us to manipulate the corresponding primitive types. Originally, primitive vvalue have no method, but you want to use methods, the system will transfer corresponding objects&#x2019;s methods.<br>For example:</p>
+<pre>var  realMessage=&quot;Said I love you but I lied&quot;; 
+var  myMessage=realMessage.substring(5,15); 
+console.log(myMessage); //&quot;I love you&quot;</pre> 
+In fact the process is:
+<pre>var _realMessage=new String(&quot;Said I love you but I lied&quot;); 
+var myMessage=_realMessage.substring(5,15);
+realMessgae=null; //Destroyed after used</pre>
+
+<h2 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h2><p>The JavaScript Array object is a global object that is used in the construction of arrays; which are high-level, list-like objects.</p>
+<p>Arrays are list-like objects whose prototype has methods to perform traversal and mutation operations. Neither the length of a JavaScript array nor the types of its elements are fixed. Since an array&#x2019;s length can change at any time, and data can be stored at non-contiguous locations in the array, JavaScript arrays are not guaranteed to be dense; this depends on how the programmer chooses to use them.</p>
+<ol>
+<li><p>Properties:<br>Array.length: The Array constructor&#x2019;s length property whose value is 1.<br>Array.prototype: Allows the addition of properties to all array objects.  </p>
+</li>
+<li><p>Methods: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array</a></p>
+</li>
+</ol>
+<h2 id="Math-Map-Date"><a href="#Math-Map-Date" class="headerlink" title="Math, Map, Date"></a>Math, Map, Date</h2><h3 id="Math"><a href="#Math" class="headerlink" title="Math"></a>Math</h3><p>Math is a built-in object that has properties and methods for mathematical constants and functions rather than a function object. All properties and methods of Math are static. Example:<br>You refer to the constant pi as Math.PI and you call the sine function as Math.sin(x), where x is the method&#x2019;s argument. </p>
+<h3 id="Date"><a href="#Date" class="headerlink" title="Date"></a>Date</h3><p>Creates a JavaScript Date instance that represents a single moment in time. Date objects are based on a time value that is the number of milliseconds since 1 January, 1970 UTC.</p>
+<ol>
+<li>Syntax<br>new Date();<br>new Date(value);<br>new Date(dateString);<br>new Date(year, month[, day[, hour[, minutes[, seconds[, milliseconds]]]]]);</li>
+<li>Usage<br>JavaScript Date objects can only be instantiated by calling JavaScript Date as a constructor: calling it as a regular function (i.e. without the new operator) will return <b>a string rather than a Date object</b></li>
+<li>Date.prototype Methods<br>Document: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date</a></li>
+</ol>
+<h3 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h3><ol>
+<li>The Map object is a simple key/value map. Any value (both objects and primitive values) may be used as either a key or a value.</li>
+<li>Exapmle:<pre>var myMap = new Map();
+var keyString = &quot;a string&quot;,
+ keyObj = {},
+ keyFunc = function () {};
+// setting the values
+myMap.set(keyString, &quot;value associated with &apos;a string&apos;&quot;);
+myMap.set(keyObj, &quot;value associated with keyObj&quot;);
+myMap.set(keyFunc, &quot;value associated with keyFunc&quot;);
+myMap.size; // 3</pre>
+
+</li>
+</ol>
+<h2 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h2><p>JSON is a syntax for serializing objects, arrays, values, strings, booleans, and nulls. It is based on JavaScript syntax, but there are differences: some JavaScript values are not JSON, and some JSON is not a JavaScript value.</p>
+<blockquote>
+<p><b>Details see the next blog.</b></p>
+</blockquote>
+<hr>
+<h1 id="Type-of-Operator"><a href="#Type-of-Operator" class="headerlink" title="Type of Operator"></a>Type of Operator</h1><p>The typeof operator returns a string indicating the type of the unevaluated operand.</p>
+<table><thead><th align="right">Type</th><th align="left">Result</th></thead><tbody><tr><td align="right">Undefined</td><td align="left">&#x201C;undefined&#x201D;</td></tr><tr><td align="right">Null</td><td align="left">&#x201C;object&#x201D;</td></tr><tr><td align="right">Boolean</td><td align="left">&#x201C;boolean&#x201D;</td></tr><tr><td align="right">String</td><td align="left">&#x201C;string&#x201D;</td></tr><tr><td align="right">Number</td><td align="left">&#x201C;number&#x201D;</td></tr><tr><td align="right">Symbol</td><td align="left">&#x201C;symbol&#x201D;</td>   </tr><tr><td align="right">Host object</td><td align="left">Implementation-dependent</td></tr><tr><td align="right">Function object</td><td align="left">&#x201C;function&#x201D;</td></tr><tr><td align="right">Any other object</td><td align="left">&#x201C;object&#x201D;</td></tr></tbody></table>
+
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript Basic </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Javascript </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[The JavaScript Event Loop]]></title>
+      <url>http://tongzhang.me/2016/09/17/The-JavaScript-Event-Loop/</url>
+      <content type="html"><![CDATA[<p>Javascript Basic review Part 2 </p>
+<blockquote>
+<p>Basic understanding of Javascript&#x2019;s event-driven interaction model<br><a id="more"></a></p>
+</blockquote>
+<h1 id="Single-thread-Javascript"><a href="#Single-thread-Javascript" class="headerlink" title="Single-thread Javascript"></a>Single-thread Javascript</h1><p>A major feature of JavaScript language is single-threaded, that is, the same time can only do one thing. So, why JavaScript can not have multiple threads?</p>
+<p>As a browser scripting language, the main purpose of JavaScript is to interact with the user and manipulate the DOM. This determines that it can only be single-threaded, otherwise it will bring very complex synchronization issues. </p>
+<p>For example, suppose that JavaScript has two threads at the same time, one thread  add content to a DOM node, another thread delete the node, then the browser should obey which thread? Therefore, in order to avoid complexity, JavaScript is a single thread language from birth, which has become the core features of the language.</p>
+<hr>
+<h1 id="Task-Queue"><a href="#Task-Queue" class="headerlink" title="Task Queue"></a>Task Queue</h1><p>Single-threaded means that all tasks need to queue up, before the end of a task before the implementation of the latter task. If the previous task takes a long time, the latter task will have to wait.</p>
+<p>Queue up sometime cause time wasting, like Ajax operations to read data from the network takes a lot of time, but the next task have to wait for such long time. It&#x2019;s obviously unreasonable, so JavaScript language designers realize that when the main thread can completely ignore IO devices, hanging on the task, and execute the next task first. Wait until the IO device returns the results, javascript will continue executing the hanged task.</p>
+<p>Thus, all tasks can be divided into two kinds, one is synchronous task, the other is asynchronous task. Synchronous task refers to the task in the main thread on the queue, only the completion of the previous task means performing the latter task; asynchronous task does not enter the main thread, but enter the &#x201C;task queue&#x201D;. Only when the &#x201C;task queue&#x201D; informs the main thread that an asynchronous task can be executed, the task will enter the main thread execution.</p>
+<hr>
+<h1 id="Non-blocking-I-O"><a href="#Non-blocking-I-O" class="headerlink" title="Non-blocking I/O"></a>Non-blocking I/O</h1><p>In JavaScript, almost all I/O is non-blocking. This includes HTTP requests, database operations and disk reads and writes; the single thread of execution asks the runtime to perform an operation, providing a callback function and then moves on to do something else. When the operation has been completed, a message is enqueued along with the provided callback function. At some point in the future, the message is dequeued and the callback fired.</p>
+<hr>
+<h1 id="Event-loop"><a href="#Event-loop" class="headerlink" title="Event loop"></a>Event loop</h1><p>JavaScript runtimes contain a task queue which stores a list of messages to be processed and their associated callback functions. These messages are queued in response to external events (such as a mouse being clicked or receiving the response to an HTTP request) given a callback function has been provided. If, for example a user were to click a button and no callback function was provided &#x2013; no message would have been enqueued:<br><img src="/2016/09/17/The-JavaScript-Event-Loop/eventLoop.png" style="text-align: center;
+  margin: 0 auto;" title="Event Loop"></p>
+<p>The main thread take tasks from the &#x201C;task queue&#x201D;, this process is a cycle of continuous, so the whole of this operating mechanism is called Event Loop. As long as the execution stack is empty, the main thread will read from the &#x201C;task queue&#x201D;, implement the callback function of these messages one by one. </p>
+<blockquote>
+<p>The code in the execution stack (the synchronization task) is always executed before the &#x201C;task queue&#x201D; (asynchronous task) is read.</p>
+</blockquote>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript Basic </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Javascript </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Explore Javascript asynchronous programming]]></title>
+      <url>http://tongzhang.me/2016/09/05/Explore%20Javascript%20asynchronous%20programming/</url>
+      <content type="html"><![CDATA[<p>Javascript Basic review Part 1  </p>
+<blockquote>
+<p>Notes about the realizing asynchronous with Promise<br><a id="more"></a></p>
+</blockquote>
+<ul>
+<li>The current single-page web application development involves a large number of asynchronous operations.</li>
+<li>You can use backbone, angular, knockout and other framework to help you, but the asynchronous programming problem is still inevitable. With the rise of node, asynchronous programming has become a very hot topic.</li>
+</ul>
+<h1 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h1><ul>
+<li>Promise is introduced into ES6.  It is a commitment, which means after asynchronous completion, it will give an external result (success or failure), and promise that the results will no longer change. In other words, a promise represents the eventual value returned from the single completion of an operation. </li>
+</ul>
+<h2 id="States"><a href="#States" class="headerlink" title="States"></a>States</h2><blockquote>
+<p>pending: initial state, not fulfilled or rejected.<br>fulfilled: meaning that the operation completed successfully.<br>rejected: meaning that the operation failed</p>
+</blockquote>
+<ul>
+<li>There are only two transitions (pending-&gt; fulfilled, pending-&gt; rejected) in the three states, and the transition of the state can only occur once.</li>
+</ul>
+<h2 id="Promise-prototype-then-onFulfilled-onRejected"><a href="#Promise-prototype-then-onFulfilled-onRejected" class="headerlink" title="Promise.prototype.then(onFulfilled, onRejected)"></a>Promise.prototype.then(onFulfilled, onRejected)</h2><ul>
+<li>Appends fulfillment and rejection handlers to the promise, and returns <b>a new promise</b> resolving to the return value of the called handler, or to its original settled value if the promise was not handled. This enables of serial operation of multiple asynchronous operations.</li>
+</ul>
+<h2 id="Promise-prototype-catch-onRejected"><a href="#Promise-prototype-catch-onRejected" class="headerlink" title="Promise.prototype.catch(onRejected)"></a>Promise.prototype.catch(onRejected)</h2><ul>
+<li>Appends a rejection handler callback to the promise, and returns a new promise resolving to the return value of the callback if it is called, or to its original fulfillment value if the promise is instead fulfilled.</li>
+</ul>
+<h2 id="Promise-all-iterable"><a href="#Promise-all-iterable" class="headerlink" title="Promise.all(iterable)"></a>Promise.all(iterable)</h2><ul>
+<li>Promise.all passes an array of values from all the promises in the iterable object that it was passed. If something passed in the iterable array is not a promise, it&#x2019;s converted to one by Promise.resolve. </li>
+</ul>
+<blockquote>
+<pre><code>var p1 = Promise.resolve(3);
+var p2 = 1337;
+var p3 = new Promise((resolve, reject) =&gt; {
+  setTimeout(resolve, 100, &quot;foo&quot;);
+}); 
+Promise.all([p1, p2, p3]).then(values =&gt; { 
+  console.log(values); // [3, 1337, &quot;foo&quot;] 
+});</code></pre>
+
+</blockquote>
+<h2 id="Steps-with-Promise"><a href="#Steps-with-Promise" class="headerlink" title="Steps with Promise"></a>Steps with Promise</h2><blockquote>
+<ol>
+<li><p>Use the new Promise method to create a promise object</p>
+</li>
+<li><p>Use .when or .catch to add a handler for the promise object</p>
+</li>
+</ol>
+</blockquote>
+<p><img src="/2016/09/05/Explore Javascript asynchronous programming/promise.jpg" style="text-align: center; margin: 0 auto;" title="Promise"></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript Basic </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Javascript </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Angular 2.0 Architecture]]></title>
+      <url>http://tongzhang.me/2016/08/24/Start%20learning%20Angular.js/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>Notes about the architecture overview of Angular 2 framework<br><a id="more"></a></p>
+</blockquote>
+<h1 id="Angular-1-x-vs-Angular-2"><a href="#Angular-1-x-vs-Angular-2" class="headerlink" title="Angular 1.x vs Angular 2"></a>Angular 1.x vs Angular 2</h1><h2 id="Component-based-UI"><a href="#Component-based-UI" class="headerlink" title="Component-based UI"></a>Component-based UI</h2><ul>
+<li>The biggest difference between Angular 1.x and Angular 2 is that controllers and directives blur into the new Angular 2 Component. This means that in Angular 2 there are no controllers and no directives. Instead, a component has a selector which corresponds to the html tag and a @View to specify an HTML template for the component to populate.</li>
+</ul>
+<h2 id="No-more-scope"><a href="#No-more-scope" class="headerlink" title="No more $scope"></a>No more $scope</h2><ul>
+<li>Angular 2 kills <code>$scope</code> off, as use components to deal with attributes.</li>
+</ul>
+<blockquote>
+<p>An angular 2 application built by me:<br> <a href="https://github.com/TongZhangzt/MEAN-Angular2-TaskList" target="_blank" rel="noopener">https://github.com/TongZhangzt/MEAN-Angular2-TaskList</a></p>
+</blockquote>
+<h1 id="Angular-2-Architecture"><a href="#Angular-2-Architecture" class="headerlink" title="Angular 2 Architecture"></a>Angular 2 Architecture</h1><ul>
+<li>Angular 2 applications is composed of HTML templates with Angularized markup. Then we write component classes to manage those templates and add application logic in services and finally boxing components and services in modules. So the main architecture of Angular 2 is composed of:</li>
+</ul>
+<ol>
+<li>Modules</li>
+<li>Components</li>
+<li>Templates</li>
+<li>Directives</li>
+<li>Data binding</li>
+<li>Service<br><img src="/2016/08/24/Start learning Angular.js/structure.png" style="text-align: center;
+margin: 0 auto;" title="Angular2 Structure"></li>
+</ol>
+<h2 id="Modules"><a href="#Modules" class="headerlink" title="Modules"></a>Modules</h2><p>Module is a container, which contains components and services. Angular has its own Modularity system which is called NgModules. </p>
+<p>Every Angular app has at least root module all called <b>AppModule</b>. It is the basic module of a Angular app and will be boostraped by <b>main.ts</b> to launch the application. The basic properties:  </p>
+<ol>
+<li><b>declarations</b>: Components, directives belong to this module</li>
+<li><b>exports</b>: Subset of declarations, can be used in other modules when imported</li>
+<li><b>imports</b>: Import other modules</li>
+<li><b>providers</b>: Creator of services</li>
+<li><b>boostrap</b>: Main application view, host other app views.(Only AppModule has)</li>
+</ol>
+<p>Example of AppModule:</p>
+<pre>import { NgModule } from &apos;@angular/core&apos;;
+import { BrowserModule } from &apos;@angular/platform-browser&apos;;
+@NgModule({
+  imports:      [ BrowserModule ],
+  providers:    [ Logger ],
+  declarations: [ AppComponent ],
+  exports:      [ AppComponent ],
+  bootstrap:    [ AppComponent ]
+})
+export class AppModule { }</pre>
+
+<h2 id="Components"><a href="#Components" class="headerlink" title="Components"></a>Components</h2><ul>
+<li>As mentioned earlier, Angular 2 combines controllers and directives into Component. Main attributes of Component:</li>
+</ul>
+<ol>
+<li><b>moduleId</b>: Sets the base for module-relative loading of the templateUrl </li>
+<li><b>Selector</b>: CSS selector tells where to insert an instance of this component</li>
+<li><b>template/templateUrl</b>: Html Template of the view  </li>
+<li><b>providers</b>: Array of dependency injection providers for services</li>
+<li><b>class</b>: Class defines application logic and interacts with the view through an API of properties and methods.</li>
+</ol>
+<p>Example of Component:<br><pre>@Component({<br>  moduleId: module.id,<br>  selector:    &#x2018;hero-list&#x2019;,<br>  templateUrl: &#x2018;hero-list.component.html&#x2019;,<br>  providers:  [ HeroService ]<br>})<br>export class HeroListComponent implements OnInit {<br>  heroes: Hero[];<br>  selectedHero: Hero;<br>  constructor(private service: HeroService) { }<br>  ngOnInit() {<br>    this.heroes = this.service.getHeroes();<br>  }<br>  selectHero(hero: Hero) { this.selectedHero = hero; }<br>}</pre></p>
+<h2 id="Templates"><a href="#Templates" class="headerlink" title="Templates"></a>Templates</h2><ul>
+<li>A template is a form of HTML that tells Angular how to render the component. Angular has its own html template engine composed of typical HTML elements and Angular&#x2019;s template syntax, like *ngFor, (click), [hero]. Template can have child templates which is defined by selector by component.</li>
+</ul>
+<h2 id="Directives"><a href="#Directives" class="headerlink" title="Directives"></a>Directives</h2><ul>
+<li>When Angular renders templates, it transforms the DOM according to the instructions given by directives. There are two kinds of directives:</li>
+</ul>
+<ol>
+<li>Structural directives<br>Structural directives alter layout by adding, removing, and replacing elements in DOM. Example:<br><code>&lt;li <em>ngFor=&#x201D;let hero of heroes&#x201D;&gt; &lt;/li&gt;<br>&lt;hero-detail </em>ngIf=&#x201D;selectedHero&#x201D;&gt; &lt;/hero-detail&gt;</code></li>
+<li>Attribute directives<br>Attribute directives alter the appearance or behavior of an existing element just like regular HTML attributes.Example:<br><code>&lt;input [(ngModel)]=&#x201D;hero.name&#x201D;&gt;</code></li>
+</ol>
+<h2 id="Data-binding"><a href="#Data-binding" class="headerlink" title="Data binding"></a>Data binding</h2><ul>
+<li>Data binding is coordinating parts of a template with parts of component. Four ways of data-binding in Angular:</li>
+</ul>
+<ol>
+<li><p>Interpolation<br>Insert value in component to the template text elements.</p>
+</li>
+<li><p>Property binding<br>Insert value in component to the template attribute values or pass values from parent component to child component, like:<br><code>&lt;hero-detail [hero]=&#x201D;selectedHero&#x201D;&gt; &lt;/hero-detail&gt;</code></p>
+</li>
+<li><p>Event binding<br>Call a function in component, like:<br><code>&lt;li (click)=&#x201D;selectHero(hero)&#x201D;&gt; &lt;/li&gt;</code></p>
+</li>
+<li><p>Two-way data binding<br>Two-way data binding is an important fourth form that combines property and event binding in a single notation, using the ngModel directive.<br><code>&lt;input [(ngModel)]=&#x201D;hero.name&#x201D;&gt;</code></p>
+</li>
+</ol>
+<h2 id="Services"><a href="#Services" class="headerlink" title="Services"></a>Services</h2><p>Component classes should be lean. They don&#x2019;t fetch data from the server, validate user input, or log directly to the console. So they delegate such tasks to services. Example:<br><pre>@Injectable()<br>export class TaskService{<br>    constructor(private http:Http){<br>        console.log(&#x2018;Task Service Initialized&#x2026;&#x2019;);<br>    }<br>    getTasks(){<br>        return this.http.get(&#x2018;/api/tasks&#x2019;)<br>            .map(res =&gt; res.json());<br>    }</pre></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript Framework </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> AngularJS </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Sass Study Notes]]></title>
+      <url>http://tongzhang.me/2016/08/13/Sass%20Study%20Notes/</url>
+      <content type="html"><![CDATA[<p>  Sass is an extension of CSS, adding nested rules, variables, mixins, selector inheritance, and more.<br><a id="more"></a></p>
+<h2 id="Origin-of-Sass"><a href="#Origin-of-Sass" class="headerlink" title="Origin of Sass"></a>Origin of Sass</h2><ul>
+<li>As we all know, CSS it is not a programming language. You can use it to develop Web page style, but can not use it for programming. But stylesheets are getting larger, more complex, and harder to maintain. Naturally, some people began to join the programming elements for the CSS, which is called &#x201C;CSS preprocessor&#x201D;. Its basic idea is to use a special programming language for web page style design, and then compiled it into a normal CSS file.</li>
+</ul>
+<p>Sass (the preprocessor) allows two different syntaxes:<b>Sass</b> and <b>SCSS</b>. </p>
+<blockquote>
+<p>SCSS is more css, so I will use SCSS in the following code.  </p>
+</blockquote>
+<h2 id="Variables"><a href="#Variables" class="headerlink" title="Variables"></a>Variables</h2><p>Sass uses the <b>$</b> symbol to make something a variable. Here&#x2019;s an example:</p>
+<pre><code>$font-stack: Helvetica, sans-serif
+$primary-color: #333
+body
+  font: 100% $font-stack
+  color: $primary-color</code></pre>
+If you want to use variables in string:
+<pre><code>$side: left
+.rounded {
+border-#{$side}-radius: 5px;
+}</code></pre>
+
+<h2 id="Nesting"><a href="#Nesting" class="headerlink" title="Nesting"></a>Nesting</h2><ul>
+<li>Sass will let you nest your CSS selectors in a way that follows the same visual hierarchy of your HTML. In selector nesting, you can use &amp; to represent the parent element:<pre><code>a{
+  &amp;:hover {
+    color:red;
+  }
+}</code></pre>
+
+</li>
+</ul>
+<h2 id="Code-reuse"><a href="#Code-reuse" class="headerlink" title="Code reuse"></a>Code reuse</h2><ul>
+<li>One of the biggest advantages of Sass is that in Sass it is more convenient to reuse and manage your code and make the style code more concise.</li>
+</ul>
+<h3 id="Extend"><a href="#Extend" class="headerlink" title="Extend"></a>Extend</h3><p>Using <b>@extend</b> lets you share a set of CSS properties from one selector to another.</p>
+<pre><code>.message {
+  border: 1px solid #ccc;
+  padding: 10px;
+  color: #333;
+}
+.success {
+  @extend .message;
+  border-color: green;
+}</code></pre>
+
+<h3 id="Mixins"><a href="#Mixins" class="headerlink" title="Mixins"></a>Mixins</h3><ul>
+<li>A mixin lets you make groups of CSS declarations that you want to reuse throughout your site. </li>
+</ul>
+<ol>
+<li>You can even pass in parameters to make your mixin more flexible. </li>
+<li>You can also add default value after the paramters</li>
+<li>You can use &#x201C;&#x2026;&#x201D; after the parameters to allow more parameters when use use this Mixin.<pre><code>@mixin border-radius($radius:20px) {
+-webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+   -ms-border-radius: $radius;
+       border-radius: $radius;
+}
+.box { @include border-radius(10px); }</code></pre>
+
+</li>
+</ol>
+<h3 id="Import"><a href="#Import" class="headerlink" title="Import"></a>Import</h3><ul>
+<li>Sass builds on top of the current CSS <b>@import</b> but instead of requiring an HTTP request, Sass will take the file that you want to import and combine it with the file you&#x2019;re importing into so you can serve a single CSS file to the web browser.<pre><code>@import &quot;path/filename&quot;;</code></pre>
+
+</li>
+</ul>
+<h2 id="Operators-and-Functions"><a href="#Operators-and-Functions" class="headerlink" title="Operators and Functions"></a>Operators and Functions</h2><ul>
+<li>Sass has a handful of standard math operators like +, -, *, /, and % for us to calculate the value of the attributes.<br>Sass also allow us to use functions like if/else, loop and self-defined function.<h3 id="If-else"><a href="#If-else" class="headerlink" title="If/else"></a>If/else</h3><pre><code>@if lightness($color) &gt; 40% {
+&#x3000;&#x3000;&#x3000;&#x3000;background-color: #000;
+&#x3000;&#x3000;} @else {
+&#x3000;&#x3000;&#x3000;&#x3000;background-color: #fff;
+&#x3000;&#x3000;}</code></pre>
+
+</li>
+</ul>
+<h3 id="Loop-statement"><a href="#Loop-statement" class="headerlink" title="Loop statement"></a>Loop statement</h3><ol>
+<li>Use For loop:<pre><code>@for $i from 1 to 5 {
+&#x3000;&#x3000;&#x3000;&#x3000;.border-#{$i} {
+&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;border: #{$i}px solid red;
+&#x3000;&#x3000;&#x3000;&#x3000;}
+&#x3000;&#x3000;}</code></pre></li>
+<li>Use While loop:<pre><code>$i: 2;
+&#x3000;&#x3000;@while $i &gt; 0 {
+&#x3000;&#x3000;&#x3000;&#x3000;.item-#{$i} { height: 2em * $i; }
+&#x3000;&#x3000;&#x3000;&#x3000;$i: $i - 5;
+&#x3000;&#x3000;}</code></pre>
+
+</li>
+</ol>
+<h3 id="Self-defined-function"><a href="#Self-defined-function" class="headerlink" title="Self-defined function"></a>Self-defined function</h3><pre><code>@function double($n) {
+&#x3000;&#x3000;&#x3000;@return $n * 2;
+}
+#sidebar {
+&#x3000;&#x3000;&#x3000;width: double(5px);
+}</code></pre>]]></content>
+      
+        <categories>
+            
+            <category> Style Sheet </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Sass </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Study Flexbox Layout]]></title>
+      <url>http://tongzhang.me/2016/08/02/Flex%20Box%20Style/</url>
+      <content type="html"><![CDATA[<p>  Flex Box module provides a more efficient way to lay out, align and distribute space among different size of containers<br><a id="more"></a></p>
+<h2 id="Basic-concepts"><a href="#Basic-concepts" class="headerlink" title="Basic concepts"></a>Basic concepts</h2><h3 id="Container"><a href="#Container" class="headerlink" title="Container"></a>Container</h3><p>The flex box, can be inline element or block element;</p>
+<h3 id="Items"><a href="#Items" class="headerlink" title="Items"></a>Items</h3><p>Inner elements in the flex box;</p>
+<h3 id="Main-axis"><a href="#Main-axis" class="headerlink" title="Main axis"></a>Main axis</h3><p>The main axis of a flex container is the primary axis along which flex items are laid out. Beware, it is not necessarily horizontal;</p>
+<h3 id="Main-start-main-end"><a href="#Main-start-main-end" class="headerlink" title="Main-start | main-end"></a>Main-start | main-end</h3><p>The flex items are placed within the container starting from main-start and going to main-end.</p>
+<h3 id="Cross-start-cross-end"><a href="#Cross-start-cross-end" class="headerlink" title="Cross-start | cross-end"></a>Cross-start | cross-end</h3><p>Flex lines are filled with items and placed into the container starting on the cross-start side of the flex container and going toward the cross-end side.</p>
+<h2 id="Six-main-attributes-of-flex-container"><a href="#Six-main-attributes-of-flex-container" class="headerlink" title="Six main attributes of flex container"></a>Six main attributes of flex container</h2><h3 id="Flex-direction"><a href="#Flex-direction" class="headerlink" title="Flex-direction"></a>Flex-direction</h3><p>   This establishes the main-axis, thus defining the direction flex items are placed in the flex container. Values:<br>   <pre><code>row (default): left to right in ltr; right to left in rtl<br>row-reverse: right to left in ltr; left to right in rtl<br>column: same as row but top to bottom<br>column-reverse: same as row-reverse but bottom to top</code></pre></p>
+<h3 id="Flex-wrap"><a href="#Flex-wrap" class="headerlink" title="Flex-wrap"></a>Flex-wrap</h3><p>   The items can be decided to wrap in one/several lines as needed with this property. Values:<br>   <pre><code>nowrap (default): single-line / left to right in ltr; right to left in rtl<br>wrap: multi-line / left to right in ltr; right to left in rtl<br>wrap-reverse: multi-line / right to left in ltr; left to right in rtl</code></pre></p>
+<h3 id="Flex-flow"><a href="#Flex-flow" class="headerlink" title="Flex-flow"></a>Flex-flow</h3><p>   This is a shorthand flex-direction and flex-wrap properties.</p>
+<h3 id="Justify-content"><a href="#Justify-content" class="headerlink" title="Justify-content"></a>Justify-content</h3><p>   This defines the alignment along the main axis to help distribute extra free space left over. Values:<br>   <pre><code>flex-start (default): items are packed toward the start line<br>flex-end: items are packed toward to end line<br>center: items are centered along the line<br>space-between: items are evenly distributed in the line; first item is on the start line, last item on the end line<br>space-around: items are evenly distributed in the line with equal space around them.</code></pre></p>
+<h3 id="Align-items"><a href="#Align-items" class="headerlink" title="Align-items"></a>Align-items</h3><p>   This defines the layout of items on the cross axis on the current line.<br>   <pre><code>flex-start: cross-start margin edge of the items is placed on the cross-start line<br>flex-end: cross-end margin edge of the items is placed on the cross-end line<br>center: items are centered in the cross-axis<br>baseline: items are aligned such as their baselines align<br>stretch (default): stretch to fill the container</code></pre></p>
+<h3 id="Align-content"><a href="#Align-content" class="headerlink" title="Align-content"></a>Align-content</h3><p>   This aligns a flex container&#x2019;s lines within when there is extra space in the cross-axis, similar to how justify-content aligns individual items within the main-axis.</p>
+<h2 id="Four-main-attributes-of-items"><a href="#Four-main-attributes-of-items" class="headerlink" title="Four main attributes of items"></a>Four main attributes of items</h2><h3 id="Order"><a href="#Order" class="headerlink" title="Order"></a>Order</h3><p>   The order property controls the order in which they appear in the flex container.</p>
+<h3 id="Flex-grow-Flex-shrink"><a href="#Flex-grow-Flex-shrink" class="headerlink" title="Flex-grow | Flex-shrink"></a>Flex-grow | Flex-shrink</h3><p>   This defines the ability for a flex item to grow/shrink if necessary. </p>
+<h3 id="Flex-basis"><a href="#Flex-basis" class="headerlink" title="Flex-basis"></a>Flex-basis</h3><p>   This defines the default size of an element before the remaining space is distributed.</p>
+<h3 id="Align-self"><a href="#Align-self" class="headerlink" title="Align-self"></a>Align-self</h3><p>   This allows the default alignment (or the one specified by align-items) to be overridden for individual flex items. For example:<br>   <pre><code>.item {<br>   align-self: auto | flex-start | flex-end | center | baseline | stretch;<br>   }</code></pre></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Style Sheet </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> CSS </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Differences between attr() and prop() methods]]></title>
+      <url>http://tongzhang.me/2016/07/22/attr%20and%20prop/</url>
+      <content type="html"><![CDATA[<h1 id="How-prop-is-generated"><a href="#How-prop-is-generated" class="headerlink" title="How prop() is generated"></a>How prop() is generated</h1><ul>
+<li>From jQuery 1.6, a new prop() method is added. On the surface, both the two methods are to get / set attributes and properties, and have no big difference. So why do we need to add the prop() method?</li>
+</ul>
+<p>Official document says:</p>
+<pre><code>Before jQuery 1.6, the .attr () methodatically took property values into account when retrieving some attributes, which could cause inconsistent behavior.
+</code></pre>
+
+<ul>
+<li>The reason is that, before jQuery 1.6, for example, we use .attr() method to select attributes such as selectedIndex, tagName, nodeName, nodeType, ownerDocument, defaultChecked, and defaultSelected, but these attributes are not the attr attributea of element. They have no corresponding attributes but only properties.</li>
+</ul>
+<h1 id="The-difference-between-prop-and-attr"><a href="#The-difference-between-prop-and-attr" class="headerlink" title="The difference between prop() and attr()"></a>The difference between prop() and attr()</h1><ul>
+<li>In attr() method , the most critical codes are:</li>
+</ul>
+<p><code>elem.setAttribute (name, value + &#x201C;&#x201D;);<br>           Ret = elem.getAttribute (name);</code></p>
+<p>It is obvious that Attr() method uses setAttribute () and getAttribute () methods to operate DOM with the DOM&#x2019;s API.</p>
+<ul>
+<li>In prop(), the most critical codes are:</li>
+</ul>
+<p><code>return (elem [name] = value);<br>           Return elem [name];</code></p>
+<p>These codes can be understood as document.getElementById(el)[name] = value, which is converted into an attribute element.</p>
+<h1 id="Use-of-prop-and-attr"><a href="#Use-of-prop-and-attr" class="headerlink" title="Use of prop() and attr()"></a>Use of prop() and attr()</h1><ul>
+<li>Under what circumstances we should use prop (), and which cases should use attr ()?</li>
+</ul>
+<p>First look at the official statement:</p>
+<pre><code> To retrieve and change DOM properties such as the checked, selected, or disabled state of form elements, use the .prop () method.
+</code></pre>
+
+<p>To summarize, use prop() when the properties have true and false values, like:<br>Async, autofocus, checked, location, mutiple, readOnly, selected:<br><img src="/2016/07/22/attr and prop/attr_prop.jpg" style="text-align: center;
+  margin: 0 auto;" title="prop vs attr"></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript Basic </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> jQuery </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Build your own blog with Hexo and Github pages]]></title>
+      <url>http://tongzhang.me/2016/07/11/The-Second-Blog/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>Here record how to use Hexo and GitHub Pages to build a blog.<br><a id="more"></a></p>
+</blockquote>
+<h2 id="Introduction-of-github-pages-and-Hexo"><a href="#Introduction-of-github-pages-and-Hexo" class="headerlink" title="Introduction of github pages and Hexo"></a>Introduction of github pages and Hexo</h2><h3 id="Hexo"><a href="#Hexo" class="headerlink" title="Hexo"></a>Hexo</h3><ul>
+<li>Hexo allows you to use markdown writing, and finally generate static HTML content. Hexo is Node.js based blog engine. Relevant information about Node.js installation configuration can be found online.</li>
+</ul>
+<h3 id="Github-pages"><a href="#Github-pages" class="headerlink" title="Github pages"></a>Github pages</h3><ul>
+<li>Github Pages allow you to commit a static website, it helps you hosting. I signed up for two source libraries: blog and tongzhang.github.io. The first source library for writing markdown, the second to host the final of the blog site. Also note that the name of the second source library happens to be my blog address. Github will be very smart to host the content code library for the content of the blog site.</li>
+</ul>
+<h2 id="The-main-Process"><a href="#The-main-Process" class="headerlink" title="The main Process"></a>The main Process</h2><h3 id="Create-a-new-blog"><a href="#Create-a-new-blog" class="headerlink" title="Create a new blog"></a>Create a new blog</h3><pre><code>hexo init blog  //Your file name
+cd blog
+git init
+git add.
+git commit -a -m &quot;Initial commit&quot;
+git remote add origin git@github.com: TongZhangzt/blog.git
+git push -u origin master
+</code></pre>
+
+<h3 id="Modify-config-yml-file"><a href="#Modify-config-yml-file" class="headerlink" title="Modify _config.yml file"></a>Modify _config.yml file</h3><pre><code># Deployment
+## Docs: https://hexo.io/docs/deployment.html
+deploy:
+  type: git
+  repo: ssh://git@github.com/TongZhangzt/TongZhangzt.github.io
+  branch: master
+</code></pre>
+
+<h3 id="Modify-gitignore-file-add"><a href="#Modify-gitignore-file-add" class="headerlink" title="Modify .gitignore file add"></a>Modify .gitignore file add</h3><pre><code>public /
+.deploy /
+</code></pre>
+
+<h3 id="New-blog-article"><a href="#New-blog-article" class="headerlink" title="New blog article"></a>New blog article</h3><pre><code>hexo new &quot;Hexo and GitHub Pages&quot;
+</code></pre>
+
+<p>write article content in the source / _posts / hexo-and-github-pages.md.</p>
+<h3 id="Post-blog"><a href="#Post-blog" class="headerlink" title="Post blog"></a>Post blog</h3><pre><code>hexo generate
+hexo deploy
+</code></pre>
+
+<p>View blog content: <a href="http://tongzhang.me">http://tongzhang.me</a></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript Framework </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Hexo </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Introduce the origin of the blog site]]></title>
+      <url>http://tongzhang.me/2016/07/05/My-first-blog/</url>
+      <content type="html"><![CDATA[<p>To record my study notes, and talk to myself. </p>
+<blockquote>
+<p>It&#x2019;s my first blog, it&#x2019;s a start, let&#x2019;s go!<br><a id="more"></a></p>
+</blockquote>
+<h1 id="I-hope-it&#x2019;s-a-start"><a href="#I-hope-it&#x2019;s-a-start" class="headerlink" title="I hope it&#x2019;s a start"></a>I hope it&#x2019;s a start</h1><ul>
+<li>I&#x2019;ve always wanted to have my own blog, to record my own learning notes. As a front-end designer, it&#x2019;s also very important to have a nice blog.</li>
+</ul>
+<h1 id="Give-myself-the-motor-to-keep-learning"><a href="#Give-myself-the-motor-to-keep-learning" class="headerlink" title="Give myself the motor to keep learning"></a>Give myself the motor to keep learning</h1><ul>
+<li>The reason that I wanna have a blog is not only to record my learning notes, I also think it&#x2019;s a place to talk to myself, to give me the motor of keeping learning. Everyday we receive too much inforamtion, we need a sapce to store what we&#x2019;ve got.To write things down. </li>
+</ul>
+<h1 id="Record-the-growth-of-myself"><a href="#Record-the-growth-of-myself" class="headerlink" title="Record the growth of myself"></a>Record the growth of myself</h1><ul>
+<li>During this process, we can gradually improve our logical thinking skills, analytical skills, and it will force us to arrange our mind to build a structured framework. It&#x2019;s a greate way to record your own growth. Periodically, look back on your blog, you will find yourself in such a way that continues to grow. It&#x2019;s a thing that belongs to myself, which gives me a sense of accomplishment.</li>
+</ul>
+<h1 id="A-great-way-of-sharing"><a href="#A-great-way-of-sharing" class="headerlink" title="A great way of sharing"></a>A great way of sharing</h1><ul>
+<li>I think writing a blog is also a kind of sharing, which is the most important spirit of Internet. Blog is a place we can exchange ideas and knowledge.</li>
+</ul>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> Life </tag>
+            
+        </tags>
+        
+    </entry>
+    
+  
+  
+</search>

@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>Tags | Tong&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="You can click on tags to view posts about this tag">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tags">
+<meta property="og:url" content="http://tongzhang.me/tags/index.html">
+<meta property="og:site_name" content="Tong&#39;s blog">
+<meta property="og:description" content="You can click on tags to view posts about this tag">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-02-09T15:31:07.577Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tags">
+<meta name="twitter:description" content="You can click on tags to view posts about this tag">
+  
+    <link rel="alternate" href="/atom.xml" title="Tong&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/images/favicon.gif">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Tong</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item" href="/tags">
+                Tags
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </nav>
+    <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="z-index: 2">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item flex-1" href="/tags">
+                Tags
+            </a>
+            
+    </div>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <style>
+    .container.tag-cate-wrap {
+        min-height: 93vh;
+        width: 80%;
+        margin: 5rem auto;
+    }
+
+    .tags>a {
+        display: inline-block;
+        color: #000;
+        border: 1px solid gray;
+        margin: 4px 2px;
+        padding: 0 4px;
+        border-radius: 6px;
+    }
+
+    .one-tag-list {
+        margin-top: 20px;
+    }
+
+    /* Tags support */
+
+    .tags {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .tags a,
+    .tags .tag {
+        display: inline-block;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 4px;
+        padding: 0 10px;
+        color: #ffffff;
+        line-height: 24px;
+        font-size: 12px;
+        text-decoration: none;
+        margin: 0 1px;
+        margin-bottom: 6px;
+    }
+
+    .tags a:hover,
+    .tags .tag:hover,
+    .tags a:active,
+    .tags .tag:active {
+        color: white;
+        border-color: white;
+        background-color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+    }
+
+    @media only screen and (min-width: 768px) {
+        .tags a,
+        .tags .tag {
+            margin-right: 5px;
+        }
+    }
+
+    #tag-heading {
+        padding: 70px 0 60px;
+    }
+
+    @media only screen and (min-width: 768px) {
+        #tag-heading {
+            padding: 55px 0;
+        }
+    }
+
+    #tag_cloud {
+        margin: 20px 0 15px 0;
+    }
+
+    #tag_cloud a,
+    #tag_cloud .tag {
+        font-size: 14px;
+        border: none;
+        line-height: 28px;
+        margin: 0 2px;
+        margin-bottom: 8px;
+        background: #D6D6D6;
+    }
+
+    #tag_cloud a:hover,
+    #tag_cloud .tag:hover,
+    #tag_cloud a:active,
+    #tag_cloud .tag:active {
+        background-color: #0085a1 !important;
+    }
+
+    @media only screen and (min-width: 768px) {
+        #tag_cloud {
+            margin-bottom: 25px;
+        }
+    }
+
+    .tag-comments {
+        font-size: 12px;
+    }
+
+    @media only screen and (min-width: 768px) {
+        .tag-comments {
+            font-size: 14px;
+        }
+    }
+
+    .t:first-child {
+        margin-top: 0;
+    }
+
+    .listing-seperator {
+        color: #0085a1;
+        font-size: 21px !important;
+    }
+
+    .listing-seperator::before {
+        margin-right: 5px;
+    }
+
+    @media only screen and (min-width: 768px) {
+        .listing-seperator {
+            font-size: 20px !important;
+            line-height: 2 !important;
+        }
+    }
+
+    .one-tag-list .tag-text {
+        font-weight: 500;
+        /* Hux learn from
+       *     TypeIsBeautiful,
+       *     [This Post](http://zhuanlan.zhihu.com/ibuick/20186806) etc.
+       */
+        font-family: -apple-system, "Helvetica Neue", "Arial", "PingFang SC", "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "Microsoft JhengHei", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "WenQuanYi Micro Hei", SimSun, sans-serif;
+        line-height: 1.7;
+    }
+
+    .one-tag-list .post-preview {
+        position: relative;
+    }
+
+    .one-tag-list .post-preview>a .post-title {
+        font-size: 16px;
+        margin-top: 20px;
+    }
+
+    .one-tag-list .post-preview>a .post-subtitle {
+        font-size: 15px;
+        padding-top: 5px;
+        font-weight: 400;
+    }
+
+    .one-tag-list .post-preview>.post-meta {
+        position: absolute;
+        right: 5px;
+        bottom: 0;
+        margin: 0;
+        font-size: 12px;
+        line-height: 12px;
+    }
+
+    @media only screen and (min-width: 768px) {
+        .one-tag-list .post-preview {
+            margin-left: 20px;
+        }
+
+        .one-tag-list .post-preview>a>.post-title {
+            font-size: 18px;
+            line-height: 1.3;
+        }
+
+        .one-tag-list .post-preview>a>.post-subtitle {
+            font-size: 15px;
+        }
+
+        .one-tag-list .post-preview .post-meta {
+            font-size: 18px;
+        }
+    }
+
+    
+        header.intro-header {
+            background-image: url('/images/background.jpg')
+        }
+    
+
+    .intro-header .site-heading,
+    .intro-header .page-heading,
+    .intro-header .post-heading{
+        color: #fff;
+    }
+
+    .intro-header .site-heading h1,
+    .intro-header .page-heading h1,
+    .intro-header .post-heading h1 {
+        text-shadow: 0 0 40px black;
+    }
+
+    .intro-header .site-heading .subheading,
+    .intro-header .page-heading .subheading {
+        font-size: 18px;
+        line-height: 1.1;
+        display: block;
+        font-weight: 300;
+        margin: 10px 0 0;
+    }
+</style>
+
+<!-- Page Header -->
+<header class="intro-header" style="height: 18rem">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                    <div class="site-heading" style="text-align:center;padding: 4rem 1rem 0 1rem">
+                        <h1 style="font-size: 2.5rem">Tags</h1>
+                        <span class="subheading">You can click on tags to view posts about this tag</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+</header>
+
+<!-- Main Content -->
+<div class="container tag-cate-wrap">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <!-- 标签云 -->
+            <div id='tag_cloud'
+                 class="tags">
+                
+                    <a href="AngularJS"
+                       style="background-color: rgb(187, 187, 238);" 
+                       title="AngularJS"
+                       rel="3">
+                        AngularJS
+                    </a>
+                    
+                    <a href="Javascript"
+                       style="background-color: rgb(187, 187, 238);" 
+                       title="Javascript"
+                       rel="6">
+                        Javascript
+                    </a>
+                    
+                    <a href="CSS"
+                       style="background-color: rgb(187, 187, 238);" 
+                       title="CSS"
+                       rel="1">
+                        CSS
+                    </a>
+                    
+                    <a href="JSON"
+                       style="background-color: rgb(187, 187, 238);" 
+                       title="JSON"
+                       rel="1">
+                        JSON
+                    </a>
+                    
+                    <a href="Life"
+                       style="background-color: rgb(187, 187, 238);" 
+                       title="Life"
+                       rel="1">
+                        Life
+                    </a>
+                    
+                    <a href="Sass"
+                       style="background-color: rgb(187, 187, 238);" 
+                       title="Sass"
+                       rel="1">
+                        Sass
+                    </a>
+                    
+                    <a href="MochaJs"
+                       style="background-color: rgb(187, 187, 238);" 
+                       title="MochaJs"
+                       rel="1">
+                        MochaJs
+                    </a>
+                    
+                    <a href="Hexo"
+                       style="background-color: rgb(187, 187, 238);" 
+                       title="Hexo"
+                       rel="1">
+                        Hexo
+                    </a>
+                    
+                    <a href="jQuery"
+                       style="background-color: rgb(187, 187, 238);" 
+                       title="jQuery"
+                       rel="1">
+                        jQuery
+                    </a>
+                    
+            </div>
+
+            <!-- 标签列表 -->
+            
+                <div class="one-tag-list">
+                    <span class="fa fa-tag listing-seperator"
+                          id="AngularJS">
+                        <span class="tag-text">
+                            AngularJS
+                        </span>
+                    </span>
+                    
+                        <div class="post-preview">
+                            <a href="/2016/10/29/Angular2-Module/">
+                                <h2 class="post-title">
+                                    Angular 2.0 Module
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                        <div class="post-preview">
+                            <a href="/2016/08/24/Start learning Angular.js/">
+                                <h2 class="post-title">
+                                    Angular 2.0 Architecture
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                        <div class="post-preview">
+                            <a href="/2017/01/28/UI-Router-in-AngularJS/">
+                                <h2 class="post-title">
+                                    UI-Router in AngularJS
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                </div>
+                
+                <div class="one-tag-list">
+                    <span class="fa fa-tag listing-seperator"
+                          id="Javascript">
+                        <span class="tag-text">
+                            Javascript
+                        </span>
+                    </span>
+                    
+                        <div class="post-preview">
+                            <a href="/2016/11/20/DOM-Events-in-Javascript/">
+                                <h2 class="post-title">
+                                    DOM Events in Javascript
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                        <div class="post-preview">
+                            <a href="/2016/09/05/Explore Javascript asynchronous programming/">
+                                <h2 class="post-title">
+                                    Explore Javascript asynchronous programming
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                        <div class="post-preview">
+                            <a href="/2016/10/20/Inheritance-and-the-prototype-chain/">
+                                <h2 class="post-title">
+                                    Inheritance and the Prototype chain
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                        <div class="post-preview">
+                            <a href="/2016/09/30/Javascript-type-value-and-variable/">
+                                <h2 class="post-title">
+                                    Javascript type, value and variable
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                        <div class="post-preview">
+                            <a href="/2016/09/17/The-JavaScript-Event-Loop/">
+                                <h2 class="post-title">
+                                    The JavaScript Event Loop
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                        <div class="post-preview">
+                            <a href="/2016/11/10/Scope-chain-and-execution-context-in-Javascript/">
+                                <h2 class="post-title">
+                                    Scope chain and execution context in Javascript
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                </div>
+                
+                <div class="one-tag-list">
+                    <span class="fa fa-tag listing-seperator"
+                          id="CSS">
+                        <span class="tag-text">
+                            CSS
+                        </span>
+                    </span>
+                    
+                        <div class="post-preview">
+                            <a href="/2016/08/02/Flex Box Style/">
+                                <h2 class="post-title">
+                                    Study Flexbox Layout
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                </div>
+                
+                <div class="one-tag-list">
+                    <span class="fa fa-tag listing-seperator"
+                          id="JSON">
+                        <span class="tag-text">
+                            JSON
+                        </span>
+                    </span>
+                    
+                        <div class="post-preview">
+                            <a href="/2016/10/12/JSON-object-and-JSON-string/">
+                                <h2 class="post-title">
+                                    JSON, JavaScript Object literals and JSON string
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                </div>
+                
+                <div class="one-tag-list">
+                    <span class="fa fa-tag listing-seperator"
+                          id="Life">
+                        <span class="tag-text">
+                            Life
+                        </span>
+                    </span>
+                    
+                        <div class="post-preview">
+                            <a href="/2016/07/05/My-first-blog/">
+                                <h2 class="post-title">
+                                    Introduce the origin of the blog site
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                </div>
+                
+                <div class="one-tag-list">
+                    <span class="fa fa-tag listing-seperator"
+                          id="Sass">
+                        <span class="tag-text">
+                            Sass
+                        </span>
+                    </span>
+                    
+                        <div class="post-preview">
+                            <a href="/2016/08/13/Sass Study Notes/">
+                                <h2 class="post-title">
+                                    Sass Study Notes
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                </div>
+                
+                <div class="one-tag-list">
+                    <span class="fa fa-tag listing-seperator"
+                          id="MochaJs">
+                        <span class="tag-text">
+                            MochaJs
+                        </span>
+                    </span>
+                    
+                        <div class="post-preview">
+                            <a href="/2016/11/29/Testing-Framework-Mocha-js/">
+                                <h2 class="post-title">
+                                    Testing Framework Mocha.js
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                </div>
+                
+                <div class="one-tag-list">
+                    <span class="fa fa-tag listing-seperator"
+                          id="Hexo">
+                        <span class="tag-text">
+                            Hexo
+                        </span>
+                    </span>
+                    
+                        <div class="post-preview">
+                            <a href="/2016/07/11/The-Second-Blog/">
+                                <h2 class="post-title">
+                                    Build your own blog with Hexo and Github pages
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                </div>
+                
+                <div class="one-tag-list">
+                    <span class="fa fa-tag listing-seperator"
+                          id="jQuery">
+                        <span class="tag-text">
+                            jQuery
+                        </span>
+                    </span>
+                    
+                        <div class="post-preview">
+                            <a href="/2016/07/22/attr and prop/">
+                                <h2 class="post-title">
+                                    Differences between attr() and prop() methods
+                                </h2>
+                                
+                            </a>
+                        </div>
+                        <hr>
+                        
+                </div>
+                
+
+        </div>
+    </div>
+</div>
+      </div>
+  </div>
+  <style>
+    #footer {
+        min-height: 10vh;
+        background: black;
+        color: #fff;
+    }
+
+    #footer a {
+        color: #e1e1e1;
+    }
+
+    .footer-content {
+        padding: 1rem;
+        margin: 0 auto;
+    }
+</style>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+<footer id="footer"
+        class="has-text-centered is-flex center">
+    <div class="container has-padding">
+        <div>
+            <div class="footer-content">
+                <i class="fa fa-eye" style="position: relative; top: 3px;right: 5px"></i><span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Visits
+                <br> Copyright ©
+                Tong Zhang
+                    2018
+                        <br> Powered by
+                        <a href="http://hexo.io/"
+                           target="_blank">Hexo</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script async
+        src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+        </script>
+
+<script src="/js/search_core.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>

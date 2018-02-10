@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>Categories | Tong&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Tong Zhang&apos;s personal blog">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Categories">
+<meta property="og:url" content="http://tongzhang.me/category/index.html">
+<meta property="og:site_name" content="Tong&#39;s blog">
+<meta property="og:description" content="Tong Zhang&apos;s personal blog">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-02-09T22:18:03.689Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Categories">
+<meta name="twitter:description" content="Tong Zhang&apos;s personal blog">
+  
+    <link rel="alternate" href="/atom.xml" title="Tong&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/images/favicon.gif">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Tong</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item" href="/tags">
+                Tags
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </nav>
+    <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="z-index: 2">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item flex-1" href="/tags">
+                Tags
+            </a>
+            
+    </div>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <style>
+    .categories-title {
+        margin-top: 85px;
+    }
+
+    .categories-title strong {
+        padding: 0 10px 5px;
+        text-transform: capitalize;
+        border-top: 2px solid #000;
+        border-bottom: 2px solid #000;
+    }
+
+    .categories-box {
+        min-height: 90vh;
+    }
+
+    .categories-inner {
+        flex-wrap: wrap;
+        min-height: 350px;
+    }
+
+    .category-link, .tag-link {
+        position: relative;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        height: 80px;
+        width: 80px;
+        padding: 12px;
+        margin: 15px;
+        border-radius: 50%;
+
+        color: #FFF;
+        background-color: #00d1b2;
+    }
+
+    .category-count, .tag-count {
+        position: absolute;
+        top:0;
+        right: 5px;
+
+        display: flex;
+        align-items:center;
+        justify-content: center;
+
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background-color: black;
+    }
+
+</style>
+<div class="container categories-box">
+    <div class="content categories-title">
+        <h1 class="has-text-centered"><strong>Categories</strong></h1>
+    </div>
+    <div class="categories-inner is-flex center">
+        
+            <h2>Categories is Empty</h2>
+        
+    </div>
+</div>
+<script>
+    //    var allItem = document.querySelectorAll('.category-list-item')
+    //    allItem.forEach(function (item, index) {
+    //        var containerWidth = 80
+    //        var itemChilds = item.querySelectorAll('.category-list-child')
+    //        item.style.width = containerWidth * itemChilds.length + 'px'
+    //        item.classList.add('debug')
+    //    })
+</script>
+      </div>
+  </div>
+  <style>
+    #footer {
+        min-height: 10vh;
+        background: black;
+        color: #fff;
+    }
+
+    #footer a {
+        color: #e1e1e1;
+    }
+
+    .footer-content {
+        padding: 1rem;
+        margin: 0 auto;
+    }
+</style>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+<footer id="footer"
+        class="has-text-centered is-flex center">
+    <div class="container has-padding">
+        <div>
+            <div class="footer-content">
+                <i class="fa fa-eye" style="position: relative; top: 3px;right: 5px"></i><span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Visits
+                <br> Copyright ©
+                Tong Zhang
+                    2018
+                        <br> Powered by
+                        <a href="http://hexo.io/"
+                           target="_blank">Hexo</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script async
+        src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+        </script>
+
+<script src="/js/search_core.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>

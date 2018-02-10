@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html class="full-height">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="//cdn.bootcss.com/bulma/0.4.1/css/bulma.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  
+  <title>UI-Router in AngularJS | Tong&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="UI-Router is a client-side router for single page web applications  A client-side router updates the browser URL as the user nagivates through the single page app.">
+<meta name="keywords" content="AngularJS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UI-Router in AngularJS">
+<meta property="og:url" content="http://tongzhang.me/2017/01/28/UI-Router-in-AngularJS/index.html">
+<meta property="og:site_name" content="Tong&#39;s blog">
+<meta property="og:description" content="UI-Router is a client-side router for single page web applications  A client-side router updates the browser URL as the user nagivates through the single page app.">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-02-10T17:49:16.486Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="UI-Router in AngularJS">
+<meta name="twitter:description" content="UI-Router is a client-side router for single page web applications  A client-side router updates the browser URL as the user nagivates through the single page app.">
+  
+    <link rel="alternate" href="/atom.xml" title="Tong&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/images/favicon.gif">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/layout.css">
+  
+
+</head>
+
+<body>
+  <header id="navbar" class="overflow-hidden">
+  <div class="container">
+    <nav class="nav">
+         <div class="nav-left">
+            <a href="/" class="nav-item" style="font-size: 20px;">
+              <span class="logo">Tong</span>'s Blog
+            </a>
+         </div>
+        <div class="nav-center is-hidden position-relative" id="search_container">
+            <div class="nav-item full-width full-height">
+                <i class="fa fa-search has-padding" aria-hidden="true"></i>
+                <input type="text" id="search_input" class="search-input full-height full-width" placeholder="Search post" autofocus>
+                <i id="close_search" class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div id="search_result"></div>
+        </div>
+        <div class="nav-right nav-menu">
+            <a class="nav-item" id="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+            
+            <a class="nav-item" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item" href="/tags">
+                Tags
+            </a>
+            
+        </div>
+        <span class="nav-toggle" id="navMenuDropdown">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </nav>
+    <div class="navbar-menu position-absolute full-width content-box is-hidden-desktop is-flex flex-column center" style="z-index: 2">
+            
+            <a class="nav-item flex-1" href="/">
+                Home
+            </a>
+            
+            <a class="nav-item flex-1" href="/works">
+                My Works
+            </a>
+            
+            <a class="nav-item flex-1" href="/about">
+                About
+            </a>
+            
+            <a class="nav-item flex-1" href="/tags">
+                Tags
+            </a>
+            
+    </div>
+  </div>
+</header>
+
+  <div id="main-wrap" class="position-relative" style="margin-top: 55px;">
+      <div class="main-inner-content">
+          <!--博文页面-->
+
+<style>
+    .header-box {
+        height: 370px;
+        filter: blur(10px);
+        background-size: cover;
+        background-color: lightsteelblue;
+    }
+
+    .post-box {
+        padding: 15px;
+        padding-top: 60px;
+        min-height: 80vh;
+        margin-top: -200px;
+        border-radius: 4px;
+        background-color: rgba(255,255,255,.8);
+    }
+
+    .post-avatar {
+        width: 40px;
+        border-radius: 40px;
+    }
+
+    .flow-chart {
+        text-align: center;
+    }
+
+    img[alt="post-cover"] {
+        display: none;
+    }
+</style>
+<header>
+    <div id="header_box" class="header-box"></div>
+</header>
+<section>
+    <div class="container post-box">
+        <div class="content post-title is-flex center flex-column" style="margin-bottom: 70px; overflow: auto;">
+            <h1 class="has-text-centered" style="padding-bottom: 10px; border-bottom: 3px solid #fff">
+                <strong>UI-Router in AngularJS</strong>
+            </h1>
+            
+            <div class="is-flex align-center">
+                <img class="post-avatar" src="/images/avatar.jpeg">
+                <span style="padding:0 10px;"> <span class="sub-title">By</span> Tong</span>
+                <span class="post-date sub-title">at: 2017-01-28</span>
+            </div>
+            
+                <div>
+                    
+                         <a class="tag is-post-tag" href="/tags/AngularJS/">AngularJS</a>
+                    
+                </div>
+            
+        </div>
+        <div class="content" style="overflow: auto">
+            <p>UI-Router is a client-side router for single page web applications</p>
+<blockquote>
+<p>A client-side router updates the browser URL as the user nagivates through the single page app.<br><a id="more"></a></p>
+</blockquote>
+<p>Happy Chinese New Year!</p>
+<hr>
+<p>The aim of UI-Router is to change the browser&#x2019;s URL to drive navigation of the app, and enable a user to create deep-links (i.e., bookmarks) to areas deep within the application.</p>
+<h1 id="States-Manager"><a href="#States-Manager" class="headerlink" title="States Manager"></a>States Manager</h1><p>Think about each feature of an application as a set of states. Only one state can be active at one time. The user can transition from one state to another, to activate a different feature of the application.</p>
+<p>A state is a javascript object which has specific properties. Those properties define the functionality of the application when that state is active:</p>
+<h2 id="Name"><a href="#Name" class="headerlink" title="Name"></a>Name</h2><p>A name for this state, providing a way to refer to the state in many places.</p>
+<h2 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h2><p>A state can define a URL, but it isn&#x2019;t required. If a state has defined a URL, the browser&#x2019;s location is updated to that URL when the state is active.</p>
+<p>A state&#x2019;s URL is actually a URL fragment. Each state defines only the frament (portion) of the URL that it &#x201C;owns&#x201D;. That fragment is appended to the parent state&#x2019;s url in the browser URL when the nested state is active.</p>
+<h2 id="Views"><a href="#Views" class="headerlink" title="Views"></a>Views</h2><p>How this state will look and behave, which includes: Template, Controller, Resolve and Custom Data. </p>
+<h2 id="Template"><a href="#Template" class="headerlink" title="Template"></a>Template</h2><h3 id="Simple-template-or-templateUrl"><a href="#Simple-template-or-templateUrl" class="headerlink" title="Simple template or templateUrl:"></a>Simple template or templateUrl:</h3><p><b>Simple template:</b></p>
+<pre>$stateProvider.state(&apos;contacts&apos;, {
+  template: &apos;&lt;h1&gt;My Contacts&lt;/h1&gt;&apos;
+})</pre>
+
+<p><b>Dynamic creating templateUrl:</b></p>
+<pre>$stateProvider.state(&apos;contacts&apos;, {
+  templateUrl: function ($stateParams){
+    return &apos;/partials/contacts.&apos; + $stateParams.filterBy + &apos;.html&apos;;
+  }
+})</pre>
+
+<h3 id="Template-provider-function"><a href="#Template-provider-function" class="headerlink" title="Template provider function:"></a>Template provider function:</h3><p>We can use a template provider function which can be injected, has access to locals, and must return template HTML.</p>
+<pre><code>$stateProvider.state(&apos;contacts&apos;, {
+  templateProvider: function ($timeout, $stateParams) {
+    return $timeout(function () {
+      return &apos;/partials/contacts.&apos; + $stateParams.contactId + &apos;.html&apos;;
+    }, 100);
+  }
+})</code></pre>
+
+<h3 id="Default-template-Content"><a href="#Default-template-Content" class="headerlink" title="Default template Content"></a>Default template Content</h3><p>We can use ui-view to have some default content before it&#x2019;s populated by a state activation.</p>
+<pre><code>&lt;ui-view&gt;
+        &lt;i&gt;Some content will load here!&lt;/i&gt;
+    &lt;/ui-view&gt;</code></pre>
+
+<h2 id="Controllers"><a href="#Controllers" class="headerlink" title="Controllers"></a>Controllers</h2><p>We can assign a controller to the template, which will not be instantiated if template is not defined.</p>
+<h3 id="Simple-Controller"><a href="#Simple-Controller" class="headerlink" title="Simple Controller"></a>Simple Controller</h3><p>We can use the <code>controller</code> or <code>controllerAs</code> property to give the view a controller:   </p>
+<pre>$stateProvider.state(&apos;contacts&apos;, {
+  template: &apos;&lt;h1&gt;UI-Router in AngularJS&lt;/h1&gt;&apos;,
+  controller: function($scope){
+    $scope.title = &apos;My Contacts&apos;;
+  },
+  controllerAs: &apos;contact&apos;
+})</pre>
+
+<h3 id="Controller-Provider"><a href="#Controller-Provider" class="headerlink" title="Controller Provider"></a>Controller Provider</h3><p>We can use the controllerProvider to dynamically return a controller function or string for the template.</p>
+<pre>$stateProvider.state(&apos;contacts&apos;, {
+  template: ...,
+  controllerProvider: function($stateParams) {
+      var ctrlName = $stateParams.type + &quot;Controller&quot;;
+      return ctrlName;
+  }
+})</pre>
+
+<h2 id="Resolve"><a href="#Resolve" class="headerlink" title="Resolve"></a>Resolve</h2><p>If any of these dependencies are promises, they will be resolved and converted to a value before the <code>controller</code> is instantiated and the $stateChangeSuccess event is fired. We can use <code>resolve</code> to provide controller with content or data that is custom to the state.  </p>
+<p><b>Resolve</b> property is a map object:<br>key &#x2013; {string}: a name of a dependency to be injected into the controller.<br>factory - {string|function}</p>
+<pre>$stateProvider.state(&apos;myState&apos;, {
+      resolve:{
+         // Example using function with simple return value.
+         // Since it&apos;s not a promise, it resolves immediately.
+         simpleObj:  function(){
+            return {value: &apos;simple!&apos;};
+         },
+
+         // Example using function with returned promise.
+         promiseObj:  function($http){
+            // $http returns a promise for the url data
+            return $http({method: &apos;GET&apos;, url: &apos;/someUrl&apos;});
+         },
+
+         // Another promise example. If you need to do some 
+         // processing of the result, use .then, and your 
+         // promise is chained in for free.
+         promiseObj2:  function($http){
+            return $http({method: &apos;GET&apos;, url: &apos;/someUrl&apos;})
+               .then (function (data) {
+                   return doSomeStuffFirst(data);
+               });
+         }, 
+
+         // Example using a service by name as string.
+         // Note: The service could return a promise and
+         // it would work just like the example above
+         translations: &quot;translations&quot;,
+
+         // Example showing injection of service into
+         // resolve function. Service then returns a
+         // promise. 
+         translations2: function(translations, $stateParams){
+             // Assume that getLang is a service method
+             // that uses $http to fetch some translations.
+             // Also assume our url was &quot;/:lang/home&quot;.
+             return translations.getLang($stateParams.lang);
+         },
+
+      // The controller waits for every one of the above items to be
+      // completely resolved before instantiation. 
+      controller: function($scope, simpleObj, promiseObj, promiseObj2, translations, translations2, greeting){
+          $scope.simple = simpleObj.value;
+
+          // You can be sure that promiseObj is ready to use!
+          $scope.items = promiseObj.data.items;
+          $scope.items = promiseObj2.items;
+
+          $scope.title = translations.getLang(&quot;english&quot;).title;
+          $scope.title = translations2.title;
+      }
+   })</pre>
+
+<h2 id="Custom-Data"><a href="#Custom-Data" class="headerlink" title="Custom Data"></a>Custom Data</h2><p>We can attach custom data to the state object using a data property.</p>
+<pre>$stateProvider
+  .state(&apos;contacts.list&apos;, {
+    templateUrl: &apos;contacts.list.html&apos;,
+    data: {
+        customData1: 44,
+        customData2: &quot;red&quot;
+    } 
+  });
+  function Ctrl($state){
+    console.log($state.current.data.customData1) // outputs 44;
+    console.log($state.current.data.customData2) // outputs &quot;red&quot;;
+}</pre>
+
+<hr>
+<h1 id="Multiple-Named-Views"><a href="#Multiple-Named-Views" class="headerlink" title="Multiple Named Views"></a>Multiple Named Views</h1><p>One state can have a single view, in which we just need to define the name, url, template, controller, resolve and custom data. We can also have more than one views in the same template. That means we can add different views in the same template and then each view in views can set up its own templates, controllers. We put all of the views in the template in the <code>views</code> property.</p>
+<p>Every view gets assigned an absolute name that follows a scheme of <code>viewname@statename</code>, where viewname is the name used in the <code>&lt;div ui-view=&#x201D;viewname&#x201D;&gt;&lt;/div&gt;</code> directive and state name is the state&#x2019;s absolute name.</p>
+<p>Let&#x2019;s see an example:</p>
+<pre>$stateProvider
+  .state(&apos;contacts&apos;, {
+    templateUrl: &apos;contacts.html&apos;   
+  })
+  .state(&apos;contacts.detail&apos;, {
+    views: {
+        // Relatively targets the &apos;detail&apos; view in this state&apos;s parent state, &apos;contacts&apos;.
+        // &lt;div ui-view=&apos;detail&apos;/&gt; within contacts.html
+        &quot;detail&quot; : { },            
+
+        // Relatively targets the unnamed view in this state&apos;s parent state, &apos;contacts&apos;.
+        // &lt;div ui-view/&gt; within contacts.html
+        &quot;&quot; : { }, 
+
+        // Absolutely targets the &apos;info&apos; view in this state, &apos;contacts.detail&apos;.
+        // &lt;div ui-view=&apos;info&apos;/&gt; within contacts.detail.html
+        &quot;info@contacts.detail&quot; : { }
+
+        // Absolutely targets the &apos;detail&apos; view in the &apos;contacts&apos; state.
+        // &lt;div ui-view=&apos;detail&apos;/&gt; within contacts.html
+        &quot;detail@contacts&quot; : { }
+
+        // Absolutely targets the unnamed view in parent &apos;contacts&apos; state.
+        // &lt;div ui-view/&gt; within contacts.html
+        &quot;@contacts&quot; : { }
+
+        // absolutely targets the &apos;status&apos; view in root unnamed state.
+        // &lt;div ui-view=&apos;status&apos;/&gt; within index.html
+        &quot;status@&quot; : { }
+
+        // absolutely targets the unnamed view in root unnamed state.
+        // &lt;div ui-view/&gt; within index.html
+        &quot;@&quot; : { } 
+  });</pre>
+
+<hr>
+<h1 id="Nested-States-and-Nested-Views"><a href="#Nested-States-and-Nested-Views" class="headerlink" title="Nested States and Nested Views"></a>Nested States and Nested Views</h1><p>Both views and states can be nested with each other. That means each view can have child view and parent view and each state can have sub state and parent state.</p>
+<p>Child states can be used to drill down from a more general feature to more specific one, or to implement a master/detail pattern. For instance, you might have a parent state called contacts which defines the contacts module, and renders a list of all the contacts.</p>
+<h2 id="Naming-Your-States"><a href="#Naming-Your-States" class="headerlink" title="Naming Your States"></a>Naming Your States</h2><p>We can register states in any order and across modules. We can register children before the parent state exists. It will queue them up and once the parent state is registered then the child will be registered.</p>
+<p>No two states can have the same name. The name of the child state will automatically <code>append to the</code> name of the parent&#x2019;s state name. For example, we can&#x2019;t have two different states named &#x201C;edit&#x201D; even if they have different parents.</p>
+<h2 id="Nested-States-amp-Views"><a href="#Nested-States-amp-Views" class="headerlink" title="Nested States &amp; Views"></a>Nested States &amp; Views</h2><p>The views of Child state will automatically insert in the &lt;div ui-view&gt;&lt;/div&gt; of the parent state&#x2019;s template. For example:</p>
+<pre>$stateProvider
+    .state(&apos;contacts&apos;, {
+        abstract: true,
+        templateUrl: &apos;contacts.html&apos;
+    })
+    .state(&apos;contacts.list&apos;, {
+        // loaded into ui-view of parent&apos;s template &quot;contacts.html&quot;
+        templateUrl: &apos;contacts.list.html&apos;
+    })
+    .state(&apos;contacts.detail&apos;, {
+        // loaded into ui-view of parent&apos;s template &quot;contacts.html&quot;
+        templateUrl: &apos;contacts.detail.html&apos;
+    });
+
+&lt;!-- contacts.html --&gt;
+&lt;h1&gt;Contacts Page&lt;/h1&gt;
+&lt;div ui-view&gt;&lt;/div&gt;</pre>
+
+<h2 id="Inherit-From-Parent-States"><a href="#Inherit-From-Parent-States" class="headerlink" title="Inherit From Parent States"></a>Inherit From Parent States</h2><p>Child states DO inherit the following from parent states:</p>
+<ul>
+<li>Resolved dependencies via resolve</li>
+<li>Custom data properties</li>
+</ul>
+<h3 id="Inherited-Resolved-Dependencies"><a href="#Inherited-Resolved-Dependencies" class="headerlink" title="Inherited Resolved Dependencies"></a>Inherited Resolved Dependencies</h3><p>Child states will inherit resolved dependencies from parent state(s), which they can overwrite. You can then inject resolved dependencies into the <code>controllers</code> and <code>resolve functions</code> of child states.</p>
+<pre>$stateProvider.state(&apos;parent&apos;, {
+      resolve:{
+         resA:  function(){
+            return {&apos;value&apos;: &apos;A&apos;};
+         }
+      },
+      controller: function($scope, resA){
+          $scope.resA = resA.value;
+      }
+   })
+   .state(&apos;parent.child&apos;, {
+      resolve:{
+         resB: function(resA){
+            return {&apos;value&apos;: resA.value + &apos;B&apos;};
+         }
+      },
+      controller: function($scope, resA, resB){
+          $scope.resA2 = resA.value;
+          $scope.resB = resB.value;
+      }
+    )}</pre>
+
+<h3 id="Inherited-Custom-Data"><a href="#Inherited-Custom-Data" class="headerlink" title="Inherited Custom Data"></a>Inherited Custom Data</h3><p>Child states will inherit data properties from parent state(s), which they can overwrite.</p>
+<pre>$stateProvider.state(&apos;parent&apos;, {
+      data:{
+         customData1:  &quot;Hello&quot;,
+         customData2:  &quot;World!&quot;
+      }
+   })
+   .state(&apos;parent.child&apos;, {
+      data:{
+         // customData1 inherited from &apos;parent&apos;
+         // but we&apos;ll overwrite customData2
+         customData2:  &quot;UI-Router!&quot;
+      }
+   });
+
+$rootScope.$on(&apos;$stateChangeStart&apos;, function(event, toState){ 
+    var greeting = toState.data.customData1 + &quot; &quot; + toState.data.customData2;
+    console.log(greeting);
+
+    // Would print &quot;Hello World!&quot; when &apos;parent&apos; is activated
+    // Would print &quot;Hello UI-Router!&quot; when &apos;parent.child&apos; is activated
+})</pre>
+
+<p>Child views DO inherit the following from parent views:</p>
+<ul>
+<li>Scope Inheritance</li>
+<li>Resolved Dependencies</li>
+</ul>
+<h3 id="View-Inherited-Scope"><a href="#View-Inherited-Scope" class="headerlink" title="View Inherited Scope"></a>View Inherited Scope</h3><p>Inheritance of scope properties has <code>nothing</code> to do with the nesting of your states and <code>everything</code> to do with the nesting of your views (templates).</p>
+<p>It is entirely possible that you have nested states whose templates populate ui-views at various non-nested locations within your site. In this scenario you cannot expect to access the scope variables of parent state views within the views of children states.</p>
+<blockquote>
+<p>However, normally nested states all have nested views, so these views can inherite scope.</p>
+</blockquote>
+<p>For example:</p>
+<pre>$stateProvider
+    .state(&apos;contacts&apos;, {
+        url: &apos;/contacts&apos;,
+        templateUrl: &apos;contacts.html&apos;,
+        controller: function($scope){
+            $scope.contacts = [{ id:0, name: &quot;Alice&quot; }, { id:1, name: &quot;Bob&quot; }];
+        }           
+    })
+    .state(&apos;contacts.detail&apos;, {
+        url: &apos;/:id&apos;,
+        templateUrl: &apos;contacts.detail.html&apos;,
+        controller: function($scope, $stateParams){
+          $scope.person = $scope.contacts[$stateParams.id];
+        }
+    })</pre>
+
+<h3 id="View-Inherited-Resolved-Dependencies"><a href="#View-Inherited-Resolved-Dependencies" class="headerlink" title="View Inherited Resolved Dependencies"></a>View Inherited Resolved Dependencies</h3><p>Views may inherit resolved dependencies from the <code>state</code> that they belong to, but may not inherit those of their <code>sibling</code> views.</p>
+<pre>$stateProvider.state(&apos;myState&apos;, {
+  resolve:{
+     resMyState:  function(){
+        return { value: &apos;mystate&apos; };
+     }
+  },
+  views: {
+    &apos;foo@myState&apos;: {
+      templateUrl: &apos;mystate-foo.html&apos;,
+      controller: function($scope, resMyState, resFoo){ 
+        // has access to resMyState and resFoo, but not resBar
+      },
+      resolve: {
+        resFoo: function() {
+          return { value: &apos;foo&apos; };
+        }
+      },
+    },
+    &apos;bar@myState&apos;: {
+      templateUrl: &apos;mystate-bar.html&apos;,
+      controller: function($scope, resMyState, resBar){ 
+        // has access to resMyState and resBar, but not resFoo 
+      },
+      resolve: {
+        resBar: function() {
+          return { value: &apos;bar&apos; };
+        },
+      },
+    },
+  },
+});</pre>
+
+<hr>
+<h1 id="URL-Routing"><a href="#URL-Routing" class="headerlink" title="URL Routing"></a>URL Routing</h1><p>Most states in our application will probably have a url associated with them. URL Routing was not an afterthought to the state mechanics, but was figured into the design from the beginning</p>
+<h2 id="URL-Parameters"><a href="#URL-Parameters" class="headerlink" title="URL Parameters"></a>URL Parameters</h2><p>Often, URLs have dynamic parts to them which are called parameters. There are several options for specifying parameters.</p>
+<h3 id="Basic-Parameters"><a href="#Basic-Parameters" class="headerlink" title="Basic Parameters"></a>Basic Parameters</h3><p>The basic parameters look like:</p>
+<h4 id="Parameters-in-the-URL"><a href="#Parameters-in-the-URL" class="headerlink" title="Parameters in the URL:"></a>Parameters in the URL:</h4><p>Examples:</p>
+<ul>
+<li>&#x2018;/user/:id&#x2019; - Matches &#x2018;/user/bob&#x2019; or &#x2018;/user/1234!!!&#x2019; or even &#x2018;/user/&#x2018; but not &#x2018;/user&#x2019; or &#x2018;/user/bob/details&#x2019;. The second path segment will be captured as the parameter &#x2018;id&#x2019;.</li>
+<li>&#x2018;/user/{id}&#x2019; - Same as the previous example, but using curly brace syntax.</li>
+<li>&#x2018;/user/{id:int}&#x2019; - The param is interpreted as Integer.</li>
+</ul>
+<h4 id="Parameters-in-Links"><a href="#Parameters-in-Links" class="headerlink" title="Parameters in Links:"></a>Parameters in Links:</h4><p>To create a link that passes parameters, use the state name like a <code>function</code> and pass it an <code>object</code> with parameter names as keys. The proper href will be generated.</p>
+<p><code>&lt;a ui-sref=&#x201D;contacts.detail({contactId: id})&#x201D;&gt;View Contact&lt;/a&gt;</code><br>The value for id can be anything in scope.</p>
+<h3 id="Query-Parameters"><a href="#Query-Parameters" class="headerlink" title="Query Parameters"></a>Query Parameters</h3><p>You can also specify parameters as query parameters, following a &#x2018;?&#x2019;:</p>
+<pre>url: &quot;/contacts?myParam&quot;
+// will match to url of &quot;/contacts?myParam=value&quot;</pre>
+
+<p>If you need to have more than one, separate them with an &#x2018;&amp;&#x2019;:</p>
+<pre>url: &quot;/contacts?myParam1&amp;myParam2&quot;
+// will match to url of &quot;/contacts?myParam1=value1&amp;myParam2=wowcool&quot;</pre>
+
+<h3 id="Property-Parameters"><a href="#Property-Parameters" class="headerlink" title="Property Parameters"></a>Property Parameters</h3><p>We still can specify what parameters to receive even though the parameters don&#x2019;t appear in the url. You need to add a new field <code>params</code> in the state and create links as specified in Using Parameters in Links:<br>In the state:</p>
+<pre>.state(&apos;contacts&apos;, {
+        url: &quot;/contacts&quot;,
+        params: {
+            param1: null
+        },
+        templateUrl: &apos;contacts.html&apos;
+    })</pre>
+
+<p>The link you create is:<br><code>&lt;a ui-sref=&#x201D;contacts({param1: value1})&#x201D;&gt;View Contacts&lt;/a&gt;</code><br>Or can you pass them to $state.go():<br><code>$state.go(&#x2018;contacts&#x2019;, {param1: value1})</code><br>So that state can transite to that state with parameters.</p>
+<h3 id="stateParams-Service"><a href="#stateParams-Service" class="headerlink" title="$stateParams Service"></a>$stateParams Service</h3><p>As you saw previously the <code>$stateParams</code> service is an object that will have one key per url parameter. The <code>$stateParams</code> is a perfect way to provide your controllers or other services with the individual parts of the navigated url.</p>
+<pre>// If you had a url on your state of:
+url: &apos;/users/:id/details/{type}/{repeat:[0-9]+}?from&amp;to&apos;
+
+// Then you navigated your browser to:
+&apos;/users/123/details//0&apos;
+
+// Your $stateParams object would be
+{ id:&apos;123&apos;, type:&apos;&apos;, repeat:&apos;0&apos; }
+
+// Then you navigated your browser to:
+&apos;/users/123/details/default/0?from=there&amp;to=here&apos;
+
+// Your $stateParams object would be
+{ id:&apos;123&apos;, type:&apos;default&apos;, repeat:&apos;0&apos;, from:&apos;there&apos;, to:&apos;here&apos; }</pre>
+
+<blockquote>
+<p>In state controllers, the $stateParams object will only contain the params that were registered with that state. So you will not see params registered on other states, including ancestors.</p>
+</blockquote>
+<p>For example:</p>
+<pre>$stateProvider.state(&apos;contacts.detail&apos;, {
+   url: &apos;/contacts/:contactId&apos;,   
+   controller: function($stateParams){
+      $stateParams.contactId  //*** Exists! ***//
+   }
+}).state(&apos;contacts.detail.subitem&apos;, {
+   url: &apos;/item/:itemId&apos;, 
+   controller: function($stateParams){
+      $stateParams.contactId //*** Watch Out! DOESN&apos;T EXIST!! ***//
+      $stateParams.itemId //*** Exists! ***//  
+   }
+})</pre>
+
+<p>If you want to use the parameters in the url of parent state, you can use the resolve data to pass:</p>
+<pre>$stateProvider.state(&apos;contacts.detail&apos;, {
+   url: &apos;/contacts/:contactId&apos;,   
+   controller: function($stateParams){
+      $stateParams.contactId  //*** Exists! ***//
+   },
+   resolve:{
+      contactId: [&apos;$stateParams&apos;, function($stateParams){
+          return $stateParams.contactId;
+      }]
+   }
+}).state(&apos;contacts.detail.subitem&apos;, {
+   url: &apos;/item/:itemId&apos;, 
+   controller: function($stateParams, contactId){
+      contactId //*** Exists! ***//
+      $stateParams.itemId //*** Exists! ***//  
+   }
+})</pre>
+
+<h2 id="URL-Routing-for-Nested-States"><a href="#URL-Routing-for-Nested-States" class="headerlink" title="URL Routing for Nested States"></a>URL Routing for Nested States</h2><p>When using url routing together with nested states the default behavior is for child states to append their url to the urls of each of its parent states.</p>
+<pre>$stateProvider
+  .state(&apos;contacts&apos;, {
+     url: &apos;/contacts&apos;,
+     ...
+  })
+  .state(&apos;contacts.list&apos;, {
+     url: &apos;/list&apos;,
+     ...
+  });</pre>
+
+<p>So the routes would become:</p>
+<ul>
+<li>&#x2018;contacts&#x2019; state matches &#x201C;/contacts&#x201D;</li>
+<li>&#x2018;contacts.list&#x2019; state matches &#x201C;/contacts/list&#x201D;. The urls were combined.</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><a href="https://ui-router.github.io/" target="_blank" rel="noopener">UI-Router Official Website</a></li>
+<li><a href="https://github.com/angular-ui/ui-router/wiki" target="_blank" rel="noopener">UI-Router Nested States and Nested Views</a></li>
+</ol>
+
+        </div>
+        <div class="post-reply">
+            
+            
+            <div id="disqus_thread" style="width: 80%; margin: 0 auto;"></div>
+                <script>
+
+                    /**
+                     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+                    /*
+                     var disqus_config = function () {
+                     this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                     this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                     };
+                     */
+                    (function() { // DON'T EDIT BELOW THIS LINE
+                        var d = document, s = d.createElement('script');
+                        s.src = 'https://disqus.com/by/jimmyzt/';
+                        s.setAttribute('data-timestamp', +new Date());
+                        (d.head || d.body).appendChild(s);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            
+        </div>
+    </div>
+</section>
+<script>
+    // 获取第一张图, 用以当封面背景图
+    var img = document.querySelectorAll('img')[1]
+
+    if (img) {
+        var header_box = document.querySelector('#header_box')
+        header_box.style.backgroundImage = 'url('+ img.src +')'
+    }
+</script>
+      </div>
+  </div>
+  <style>
+    #footer {
+        min-height: 10vh;
+        background: black;
+        color: #fff;
+    }
+
+    #footer a {
+        color: #e1e1e1;
+    }
+
+    .footer-content {
+        padding: 1rem;
+        margin: 0 auto;
+    }
+</style>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+<footer id="footer"
+        class="has-text-centered is-flex center">
+    <div class="container has-padding">
+        <div>
+            <div class="footer-content">
+                <i class="fa fa-eye" style="position: relative; top: 3px;right: 5px"></i><span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-spin"></i></span> Visits
+                <br> Copyright ©
+                Tong Zhang
+                    2018
+                        <br> Powered by
+                        <a href="http://hexo.io/"
+                           target="_blank">Hexo</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script async
+        src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+        </script>
+
+<script src="/js/search_core.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>
