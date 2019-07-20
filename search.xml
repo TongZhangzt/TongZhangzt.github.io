@@ -967,27 +967,6 @@ boundGetX(); // 81</pre>
     </entry>
     
     <entry>
-      <title><![CDATA[Angular 2.0 Module]]></title>
-      <url>http://tongzhang.me/2016/10/29/Angular2-Module/</url>
-      <content type="html"><![CDATA[<a id="more"></a>
-]]></content>
-      
-        <categories>
-            
-            <category> Javascript Framework </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> AngularJS </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
       <title><![CDATA[Inheritance and the Prototype chain]]></title>
       <url>http://tongzhang.me/2016/10/20/Inheritance-and-the-prototype-chain/</url>
       <content type="html"><![CDATA[<p>Javascript Basic review Part 4 </p>
